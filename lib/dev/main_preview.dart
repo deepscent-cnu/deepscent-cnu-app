@@ -1,3 +1,4 @@
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scent_notice.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scentraining_header.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       home: Scaffold(
-        body: SafeArea(child: ScenTrainingHeader(trainingTitle: '일반 후각 훈련')),
+        body: SafeArea(child: ScentNotice(message: "10초간 레몬 향을 발향합니다. 레몬 향을 상상하면서 향기에 집중해주세요!")),
       ),
       debugShowCheckedModeBanner: false,
     );
