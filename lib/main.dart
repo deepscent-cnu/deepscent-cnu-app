@@ -7,116 +7,174 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).i
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return const MaterialApp(
+      home: HomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+      appBar: AppBar(title: const Text('Flutter App')),
+      body: const Center(
+        child: Text('Hello, world!'),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
+
+
+// import 'package:flutter/material.dart';
+// // 음성 인식 라이브러리
+// import 'package:speech_to_text/speech_to_text.dart' as stt;
+// // 텍스트를 음성으로 변환하는 TTS 라이브러리
+// import 'package:flutter_tts/flutter_tts.dart';
+
+// void main() {
+//   runApp(const MyApp());
+// }
+
+// // 앱의 루트 위젯
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: const STT_TTS_TestPage(), // 메인 페이지로 이동
+//       debugShowCheckedModeBanner: false, // 오른쪽 위 디버그 배너 제거
+//     );
+//   }
+// }
+
+// // STT & TTS 기능 테스트 페이지
+// class STT_TTS_TestPage extends StatefulWidget {
+//   const STT_TTS_TestPage({super.key});
+
+//   @override
+//   State<STT_TTS_TestPage> createState() => _STT_TTS_TestPageState();
+// }
+
+// class _STT_TTS_TestPageState extends State<STT_TTS_TestPage> {
+//   // STT 인식 객체
+//   final stt.SpeechToText _speech = stt.SpeechToText();
+//   // TTS 객체
+//   final FlutterTts _flutterTts = FlutterTts();
+
+//   // 인식된 텍스트 저장 변수
+//   String _recognizedText = '';
+
+//   // 음성 인식 중인지 여부
+//   bool _isListening = false;
+
+//   // 사용자가 입력한 텍스트를 저장할 컨트롤러 (TTS용)
+//   final TextEditingController _ttsInputController = TextEditingController();
+
+//   @override
+//   void dispose() {
+//     _flutterTts.stop(); // 페이지 종료 시 TTS 중지
+//     _ttsInputController.dispose(); // 컨트롤러 정리
+//     super.dispose();
+//   }
+
+//   // 음성 인식 시작 함수
+//   Future<void> _startListening() async {
+//     bool available = await _speech.initialize(); // STT 초기화
+//     if (available) {
+//       setState(() => _isListening = true); // 상태: 듣는 중
+//       _speech.listen(
+//         localeId: 'ko_KR',
+//         onResult: (result) {
+//           print("🎤 인식된 텍스트: ${result.recognizedWords}");
+//           setState(() {
+//             _recognizedText = result.recognizedWords; // 결과 저장
+//           });
+//         },
+//       );
+//     }
+//   }
+
+//   // 음성 인식 중단 함수
+//   Future<void> _stopListening() async {
+//     await _speech.stop(); // STT 종료
+//     setState(() => _isListening = false);
+//   }
+
+//   // 텍스트 → 음성 출력 함수
+//   Future<void> _speak() async {
+//     if (_ttsInputController.text.isNotEmpty) {
+//       await _flutterTts.setLanguage("ko-KR");
+//       await _flutterTts.speak(_ttsInputController.text); // TTS 실행
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('🎙️ STT & 🔊 TTS Test')),
+//       body: Padding(
+//         padding: const EdgeInsets.all(20),
+//         child: Column(
+//           children: [
+//             // 음성 인식 결과 텍스트
+//             Text(
+//               '🎙️ 음성 인식 결과:',
+//               style: Theme.of(context).textTheme.titleMedium,
+//             ),
+
+//             // 결과 보여주는 박스
+//             Container(
+//               margin: const EdgeInsets.symmetric(vertical: 10),
+//               padding: const EdgeInsets.all(12),
+//               decoration: BoxDecoration(
+//                 border: Border.all(color: Colors.grey),
+//                 borderRadius: BorderRadius.circular(8),
+//               ),
+//               height: 80,
+//               width: double.infinity,
+//               child: Text(_recognizedText),
+//             ),
+
+//             // 음성 인식 시작/중지 버튼
+//             ElevatedButton(
+//               onPressed: _isListening ? _stopListening : _startListening,
+//               child: Text(_isListening ? '🛑 Stop Listening' : '🎤 Start Listening'),
+//             ),
+
+//             const SizedBox(height: 30),
+
+//             // TTS 입력 안내
+//             Text(
+//               '🔊 텍스트를 음성으로 변환',
+//               style: Theme.of(context).textTheme.titleMedium,
+//             ),
+
+//             // 텍스트 입력 필드
+//             TextField(
+//               controller: _ttsInputController,
+//               decoration: const InputDecoration(
+//                 hintText: '여기에 텍스트 입력', // 사용자 안내 문구
+//                 border: OutlineInputBorder(),
+//               ),
+//             ),
+
+//             const SizedBox(height: 10),
+
+//             // TTS 실행 버튼
+//             ElevatedButton(
+//               onPressed: _speak,
+//               child: const Text('📢 전송(TTS)'),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
