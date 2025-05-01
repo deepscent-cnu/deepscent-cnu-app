@@ -1,6 +1,6 @@
 //import 'package:deepscent_cnu/presentation/screens/%08signup.dart';
 import 'package:flutter/material.dart';
-import 'login.dart';// 경로는 네 프로젝트에 맞게 수정
+import 'features/normal_olfactory_training/presentation/screens/login.dart';// 경로는 네 프로젝트에 맞게 수정
 
 void main() {
   runApp(const MyApp());
