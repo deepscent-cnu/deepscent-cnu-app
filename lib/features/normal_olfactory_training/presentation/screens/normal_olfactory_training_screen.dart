@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/trainingResult.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scent_notice.dart';
@@ -43,12 +44,12 @@ class _NormalOlfactoryTrainingScreenState
       await Future.delayed(const Duration(seconds: 10));
     }
 
-    // if (context.mounted) {
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(builder: (_) => const TrainingResult()),
-    //   );
-    // }
+    if (context.mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const BasicTrainingResultPage()),
+      );
+    }
   }
 
   Future<void> controlScentDeviceSlot(int fanNumber, int fanSpeed) async {
@@ -56,7 +57,7 @@ class _NormalOlfactoryTrainingScreenState
 
     final requestHeaders = {
       'Content-type': 'application/json',
-      'Authorization': '$deepscentToken',
+      'Authorization': 'Bearer $deepscentToken',
     };
 
     final requestBody = jsonEncode({
