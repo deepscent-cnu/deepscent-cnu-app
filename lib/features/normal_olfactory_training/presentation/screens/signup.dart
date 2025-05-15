@@ -1,7 +1,64 @@
 import 'package:flutter/material.dart';
+import '../../data/auth_api.dart'; 
+import 'dart:convert';
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
+
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  final nameController = TextEditingController();
+  final birthController = TextEditingController();
+  final phoneController = TextEditingController();
+  final idController = TextEditingController();
+  final pwController = TextEditingController();
+
+  Future<void> handleSignUp() async {
+    final response = await AuthApi.signup(
+      name: nameController.text,
+      birthDate: birthController.text,
+      phoneNumber: phoneController.text,
+      username: idController.text,
+      password: pwController.text,
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print('회원가입 성공: $data');
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("회원가입 완료"),
+          content: const Text("로그인 화면으로 이동합니다."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("확인"),
+            ),
+          ],
+        ),
+      );
+      Navigator.pop(context); // 이전 페이지로 (로그인)
+    } else {
+      print('회원가입 실패: ${response.body}');
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("회원가입 실패"),
+          content: const Text("정보를 다시 확인해주세요."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("확인"),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +91,15 @@ class SignUpPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
-                _buildTextField('이름을 입력해주세요.'),
+                _buildTextField('이름을 입력해주세요.', controller: nameController),
                 const SizedBox(height: 12),
-                _buildTextField('생년월일을 입력해주세요.'),
+                _buildTextField('생년월일을 입력해주세요.', controller: birthController),
                 const SizedBox(height: 12),
-                _buildTextField('전화번호를 입력해주세요.'),
+                _buildTextField('전화번호를 입력해주세요.', controller: phoneController),
                 const SizedBox(height: 12),
-                _buildTextField('ID를 입력해주세요.', isBold: true),
+                _buildTextField('ID를 입력해주세요.', controller: idController, isBold: true),
                 const SizedBox(height: 12),
-                _buildTextField('비밀번호를 입력해주세요.', isObscure: true),
+                _buildTextField('비밀번호를 입력해주세요.', controller: pwController, isObscure: true),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
@@ -54,7 +111,7 @@ class SignUpPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: handleSignUp,
                     child: const Text(
                       '회원가입',
                       style: TextStyle(fontSize: 18),
@@ -69,8 +126,13 @@ class SignUpPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(String hintText, {bool isObscure = false, bool isBold = false}) {
+  Widget _buildTextField(String hintText, {
+    required TextEditingController controller,
+    bool isObscure = false,
+    bool isBold = false,
+  }) {
     return TextField(
+      controller: controller,
       obscureText: isObscure,
       decoration: InputDecoration(
         hintText: hintText,
