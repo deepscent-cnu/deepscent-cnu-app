@@ -1,8 +1,53 @@
 import 'package:flutter/material.dart';
 import 'signup.dart';
+import '../../data/auth_api.dart'; 
+import 'dart:convert';
+import 'normal_olfactory_training_screen.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController idController = TextEditingController();
+  final TextEditingController pwController = TextEditingController();
+
+Future<void> handleLogin() async {
+  final response = await AuthApi.login(
+    username: idController.text,
+    password: pwController.text,
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    print('로그인 성공: $data');
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const NormalOlfactoryTrainingScreen(),
+      ),
+    );
+  } else {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('로그인 실패'),
+        content: const Text('아이디 또는 비밀번호가 올바르지 않습니다.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('확인'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +75,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
                 TextField(
+                  controller: idController,
                   decoration: InputDecoration(
                     hintText: 'ID를 입력해주세요.',
                     hintStyle: const TextStyle(fontWeight: FontWeight.bold),
@@ -42,6 +88,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 TextField(
+                  controller: pwController,
                   obscureText: true,
                   decoration: InputDecoration(
                     hintText: '비밀번호를 입력해주세요.',
@@ -63,7 +110,7 @@ class LoginPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: handleLogin, // 여기서 API 호출
                     child: const Text(
                       '로그인',
                       style: TextStyle(fontSize: 18),
@@ -71,7 +118,6 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
                 TextButton(
                   onPressed: () {
                     Navigator.push(
