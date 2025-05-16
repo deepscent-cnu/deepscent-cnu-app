@@ -36,9 +36,17 @@ class _NormalOlfactoryTrainingScreenState
     final List<String> instructions = [
       '카트리지가 올바르게\n장착되었는지 확인해 주세요.',
       '향의 구성은 3개월마다\n새롭게 변경해 주세요.',
-      '향을 맡기 힘들 경우, 자동으로 발향 강도를 높여줍니다.',
-      '향을 맡으며 관련된 추억이나 장면을 떠올려 보세요.',
+      '향을 맡기 힘들 경우, 자동으로\n발향 강도를 높여줍니다.',
+      '향을 맡으며 관련된 추억이나\n장면을 떠올려 보세요.',
       '훈련을 시작할 준비가 되었다면\n아래 버튼을 눌러주세요.',
+    ];
+
+    final List<String> imagePaths = [
+      'assets/images/cartridge_check.png',
+      'assets/images/replace_scent_3months.png',
+      'assets/images/auto_intensity_adjust.png',
+      'assets/images/recall_memory_scent.png',
+      '',  // 마지막은 버튼만 표시할 예정
     ];
 
     showDialog(
@@ -53,7 +61,7 @@ class _NormalOlfactoryTrainingScreenState
             builder: (context, setState) {
               return SizedBox(
                 width: 300,  // 모달 너비
-                height: 400,  // 모달 높이
+                height: 450,  // 모달 높이
                 child: Column(
                   children: [
                     Expanded(  // 남은 영역을 PageView로 채움 (좌우로 넘길 수 있는 영역)
@@ -81,17 +89,38 @@ class _NormalOlfactoryTrainingScreenState
                                 ),
                                 const SizedBox(height: 20),  // 위아래 여백
 
+                                const Divider(  // 구분선
+                                  thickness: 1,
+                                  height: 1,
+                                  color: Color(0xFFE0E0E0),
+                                ),
+                                const SizedBox(height: 16),
+
                                 if (index < totalPages - 1)  // 마지막 페이지가 아닌 경우에만 이미지 표시
-                                  Container(
-                                    width: 200,
-                                    height: 120,
-                                    alignment: Alignment.center,
-                                    color: Colors.grey[300],
-                                    child: Text(
-                                      'Image ${index + 1}',
-                                      style: const TextStyle(
-                                        fontSize: 24,
-                                        color: Colors.black54,
+                                  AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 500),
+                                    child: Container(
+                                      key: ValueKey(imagePaths[index]),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black26,
+                                            blurRadius: 8,
+                                            offset: Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: AspectRatio(
+                                          aspectRatio: 1,
+                                          child: Image.asset(
+                                            imagePaths[index],
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   )
