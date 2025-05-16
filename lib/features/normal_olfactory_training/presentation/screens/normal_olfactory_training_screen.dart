@@ -34,11 +34,11 @@ class _NormalOlfactoryTrainingScreenState
     const int totalPages = 5;  // 총 페이지 수
 
     final List<String> instructions = [
-      '안내 멘트 1',
-      '안내 멘트 2',
-      '안내 멘트 3',
-      '안내 멘트 4',
-      '안내 멘트 5',
+      '카트리지가 올바르게\n장착되었는지 확인해 주세요.',
+      '향의 구성은 3개월마다\n새롭게 변경해 주세요.',
+      '향을 맡기 힘들 경우, 자동으로 발향 강도를 높여줍니다.',
+      '향을 맡으며 관련된 추억이나 장면을 떠올려 보세요.',
+      '훈련을 시작할 준비가 되었다면\n아래 버튼을 눌러주세요.',
     ];
 
     showDialog(
