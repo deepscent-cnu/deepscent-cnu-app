@@ -14,6 +14,7 @@ class MemoryRecallTrainingScreenState
     extends State<MemoryRecallTrainingScreen> {
   int remainTime = 10;
   String message = "초 뒤, 발향이 중지됩니다.";
+  bool isStopped = false;
 
   @override
   void initState() {
@@ -22,10 +23,15 @@ class MemoryRecallTrainingScreenState
   }
 
   Future<void> startTrainingCycle() async {
+    isStopped = false;
     await DeviceApi.controlScentDeviceSlot(0, 3);
     await Future.delayed(const Duration(seconds: 1));
 
     while (remainTime > 1) {
+      if (isStopped) {
+        return;
+      }
+
       setState(() {
         remainTime -= 1;
       });
@@ -33,7 +39,7 @@ class MemoryRecallTrainingScreenState
       await Future.delayed(const Duration(seconds: 1));
     }
 
-    if (context.mounted) {
+    if (!isStopped && context.mounted) {
       await DeviceApi.controlScentDeviceSlot(0, 0);
       Navigator.pushReplacement(
         context,
@@ -43,8 +49,12 @@ class MemoryRecallTrainingScreenState
   }
 
   Future<void> stopTrainingCycle() async {
+    isStopped = true;
     await DeviceApi.controlScentDeviceSlot(0, 0);
-    Navigator.pop(context);
+
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
   }
 
   void extendTime() {
@@ -56,6 +66,7 @@ class MemoryRecallTrainingScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       bottomNavigationBar: Container(
         height: 56,
         color: Colors.grey[200],
@@ -64,7 +75,6 @@ class MemoryRecallTrainingScreenState
       ),
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 1,
         leadingWidth: 120,
         leading: Padding(
           padding: const EdgeInsets.only(left: 12.0),

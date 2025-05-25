@@ -197,7 +197,6 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 1,
         leadingWidth: 120,
         leading: Padding(
           padding: const EdgeInsets.only(left: 12.0),
@@ -294,9 +293,9 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: Colors.black26,
               blurRadius: 7,
-              offset: const Offset(0, 2),
+              offset: const Offset(0, 4),
             ),
           ],
         ),

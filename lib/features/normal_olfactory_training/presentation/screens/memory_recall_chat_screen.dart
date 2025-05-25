@@ -42,81 +42,120 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomAppBar(
-        color: const Color(0xFFF1F1F1),
-        child: SizedBox(
-          height: 60,
-          child: Center(
-            child: Text('하단 네비게이션 바', style: TextStyle(color: Colors.black54)),
+      bottomNavigationBar: Container(
+        height: 56,
+        color: Colors.grey[200],
+        alignment: Alignment.center,
+        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
+      ),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        leadingWidth: 120,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12.0),
+          child: Image.asset(
+            'assets/images/logo.png',
+            width: 120,
+            height: 50,
+            fit: BoxFit.contain,
           ),
         ),
+        actions: const [
+          Icon(Icons.help_outline, color: Colors.black),
+          SizedBox(width: 12),
+        ],
       ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8,
-              ),
-              child: Row(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 24),
+              Row(
                 children: [
-                  const Icon(Icons.arrow_back),
-                  const SizedBox(width: 8),
-                  Text(
-                    'deepscent',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                  ),
+                  const Text(
+                    '기억 회상 훈련',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                '기억 회상 훈련',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Text(
-                testQuestionList[currentIndex],
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF7F7F7),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
-                  testAnswerList[currentIndex],
-                  style: TextStyle(fontSize: 14),
+                  testQuestionList[currentIndex],
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  _onNextPressed();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDCEDC8),
-                  foregroundColor: Colors.black,
-                  minimumSize: const Size.fromHeight(48),
-                  elevation: 0,
+              const SizedBox(height: 32),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  height: 130,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 7,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Scrollbar(
+                    thumbVisibility: true,
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(right: 10),
+                      child: Text(
+                        testAnswerList[currentIndex],
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ),
                 ),
-                icon: const Icon(Icons.double_arrow),
-                label: Text(isLastQuestion ? '훈련 저장하기' : '다음 질문으로'),
               ),
-            ),
-          ],
+              const SizedBox(height: 48),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 48,
+                  vertical: 16,
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    _onNextPressed();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                    backgroundColor: Color(0xFFF9F9F9),
+                    foregroundColor: Color(0xFF335928),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.double_arrow),
+                  label: Text(
+                    isLastQuestion ? '훈련 저장하기' : '다음 질문으로',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: Image.asset(
+                  "assets/images/voice_recording.png",
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
