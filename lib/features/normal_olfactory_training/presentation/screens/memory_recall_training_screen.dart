@@ -1,12 +1,8 @@
-import 'dart:convert';
-
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/device_api.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/memory_recall_chat_screen.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scent_notice.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scentraining_header.dart';
-import 'package:deepscent_cnu/secrets.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class MemoryRecallTrainingScreen extends StatefulWidget {
   const MemoryRecallTrainingScreen({super.key});

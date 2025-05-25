@@ -2,8 +2,8 @@ import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/sc
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
 import 'package:flutter/material.dart';
 
-class TrainingListPage extends StatelessWidget {
-  const TrainingListPage({super.key});
+class OlfactoryTrainingListScreen extends StatelessWidget {
+  const OlfactoryTrainingListScreen({super.key});
 
   // 훈련 시작 전 보여줄 스와이프 가능한 안내 모달 함수
   void showTrainingCarouselModal(BuildContext context) {
@@ -184,122 +184,154 @@ class TrainingListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 1,
+        leadingWidth: 120,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12.0),
+          child: Image.asset(
+            'assets/images/logo.png',
+            width: 120,
+            height: 50,
+            fit: BoxFit.contain,
+          ),
+        ),
+        actions: const [
+          Icon(Icons.search, color: Colors.black),
+          SizedBox(width: 12),
+          Icon(Icons.notifications_none, color: Colors.black),
+          SizedBox(width: 12),
+          Icon(Icons.menu, color: Colors.black),
+          SizedBox(width: 12),
+        ],
+      ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              color: const Color(0xFF66BB6A),
-              child: Column(
-                children: const [
-                  Text(
-                    '향기 후각 훈련 서비스',
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'SCENTRAINING',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 24),
+              const Text(
+                '후각 훈련 목록',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-            ),
-            const SizedBox(height: 40),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black54),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+              const SizedBox(height: 16),
+              const Text(
+                '오늘은\n어떤 훈련을 진행할까요?',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              Expanded(
                 child: Column(
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.local_florist, color: Color(0xFF388E3C)),
-                            SizedBox(width: 8),
-                            Text(
-                              '일반 후각 훈련',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                    const SizedBox(height: 40),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildTrainingCard(
+                        context,
+                        icon: Icons.local_florist,
+                        title: '일반 후각 훈련',
+                        subtitle: '의료기관에서 진행하는 훈련',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      const NormalOlfactoryTrainingScreen(),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: 100,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF66BB6A),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          const NormalOlfactoryTrainingScreen(),
-                                ),
-                              );
-                            },
-                            child: const Text('시작'),
-                          ),
-                        ),
-                      ],
+                          );
+                        },
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.local_florist, color: Color(0xFF388E3C)),
-                            SizedBox(width: 8),
-                            Text(
-                              '기억 회상 훈련',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: 100,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF66BB6A),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                            onPressed: () {
-                              showTrainingCarouselModal(context);
-                            },
-                            child: const Text('시작'),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 60),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildTrainingCard(
+                        context,
+                        icon: Icons.lightbulb,
+                        title: '기억 회상 훈련',
+                        subtitle: '향을 맡고 기억을 회상하는 훈련',
+                        onPressed: () => {showTrainingCarouselModal(context)},
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      height: 56,
+                      color: Colors.grey[200],
+                      alignment: Alignment.center,
+                      child: const Text(
+                        '하단 네비게이션 바',
+                        style: TextStyle(fontSize: 16),
+                      ),
                     ),
                   ],
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrainingCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onPressed,
+  }) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF9F9F9),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 7,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, color: const Color(0xFF335928), size: 30),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF335928),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              '≫ 클릭하여 훈련 진행하기',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
               ),
             ),
           ],
