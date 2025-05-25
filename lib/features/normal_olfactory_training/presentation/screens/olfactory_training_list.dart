@@ -188,6 +188,12 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: Container(
+        height: 56,
+        color: Colors.grey[200],
+        alignment: Alignment.center,
+        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
+      ),
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -213,7 +219,7 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -262,15 +268,6 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    Container(
-                      height: 56,
-                      color: Colors.grey[200],
-                      alignment: Alignment.center,
-                      child: const Text(
-                        '하단 네비게이션 바',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
                   ],
                 ),
               ),
