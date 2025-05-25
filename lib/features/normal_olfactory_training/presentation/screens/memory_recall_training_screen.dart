@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/device_api.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/memory_recall_chat_screen.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scent_notice.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scentraining_header.dart';
@@ -27,7 +28,7 @@ class MemoryRecallTrainingScreenState
   }
 
   Future<void> startTrainingCycle() async {
-    await controlScentDeviceSlot(0, 3);
+    await DeviceApi.controlScentDeviceSlot(0, 3);
     await Future.delayed(const Duration(seconds: 1));
 
     while (remainTime > 1) {
@@ -39,7 +40,7 @@ class MemoryRecallTrainingScreenState
     }
 
     if (context.mounted) {
-      await controlScentDeviceSlot(0, 0);
+      await DeviceApi.controlScentDeviceSlot(0, 0);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const MemoryRecallChatScreen()),
@@ -47,28 +48,10 @@ class MemoryRecallTrainingScreenState
     }
   }
 
-  Future<void> controlScentDeviceSlot(int fanNumber, int fanSpeed) async {
-    final apiUrl =
-        apiBaseUrl + '/api/device/' + deviceId + "/fragrance/fan-state";
-
-    final requestHeaders = {'Content-type': 'application/json'};
-
-    final requestBody = jsonEncode({
-      'fan_number': fanNumber,
-      'fan_speed': fanSpeed,
+  void extendTime() {
+    setState(() {
+      remainTime += 10;
     });
-
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: requestHeaders,
-        body: requestBody,
-      );
-
-      debugPrint('(Debug) 응답 상태 코드: ${response.statusCode}');
-    } catch (e) {
-      debugPrint('(Debug) 향기 제어 API 호출 중 오류 발생: $e');
-    }
   }
 
   @override
@@ -82,6 +65,21 @@ class MemoryRecallTrainingScreenState
               child: Center(
                 child: ScentNotice(message: remainTime.toString() + message),
               ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                extendTime();
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('시간 연장하기', style: TextStyle(fontSize: 18)),
             ),
           ],
         ),
