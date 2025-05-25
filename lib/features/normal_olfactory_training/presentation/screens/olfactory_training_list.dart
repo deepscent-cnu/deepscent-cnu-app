@@ -132,10 +132,15 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
+                                      backgroundColor: Color(0xFFF9F9F9),
                                     ),
                                     child: const Text(
-                                      '훈련 시작',
-                                      style: TextStyle(fontSize: 18),
+                                      '🚀 훈련 시작하기',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF335928),
+                                      ),
                                     ),
                                   ),
                               ],
