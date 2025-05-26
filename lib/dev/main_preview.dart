@@ -1,6 +1,5 @@
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scent_notice.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scentraining_header.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/memory_recall_training_screen.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/olfactory_training_list.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: NormalOlfactoryTrainingScreen(),
+      home: OlfactoryTrainingListScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

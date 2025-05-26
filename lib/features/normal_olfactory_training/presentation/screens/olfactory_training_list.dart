@@ -1,31 +1,12 @@
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/device_api.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/trainingResult.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scent_notice.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scentraining_header.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/memory_recall_training_screen.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
 import 'package:flutter/material.dart';
 
-class NormalOlfactoryTrainingScreen extends StatefulWidget {
-  const NormalOlfactoryTrainingScreen({super.key});
-
-  @override
-  State<NormalOlfactoryTrainingScreen> createState() =>
-      _NormalOlfactoryTrainingScreenState();
-}
-
-class _NormalOlfactoryTrainingScreenState
-    extends State<NormalOlfactoryTrainingScreen> {
-  String message = '10초간 1번 슬롯의 향기를 분출합니다. 향기와 관련된 물체를 상상하면서 향에 집중해주세요!';
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showTrainingCarouselModal();
-    });
-  }
+class OlfactoryTrainingListScreen extends StatelessWidget {
+  const OlfactoryTrainingListScreen({super.key});
 
   // 훈련 시작 전 보여줄 스와이프 가능한 안내 모달 함수
-  void showTrainingCarouselModal() {
+  void showTrainingCarouselModal(BuildContext context) {
     final PageController _pageController = PageController();
     const int totalPages = 5; // 총 페이지 수
 
@@ -134,7 +115,14 @@ class _NormalOlfactoryTrainingScreenState
                                     onPressed: () {
                                       // 모달 닫고 훈련 시작 함수 실행
                                       Navigator.of(context).pop();
-                                      startTrainingCycle();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) =>
+                                                  const MemoryRecallTrainingScreen(),
+                                        ),
+                                      );
                                     },
                                     style: ElevatedButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
@@ -144,10 +132,15 @@ class _NormalOlfactoryTrainingScreenState
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
+                                      backgroundColor: Color(0xFFF9F9F9),
                                     ),
                                     child: const Text(
-                                      '훈련 시작',
-                                      style: TextStyle(fontSize: 18),
+                                      '🚀 훈련 시작하기',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF335928),
+                                      ),
                                     ),
                                   ),
                               ],
@@ -192,40 +185,156 @@ class _NormalOlfactoryTrainingScreenState
     );
   }
 
-  Future<void> startTrainingCycle() async {
-    for (int fanNumber = 0; fanNumber < 4; fanNumber++) {
-      setState(() {
-        message =
-            '10초간 ${fanNumber + 1}번 슬롯의 향기를 분출합니다. 향기와 관련된 물체를 상상하면서 향에 집중해주세요!';
-      });
-
-      await DeviceApi.controlScentDeviceSlot(fanNumber, 3);
-      await Future.delayed(const Duration(seconds: 10));
-
-      setState(() {
-        message = '발향을 중지합니다. 10초간 편안히 휴식해주세요!';
-      });
-
-      await DeviceApi.controlScentDeviceSlot(fanNumber, 0);
-      await Future.delayed(const Duration(seconds: 10));
-    }
-
-    if (context.mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const BasicTrainingResultPage()),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: Container(
+        height: 56,
+        color: Colors.grey[200],
+        alignment: Alignment.center,
+        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
+      ),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        leadingWidth: 120,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12.0),
+          child: Image.asset(
+            'assets/images/logo.png',
+            width: 120,
+            height: 50,
+            fit: BoxFit.contain,
+          ),
+        ),
+        actions: const [
+          Icon(Icons.search, color: Colors.black),
+          SizedBox(width: 12),
+          Icon(Icons.notifications_none, color: Colors.black),
+          SizedBox(width: 12),
+          Icon(Icons.menu, color: Colors.black),
+          SizedBox(width: 12),
+        ],
+      ),
       body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 24),
+              const Text(
+                '후각 훈련 목록',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                '오늘은\n어떤 훈련을 진행할까요?',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildTrainingCard(
+                        context,
+                        icon: Icons.local_florist,
+                        title: '일반 후각 훈련',
+                        subtitle: '의료기관에서 진행하는 훈련',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      const NormalOlfactoryTrainingScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 60),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildTrainingCard(
+                        context,
+                        icon: Icons.lightbulb,
+                        title: '기억 회상 훈련',
+                        subtitle: '향을 맡고 기억을 회상하는 훈련',
+                        onPressed: () => {showTrainingCarouselModal(context)},
+                      ),
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrainingCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onPressed,
+  }) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF9F9F9),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 7,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const ScenTrainingHeader(trainingTitle: "일반 후각 훈련"),
-            Expanded(child: Center(child: ScentNotice(message: message))),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, color: const Color(0xFF335928), size: 30),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF335928),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              '≫ 클릭하여 훈련 진행하기',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
           ],
         ),
       ),
