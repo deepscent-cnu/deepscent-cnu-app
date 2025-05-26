@@ -48,7 +48,9 @@ class MemoryRecallResultScreen extends StatelessWidget {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
                       const Text(
