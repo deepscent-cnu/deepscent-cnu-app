@@ -32,7 +32,7 @@ class MemoryRecallTrainingScreenState
 
   Future<void> startTrainingCycle() async {
     isStopped = false;
-    await DeviceApi.controlScentDeviceSlot(0, 3);
+    await DeviceApi.controlScentDeviceSlot(1, 3);
     await Future.delayed(const Duration(seconds: 1));
 
     while (remainTime > 1) {
@@ -48,7 +48,7 @@ class MemoryRecallTrainingScreenState
     }
 
     if (!isStopped && context.mounted) {
-      await DeviceApi.controlScentDeviceSlot(0, 0);
+      await DeviceApi.controlScentDeviceSlot(1, 0);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const MemoryRecallChatScreen()),
@@ -58,7 +58,7 @@ class MemoryRecallTrainingScreenState
 
   Future<void> stopTrainingCycle() async {
     isStopped = true;
-    await DeviceApi.controlScentDeviceSlot(0, 0);
+    await DeviceApi.controlScentDeviceSlot(1, 0);
 
     if (context.mounted) {
       Navigator.pop(context);
