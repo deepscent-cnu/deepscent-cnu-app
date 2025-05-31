@@ -193,7 +193,7 @@ class _NormalOlfactoryTrainingScreenState
   }
 
   Future<void> startTrainingCycle() async {
-    for (int fanNumber = 0; fanNumber < 4; fanNumber++) {
+    for (int fanNumber = 1; fanNumber <= 4; fanNumber++) {
       setState(() {
         message =
             '10초간 ${fanNumber + 1}번 슬롯의 향기를 분출합니다. 향기와 관련된 물체를 상상하면서 향에 집중해주세요!';
