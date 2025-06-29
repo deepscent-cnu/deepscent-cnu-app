@@ -1,5 +1,5 @@
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/device_api.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/trainingResult.dart';
+import 'package:deepscent_cnu/common/data/device_api.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_result.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scent_notice.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scentraining_header.dart';
 import 'package:flutter/material.dart';

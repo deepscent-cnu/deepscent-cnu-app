@@ -1,5 +1,5 @@
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/device_api.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/memory_recall_chat_screen.dart';
+import 'package:deepscent_cnu/common/data/device_api.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_chat_screen.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallTrainingScreen extends StatefulWidget {
