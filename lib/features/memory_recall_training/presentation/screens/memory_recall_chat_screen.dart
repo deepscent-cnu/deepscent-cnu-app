@@ -1,4 +1,5 @@
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/memory_recall_result_screen.dart';
+import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_result_screen.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallChatScreen extends StatefulWidget {
@@ -92,27 +93,10 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                                 horizontal: 32,
                                 vertical: 16,
                               ),
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.rocket_launch, size: 20),
-                                label: const Text(
-                                  "훈련 재개하기",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size.fromHeight(50),
-                                  backgroundColor: Color(0xFFF9F9F9),
-                                  foregroundColor: Color(0xFF335928),
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
+                              child: ButtonBasic(
+                                content: '훈련 재개하기',
+                                icon: Icon(Icons.rocket_launch, size: 20),
+                                function: () => {Navigator.pop(context)},
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -121,29 +105,14 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                                 horizontal: 32,
                                 vertical: 16,
                               ),
-                              child: ElevatedButton.icon(
-                                onPressed:
+                              child: ButtonBasic(
+                                content: '훈련 끝내기',
+                                icon: Icon(Icons.exit_to_app, size: 20),
+                                function:
                                     () => {
                                       Navigator.pop(context),
                                       Navigator.pop(context),
                                     },
-                                icon: const Icon(Icons.exit_to_app, size: 20),
-                                label: const Text(
-                                  "훈련 끝내기",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size.fromHeight(50),
-                                  backgroundColor: Color(0xFFF9F9F9),
-                                  foregroundColor: Color(0xFF335928),
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
                               ),
                             ),
                           ],
@@ -254,24 +223,10 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                   horizontal: 48,
                   vertical: 16,
                 ),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    _onNextPressed();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50),
-                    backgroundColor: Color(0xFFF9F9F9),
-                    foregroundColor: Color(0xFF335928),
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: const Icon(Icons.double_arrow),
-                  label: Text(
-                    isLastQuestion ? '훈련 저장하기' : '다음 질문으로',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                child: ButtonBasic(
+                  content: isLastQuestion ? '훈련 저장하기' : '다음 질문으로',
+                  icon: Icon(Icons.double_arrow),
+                  function: () => _onNextPressed(),
                 ),
               ),
               const SizedBox(height: 12),

@@ -1,3 +1,4 @@
+import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallResultScreen extends StatelessWidget {
@@ -117,25 +118,10 @@ class MemoryRecallResultScreen extends StatelessWidget {
                       horizontal: 48,
                       vertical: 16,
                     ),
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.edit_document, size: 25),
-                      label: const Text(
-                        "훈련 기록 보기",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        backgroundColor: Color(0xFFF9F9F9),
-                        foregroundColor: Color(0xFF335928),
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                    child: ButtonBasic(
+                      content: '훈련 기록 보기',
+                      icon: Icon(Icons.edit_document, size: 25),
+                      function: () {},
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -144,25 +130,10 @@ class MemoryRecallResultScreen extends StatelessWidget {
                       horizontal: 48,
                       vertical: 16,
                     ),
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.list, size: 30),
-                      label: const Text(
-                        "훈련 목록 보기",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        backgroundColor: Color(0xFFF9F9F9),
-                        foregroundColor: Color(0xFF335928),
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                    child: ButtonBasic(
+                      content: '훈련 목록 보기',
+                      icon: Icon(Icons.list, size: 30),
+                      function: () {},
                     ),
                   ),
                 ],

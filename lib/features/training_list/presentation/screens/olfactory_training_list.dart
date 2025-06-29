@@ -1,4 +1,4 @@
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/memory_recall_training_screen.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_training_screen.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
 import 'package:flutter/material.dart';
 

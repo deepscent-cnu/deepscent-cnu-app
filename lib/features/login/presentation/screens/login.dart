@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'signup.dart';
 import '../../data/auth_api.dart'; 
 import 'dart:convert';
-import 'normal_olfactory_training_screen.dart';
+import '../../../normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

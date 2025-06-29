@@ -1,5 +1,5 @@
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/device_api.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/trainingResult.dart';
+import 'package:deepscent_cnu/common/data/device_api.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_result.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scent_notice.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/widgets/scentraining_header.dart';
 import 'package:flutter/material.dart';
@@ -196,7 +196,7 @@ class _NormalOlfactoryTrainingScreenState
     for (int fanNumber = 1; fanNumber <= 4; fanNumber++) {
       setState(() {
         message =
-            '10초간 ${fanNumber + 1}번 슬롯의 향기를 분출합니다. 향기와 관련된 물체를 상상하면서 향에 집중해주세요!';
+            '10초간 $fanNumber번 슬롯의 향기를 분출합니다. 향기와 관련된 물체를 상상하면서 향에 집중해주세요!';
       });
 
       await DeviceApi.controlScentDeviceSlot(fanNumber, 3);

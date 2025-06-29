@@ -1,5 +1,6 @@
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/device_api.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/memory_recall_chat_screen.dart';
+import 'package:deepscent_cnu/common/data/device_api.dart';
+import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_chat_screen.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallTrainingScreen extends StatefulWidget {
@@ -15,7 +16,6 @@ class MemoryRecallTrainingScreenState
   int remainTime = 10;
   String message = "초 뒤, 발향이 중지됩니다.";
   bool isStopped = false;
-
   bool showHelp = false;
 
   void toggleHelp() {
@@ -127,27 +127,10 @@ class MemoryRecallTrainingScreenState
                                 horizontal: 32,
                                 vertical: 16,
                               ),
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.rocket_launch, size: 20),
-                                label: const Text(
-                                  "훈련 재개하기",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size.fromHeight(50),
-                                  backgroundColor: Color(0xFFF9F9F9),
-                                  foregroundColor: Color(0xFF335928),
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
+                              child: ButtonBasic(
+                                content: '훈련 재개하기',
+                                icon: Icon(Icons.rocket_launch, size: 20),
+                                function: () => {Navigator.pop(context)},
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -156,29 +139,14 @@ class MemoryRecallTrainingScreenState
                                 horizontal: 32,
                                 vertical: 16,
                               ),
-                              child: ElevatedButton.icon(
-                                onPressed:
+                              child: ButtonBasic(
+                                content: '훈련 끝내기',
+                                icon: Icon(Icons.exit_to_app, size: 20),
+                                function:
                                     () => {
                                       Navigator.pop(context),
-                                      stopTrainingCycle(),
+                                      Navigator.pop(context),
                                     },
-                                icon: const Icon(Icons.exit_to_app, size: 20),
-                                label: const Text(
-                                  "훈련 끝내기",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size.fromHeight(50),
-                                  backgroundColor: Color(0xFFF9F9F9),
-                                  foregroundColor: Color(0xFF335928),
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
                               ),
                             ),
                           ],
@@ -291,25 +259,10 @@ class MemoryRecallTrainingScreenState
                       horizontal: 48,
                       vertical: 16,
                     ),
-                    child: ElevatedButton.icon(
-                      onPressed: extendTime,
-                      icon: const Icon(Icons.timer),
-                      label: const Text(
-                        "시간 연장하기",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        backgroundColor: Color(0xFFF9F9F9),
-                        foregroundColor: Color(0xFF335928),
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                    child: ButtonBasic(
+                      content: '시간 연장하기',
+                      icon: Icon(Icons.timer),
+                      function: () => extendTime(),
                     ),
                   ),
                   const SizedBox(height: 60),
