@@ -3,10 +3,12 @@ import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/sc
 import 'package:flutter/material.dart';
 
 class OlfactoryTrainingListScreen extends StatelessWidget {
+  final String NORMAL_MODE = "NORMAL";
+  final String MEMORY_RECALL_MODE = "MEMORY_RECALL";
   const OlfactoryTrainingListScreen({super.key});
 
   // 훈련 시작 전 보여줄 스와이프 가능한 안내 모달 함수
-  void showTrainingCarouselModal(BuildContext context) {
+  void showTrainingCarouselModal(BuildContext context, String mode) {
     final PageController _pageController = PageController();
     const int totalPages = 5; // 총 페이지 수
 
@@ -118,9 +120,18 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder:
-                                              (context) =>
-                                                  const MemoryRecallTrainingScreen(),
+                                          builder: (context) {
+                                            if (mode == NORMAL_MODE) {
+                                              return const NormalOlfactoryTrainingScreen();
+                                            } else if (mode ==
+                                                MEMORY_RECALL_MODE) {
+                                              return const MemoryRecallTrainingScreen();
+                                            } else {
+                                              throw Exception(
+                                                'Invalid training mode',
+                                              );
+                                            }
+                                          },
                                         ),
                                       );
                                     },
@@ -243,16 +254,13 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
                         icon: Icons.local_florist,
                         title: '일반 후각 훈련',
                         subtitle: '의료기관에서 진행하는 훈련',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) =>
-                                      const NormalOlfactoryTrainingScreen(),
-                            ),
-                          );
-                        },
+                        onPressed:
+                            () => {
+                              showTrainingCarouselModal(
+                                context,
+                                NORMAL_MODE,
+                              ),
+                            },
                       ),
                     ),
                     const SizedBox(height: 60),
@@ -263,7 +271,13 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
                         icon: Icons.lightbulb,
                         title: '기억 회상 훈련',
                         subtitle: '향을 맡고 기억을 회상하는 훈련',
-                        onPressed: () => {showTrainingCarouselModal(context)},
+                        onPressed:
+                            () => {
+                              showTrainingCarouselModal(
+                                context,
+                                MEMORY_RECALL_MODE,
+                              ),
+                            },
                       ),
                     ),
                     const Spacer(),
