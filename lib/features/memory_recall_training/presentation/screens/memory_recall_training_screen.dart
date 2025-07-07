@@ -349,7 +349,7 @@ class MemoryRecallTrainingScreenState
                               textAlign: TextAlign.center,
                             ),
                             SizedBox(height: 12),
-                            Container(
+                            SizedBox(
                               width: 250,
                               height: 50,
                               child: Container(

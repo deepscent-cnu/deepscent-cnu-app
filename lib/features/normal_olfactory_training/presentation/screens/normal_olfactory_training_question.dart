@@ -1,8 +1,14 @@
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_answer.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NormalOlfactoryTrainingQuestionScreen extends StatelessWidget {
-  const NormalOlfactoryTrainingQuestionScreen({super.key});
+  final normalOlfactoryTrainingController =
+      Get.find<NormalOlfactoryTrainingController>();
+
+  NormalOlfactoryTrainingQuestionScreen({super.key});
 
   void showTrainingStopModal(BuildContext context) {
     showDialog(
@@ -92,6 +98,10 @@ class NormalOlfactoryTrainingQuestionScreen extends StatelessWidget {
     );
   }
 
+  void goAnswerScreen() {
+    Get.off(() => NormalOlfactoryTrainingAnswerScreen());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -178,22 +188,22 @@ class NormalOlfactoryTrainingQuestionScreen extends StatelessWidget {
                         ButtonBasic(
                           content: "백미밥",
                           fontSize: 24,
-                          function: () {},
+                          function: goAnswerScreen,
                         ),
                         ButtonBasic(
                           content: "참기름",
                           fontSize: 24,
-                          function: () {},
+                          function: goAnswerScreen,
                         ),
                         ButtonBasic(
                           content: "장미",
                           fontSize: 24,
-                          function: () {},
+                          function: goAnswerScreen,
                         ),
                         ButtonBasic(
                           content: "된장",
                           fontSize: 24,
-                          function: () {},
+                          function: goAnswerScreen,
                         ),
                       ],
                     ),
@@ -204,7 +214,10 @@ class NormalOlfactoryTrainingQuestionScreen extends StatelessWidget {
                       horizontal: 24,
                       vertical: 16,
                     ),
-                    child: ButtonBasic(content: "잘 모르겠어요", function: () {}),
+                    child: ButtonBasic(
+                      content: "잘 모르겠어요",
+                      function: goAnswerScreen,
+                    ),
                   ),
                   const SizedBox(height: 12),
                 ],

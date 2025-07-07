@@ -9,7 +9,7 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
 
   // 훈련 시작 전 보여줄 스와이프 가능한 안내 모달 함수
   void showTrainingCarouselModal(BuildContext context, String mode) {
-    final PageController _pageController = PageController();
+    final PageController pageController = PageController();
     const int totalPages = 5; // 총 페이지 수
 
     final List<String> instructions = [
@@ -49,7 +49,7 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
                     Expanded(
                       // 남은 영역을 PageView로 채움 (좌우로 넘길 수 있는 영역)
                       child: PageView.builder(
-                        controller: _pageController, // 위에서 만든 컨트롤러
+                        controller: pageController, // 위에서 만든 컨트롤러
                         itemCount: totalPages,
                         onPageChanged: (index) {
                           // 페이지가 바뀔 때 currentPage 상태 업데이트
