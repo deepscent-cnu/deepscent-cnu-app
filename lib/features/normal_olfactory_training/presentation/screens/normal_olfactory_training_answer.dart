@@ -1,4 +1,8 @@
+import 'dart:math';
+
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/round_log.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_result.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
@@ -99,8 +103,27 @@ class NormalOlfactoryTrainingAnswerScreen extends StatelessWidget {
     );
   }
 
-  void nextRound() {
+  void nextRound() async {
     if (normalOlfactoryTrainingController.currentRound.value == 4) {
+      var totalScore = 0;
+      var totalTimeTaken = 0;
+
+      for (RoundLog log in normalOlfactoryTrainingController.logs) {
+        if (log.isCorrect) {
+          totalScore++;
+        }
+
+        totalTimeTaken += log.timeTaken;
+      }
+
+      normalOlfactoryTrainingController.totalScore = totalScore;
+      normalOlfactoryTrainingController.totalTimeTaken = totalTimeTaken;
+
+      await NormalOlfactoryTrainingApi.submitTrainingLog(
+        totalTimeTaken,
+        normalOlfactoryTrainingController.logs.map((e) => e.toJson()).toList()
+      );
+
       Get.off(() => NormalOlfactoryTrainingResultScreen());
     } else {
       normalOlfactoryTrainingController.currentRound.value++;
@@ -173,7 +196,7 @@ class NormalOlfactoryTrainingAnswerScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      "맞았어요! 방금 맡은 향은\n참기름 향이었습니다.",
+                      '${normalOlfactoryTrainingController.isCorrect ? "맞았어요!" : "앗, 아쉬워요!"} 방금 맡은 향은\n${normalOlfactoryTrainingController.correctOption} 향이었습니다.',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
