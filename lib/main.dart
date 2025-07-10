@@ -1,6 +1,7 @@
 //import 'package:deepscent_cnu/presentation/screens/%08signup.dart';
 import 'package:flutter/material.dart';
-import 'features/login/presentation/screens/login.dart';// 경로는 네 프로젝트에 맞게 수정
+import 'features/login/presentation/screens/login.dart';
+import 'features/normal_olfactory_training/presentation/screens/memory_recall_training_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(), // ✅ 여기에서 바로 로그인 페이지 실행
+      //home: MemoryRecallTrainingScreen(),
+      home: LoginPage(),
     );
   }
 }
