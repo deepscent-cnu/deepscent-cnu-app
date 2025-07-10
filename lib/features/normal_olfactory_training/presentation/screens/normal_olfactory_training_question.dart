@@ -1,14 +1,46 @@
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/round_log.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/scent_options.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_answer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class NormalOlfactoryTrainingQuestionScreen extends StatelessWidget {
+class NormalOlfactoryTrainingQuestionScreen extends StatefulWidget {
+  const NormalOlfactoryTrainingQuestionScreen({super.key});
+
+  @override
+  State<NormalOlfactoryTrainingQuestionScreen> createState() =>
+      _NormalOlfactoryTrainingQuestionScreenState();
+}
+
+class _NormalOlfactoryTrainingQuestionScreenState
+    extends State<NormalOlfactoryTrainingQuestionScreen> {
   final normalOlfactoryTrainingController =
       Get.find<NormalOlfactoryTrainingController>();
+  bool isLoading = true;
+  ScentOptions? scentOptions;
+  late DateTime startTime;
 
-  NormalOlfactoryTrainingQuestionScreen({super.key});
+  @override
+  void initState() {
+    super.initState();
+    getScentOptions(normalOlfactoryTrainingController.currentRound.value);
+    startTime = DateTime.now();
+  }
+
+  Future<void> getScentOptions(int round) async {
+    scentOptions = await NormalOlfactoryTrainingApi.getScentOptions(round);
+    if (scentOptions != null) {
+      setState(() {
+        isLoading = false;
+      });
+
+      normalOlfactoryTrainingController.correctOption =
+          scentOptions!.correctOption;
+    }
+  }
 
   void showTrainingStopModal(BuildContext context) {
     showDialog(
@@ -98,7 +130,22 @@ class NormalOlfactoryTrainingQuestionScreen extends StatelessWidget {
     );
   }
 
-  void goAnswerScreen() {
+  void goAnswerScreen(String selectedOption) {
+    final endTime = DateTime.now();
+    final timeTaken = endTime.difference(startTime).inSeconds;
+    final correctOption = scentOptions!.correctOption;
+    final isCorrect = selectedOption == correctOption;
+
+    normalOlfactoryTrainingController.isCorrect = isCorrect;
+    normalOlfactoryTrainingController.logs.add(
+      RoundLog(
+        correctOption: correctOption,
+        selectedOption: selectedOption,
+        isCorrect: isCorrect,
+        timeTaken: timeTaken,
+      ),
+    );
+
     Get.off(() => NormalOlfactoryTrainingAnswerScreen());
   }
 
@@ -130,101 +177,134 @@ class NormalOlfactoryTrainingQuestionScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned(
-              top: 80,
-              child: Image.asset(
-                'assets/images/blurred_background.png',
-                fit: BoxFit.cover,
-                opacity: AlwaysStoppedAnimation(0.5),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          showTrainingStopModal(context);
-                        },
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                      ),
-                      const Text(
-                        '일반 후각 훈련',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Text(
-                      "방금 맡은 향은 어떤 향인지\n다음 보기 중에서 골라보세요!",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: GridView.count(
-                      shrinkWrap: true,
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 40,
-                      mainAxisSpacing: 40,
-                      childAspectRatio: 1,
+        child:
+            isLoading
+                ? Container(
+                  color: Colors.black.withOpacity(0.5), // 화면 어두워짐
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        ButtonBasic(
-                          content: "백미밥",
-                          fontSize: 24,
-                          function: goAnswerScreen,
-                        ),
-                        ButtonBasic(
-                          content: "참기름",
-                          fontSize: 24,
-                          function: goAnswerScreen,
-                        ),
-                        ButtonBasic(
-                          content: "장미",
-                          fontSize: 24,
-                          function: goAnswerScreen,
-                        ),
-                        ButtonBasic(
-                          content: "된장",
-                          fontSize: 24,
-                          function: goAnswerScreen,
+                        CircularProgressIndicator(color: Colors.white),
+                        SizedBox(height: 16),
+                        Text(
+                          '불러오는 중...',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
+                )
+                : Stack(
+                  children: [
+                    Positioned(
+                      top: 80,
+                      child: Image.asset(
+                        'assets/images/blurred_background.png',
+                        fit: BoxFit.cover,
+                        opacity: AlwaysStoppedAnimation(0.5),
+                      ),
                     ),
-                    child: ButtonBasic(
-                      content: "잘 모르겠어요",
-                      function: goAnswerScreen,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 24),
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  showTrainingStopModal(context);
+                                },
+                                icon: const Icon(
+                                  Icons.arrow_back_ios_new,
+                                  size: 20,
+                                ),
+                              ),
+                              const Text(
+                                '일반 후각 훈련',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: Text(
+                              "방금 맡은 향은 어떤 향인지\n다음 보기 중에서 골라보세요!",
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(height: 40),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: GridView.count(
+                              shrinkWrap: true,
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 40,
+                              mainAxisSpacing: 40,
+                              childAspectRatio: 1,
+                              children: [
+                                ButtonBasic(
+                                  content: scentOptions!.scentOption1,
+                                  fontSize: 24,
+                                  function:
+                                      () => goAnswerScreen(
+                                        scentOptions!.scentOption1,
+                                      ),
+                                ),
+                                ButtonBasic(
+                                  content: scentOptions!.scentOption2,
+                                  fontSize: 24,
+                                  function:
+                                      () => goAnswerScreen(
+                                        scentOptions!.scentOption2,
+                                      ),
+                                ),
+                                ButtonBasic(
+                                  content: scentOptions!.scentOption3,
+                                  fontSize: 24,
+                                  function:
+                                      () => goAnswerScreen(
+                                        scentOptions!.scentOption3,
+                                      ),
+                                ),
+                                ButtonBasic(
+                                  content: scentOptions!.scentOption4,
+                                  fontSize: 24,
+                                  function:
+                                      () => goAnswerScreen(
+                                        scentOptions!.scentOption4,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 16,
+                            ),
+                            child: ButtonBasic(
+                              content: "잘 모르겠어요",
+                              function: () => goAnswerScreen(""),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-              ),
-            ),
-          ],
-        ),
+                  ],
+                ),
       ),
     );
   }

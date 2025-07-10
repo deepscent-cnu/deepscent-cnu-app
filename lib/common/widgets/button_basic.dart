@@ -27,6 +27,7 @@ class ButtonBasic extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            padding: EdgeInsets.all(10),
           ),
           icon: icon,
           label: Text(
@@ -47,6 +48,7 @@ class ButtonBasic extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            padding: EdgeInsets.all(10),
           ),
           label: Text(
             content,
