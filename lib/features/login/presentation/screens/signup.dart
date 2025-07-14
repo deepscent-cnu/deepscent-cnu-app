@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/auth_api.dart'; 
+import '../../data/auth_api.dart';
 import 'dart:convert';
 
 class SignUpPage extends StatefulWidget {
@@ -27,35 +27,39 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('회원가입 성공: $data');
+      debugPrint('회원가입 성공: $data');
       showDialog(
         context: context,
-        builder: (_) => AlertDialog(
-          title: const Text("회원가입 완료"),
-          content: const Text("로그인 화면으로 이동합니다."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("확인"),
+        builder:
+            (_) => AlertDialog(
+              title: const Text("회원가입 완료"),
+              content: const Text("로그인 화면으로 이동합니다."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: const Text("확인"),
+                ),
+              ],
             ),
-          ],
-        ),
       );
-      Navigator.pop(context); // 이전 페이지로 (로그인)
     } else {
-      print('회원가입 실패: ${response.body}');
+      debugPrint('회원가입 실패: ${response.body}');
       showDialog(
         context: context,
-        builder: (_) => AlertDialog(
-          title: const Text("회원가입 실패"),
-          content: const Text("정보를 다시 확인해주세요."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("확인"),
+        builder:
+            (_) => AlertDialog(
+              title: const Text("회원가입 실패"),
+              content: const Text("정보를 다시 확인해주세요."),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("확인"),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     }
   }
@@ -97,9 +101,17 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(height: 12),
                 _buildTextField('전화번호를 입력해주세요.', controller: phoneController),
                 const SizedBox(height: 12),
-                _buildTextField('ID를 입력해주세요.', controller: idController, isBold: true),
+                _buildTextField(
+                  'ID를 입력해주세요.',
+                  controller: idController,
+                  isBold: true,
+                ),
                 const SizedBox(height: 12),
-                _buildTextField('비밀번호를 입력해주세요.', controller: pwController, isObscure: true),
+                _buildTextField(
+                  '비밀번호를 입력해주세요.',
+                  controller: pwController,
+                  isObscure: true,
+                ),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
@@ -112,10 +124,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     onPressed: handleSignUp,
-                    child: const Text(
-                      '회원가입',
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    child: const Text('회원가입', style: TextStyle(fontSize: 18)),
                   ),
                 ),
               ],
@@ -126,7 +135,8 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _buildTextField(String hintText, {
+  Widget _buildTextField(
+    String hintText, {
     required TextEditingController controller,
     bool isObscure = false,
     bool isBold = false,
@@ -136,10 +146,10 @@ class _SignUpPageState extends State<SignUpPage> {
       obscureText: isObscure,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+        hintStyle: TextStyle(
+          fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
         ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         filled: true,
         fillColor: Colors.white,
       ),

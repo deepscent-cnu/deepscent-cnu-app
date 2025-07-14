@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:deepscent_cnu/common/data/device_api.dart';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/round_log.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
@@ -9,11 +10,57 @@ import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/sc
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class NormalOlfactoryTrainingAnswerScreen extends StatelessWidget {
+class NormalOlfactoryTrainingAnswerScreen extends StatefulWidget {
+  const NormalOlfactoryTrainingAnswerScreen({super.key});
+
+  @override
+  State<NormalOlfactoryTrainingAnswerScreen> createState() =>
+      _NormalOlfactoryTrainingAnswerScreenState();
+}
+
+class _NormalOlfactoryTrainingAnswerScreenState
+    extends State<NormalOlfactoryTrainingAnswerScreen> {
   final normalOlfactoryTrainingController =
       Get.find<NormalOlfactoryTrainingController>();
+  int remainTime = 20;
+  String message = "초 뒤, 다른 향기가 분출됩니다.";
+  bool isLoading = false;
 
-  NormalOlfactoryTrainingAnswerScreen({super.key});
+  @override
+  void initState() {
+    super.initState();
+    if (normalOlfactoryTrainingController.currentRound.value != 4) {
+      startTrainingCycle();
+    }
+  }
+
+  Future<void> startTrainingCycle() async {
+    await DeviceApi.controlScentDeviceSlot(
+      normalOlfactoryTrainingController.currentRound.value,
+      3,
+    );
+    await Future.delayed(const Duration(seconds: 1));
+
+    while (remainTime > 1) {
+      setState(() {
+        remainTime -= 1;
+      });
+
+      await Future.delayed(const Duration(seconds: 1));
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    setState(() {
+      isLoading = false;
+    });
+
+    nextRound();
+  }
 
   void showTrainingStopModal(BuildContext context) {
     showDialog(
@@ -121,7 +168,7 @@ class NormalOlfactoryTrainingAnswerScreen extends StatelessWidget {
 
       await NormalOlfactoryTrainingApi.submitTrainingLog(
         totalTimeTaken,
-        normalOlfactoryTrainingController.logs.map((e) => e.toJson()).toList()
+        normalOlfactoryTrainingController.logs.map((e) => e.toJson()).toList(),
       );
 
       Get.off(() => NormalOlfactoryTrainingResultScreen());
@@ -159,88 +206,127 @@ class NormalOlfactoryTrainingAnswerScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned(
-              top: 80,
-              child: Image.asset(
-                'assets/images/blurred_background.png',
-                fit: BoxFit.cover,
-                opacity: AlwaysStoppedAnimation(0.5),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          showTrainingStopModal(context);
-                        },
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                      ),
-                      const Text(
-                        '일반 후각 훈련',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+        child:
+            isLoading
+                ? Container(
+                  color: Colors.black.withOpacity(0.5), // 화면 어두워짐
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(color: Colors.white),
+                        SizedBox(height: 16),
+                        Text(
+                          '로딩 중...',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Text(
-                      '${normalOlfactoryTrainingController.isCorrect ? "맞았어요!" : "앗, 아쉬워요!"} 방금 맡은 향은\n${normalOlfactoryTrainingController.correctOption} 향이었습니다.',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 128),
-                  normalOlfactoryTrainingController.currentRound.value != 4
-                      ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Text(
-                          "잠깐의 휴식 후, 훈련을 계속 진행해주세요!",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                )
+                : Stack(
+                  children: [
+                    Positioned(
+                      top: 80,
+                      child: Image.asset(
+                        'assets/images/blurred_background.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 24),
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  showTrainingStopModal(context);
+                                },
+                                icon: const Icon(
+                                  Icons.arrow_back_ios_new,
+                                  size: 20,
+                                ),
+                              ),
+                              const Text(
+                                '일반 후각 훈련',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                      : SizedBox.shrink(),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
-                    ),
-                    child: ButtonBasic(
-                      content:
+                          const SizedBox(height: 16),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: Text(
+                              '${normalOlfactoryTrainingController.isCorrect ? "맞았어요!" : "앗, 아쉬워요!"} 방금 맡은 향은\n${normalOlfactoryTrainingController.correctOption} 향이었습니다.',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          // const SizedBox(height: 128),
                           normalOlfactoryTrainingController
                                       .currentRound
                                       .value !=
                                   4
-                              ? "다음 향 맡아보기"
-                              : "훈련 결과 보기",
-                      icon: Icon(Icons.double_arrow),
-                      function: nextRound,
+                              ? Expanded(
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        remainTime.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 92,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        message,
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              : Expanded(
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 16,
+                                    ),
+                                    child: ButtonBasic(
+                                      content:
+                                          normalOlfactoryTrainingController
+                                                      .currentRound
+                                                      .value !=
+                                                  4
+                                              ? "다음 향 맡아보기"
+                                              : "훈련 결과 보기",
+                                      icon: Icon(Icons.double_arrow),
+                                      function: nextRound,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          const SizedBox(height: 60),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                  ],
+                ),
       ),
     );
   }

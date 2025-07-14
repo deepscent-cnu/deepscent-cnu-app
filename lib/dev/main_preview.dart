@@ -1,11 +1,17 @@
+import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final authController = Get.put(AuthController());
+  await authController.adminLogin();
+
   Get.put(NormalOlfactoryTrainingController());
   runApp(const MyApp());
+  debugPrint(authController.accessToken.value);
 }
 
 class MyApp extends StatelessWidget {

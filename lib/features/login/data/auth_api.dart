@@ -1,4 +1,5 @@
 // lib/src/features/auth/data/auth_api.dart
+import 'package:deepscent_cnu/secrets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -7,7 +8,7 @@ class AuthApi {
     required String username,
     required String password,
   }) async {
-    final url = Uri.parse('http://localhost:8080/api/auth/login');
+    final url = Uri.parse('$apiBaseUrl/api/auth/login');
     return await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -25,7 +26,7 @@ class AuthApi {
     required String username,
     required String password,
   }) async {
-    final url = Uri.parse('http://localhost:8080/api/auth/signup');
+    final url = Uri.parse('$apiBaseUrl/api/auth/signup');
     return await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
