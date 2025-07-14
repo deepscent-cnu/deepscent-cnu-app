@@ -1,7 +1,6 @@
 //import 'package:deepscent_cnu/presentation/screens/%08signup.dart';
 import 'package:flutter/material.dart';
 import 'features/login/presentation/screens/login.dart';
-import 'features/normal_olfactory_training/presentation/screens/memory_recall_training_screen.dart';
 
 void main() {
   runApp(const MyApp());

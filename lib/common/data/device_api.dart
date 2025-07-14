@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
 import 'package:deepscent_cnu/secrets.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class DeviceApi {
@@ -9,10 +11,14 @@ class DeviceApi {
     int fanNumber,
     int fanSpeed,
   ) async {
+    final authController = Get.find<AuthController>();
     final apiUrl =
         apiBaseUrl + '/api/device/' + deviceId + "/fragrance/fan-state";
 
-    final requestHeaders = {'Content-type': 'application/json'};
+    final requestHeaders = {
+      'Content-type': 'application/json',
+      'Authorization': 'Bearer ${authController.accessToken.value}',
+    };
 
     final requestBody = jsonEncode({
       'fan_number': fanNumber,

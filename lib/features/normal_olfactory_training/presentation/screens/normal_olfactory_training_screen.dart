@@ -17,7 +17,7 @@ class _NormalOlfactoryTrainingScreenState
     extends State<NormalOlfactoryTrainingScreen> {
   final normalOlfactoryTrainingController =
       Get.find<NormalOlfactoryTrainingController>();
-  int remainTime = 2;
+  int remainTime = 20;
   String message = "초 뒤, 발향이 중지됩니다.";
   bool isStopped = false;
 

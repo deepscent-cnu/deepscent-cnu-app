@@ -1,8 +1,10 @@
+import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
+import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'signup.dart';
 import '../../data/auth_api.dart'; 
 import 'dart:convert';
-import '../../../normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,6 +14,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final authController = Get.find<AuthController>();
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
 
@@ -23,12 +26,13 @@ Future<void> handleLogin() async {
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
+    authController.accessToken.value = data['data'];
     print('로그인 성공: $data');
 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const NormalOlfactoryTrainingScreen(),
+        builder: (context) => const OlfactoryTrainingListScreen(),
       ),
     );
   } else {

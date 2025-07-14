@@ -1,15 +1,21 @@
 import 'dart:convert';
 
+import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/scent_options.dart';
 import 'package:deepscent_cnu/secrets.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class NormalOlfactoryTrainingApi {
   static Future<ScentOptions?> getScentOptions(int round) async {
+    final authController = Get.find<AuthController>();
     final apiUrl =
         '$apiBaseUrl/api/device/$deviceId/fragrance/scent-option?round=$round';
-    final requestHeaders = {'Content-type': 'application/json'};
+    final requestHeaders = {
+      'Content-type': 'application/json',
+      'Authorization': 'Bearer ${authController.accessToken.value}',
+    };
 
     try {
       final response = await http.get(
@@ -36,10 +42,11 @@ class NormalOlfactoryTrainingApi {
     int totalTimeTaken,
     List<Map<String, dynamic>> roundLogs,
   ) async {
+    final authController = Get.find<AuthController>();
     final apiUrl = '$apiBaseUrl/api/normal-olfactory-training/log';
     final requestHeaders = {
       'Content-type': 'application/json',
-      'Authorization': 'Bearer $memberToken',
+      'Authorization': 'Bearer ${authController.accessToken.value}',
     };
 
     try {
