@@ -1,4 +1,4 @@
-import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_training_screen.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_session_select_screen.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -125,7 +125,7 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
                                               return const NormalOlfactoryTrainingScreen();
                                             } else if (mode ==
                                                 MEMORY_RECALL_MODE) {
-                                              return const MemoryRecallTrainingScreen();
+                                              return MemoryRecallSessionSelectScreen();
                                             } else {
                                               throw Exception(
                                                 'Invalid training mode',
