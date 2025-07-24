@@ -1,5 +1,5 @@
+import 'package:deepscent_cnu/features/memory_recall_training/memory_recall_scent_select_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_training_screen.dart';
 
 class MemoryRecallSessionSelectScreen extends StatelessWidget {
   final List<bool> completedSessions = [true, true, true, false, false, false, false, false];
@@ -11,6 +11,13 @@ class MemoryRecallSessionSelectScreen extends StatelessWidget {
     final int firstIncompleteIndex = completedSessions.indexWhere((element) => element == false);
         
     return Scaffold(
+      backgroundColor: Colors.white,
+      bottomNavigationBar: Container(
+        height: 56,
+        color: Colors.grey[200],
+        alignment: Alignment.center,
+        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
+      ),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -74,7 +81,6 @@ class MemoryRecallSessionSelectScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final bool isDone = completedSessions[index];
                   final bool isCurrent = index == firstIncompleteIndex;
-                  final bool isFuture = index > firstIncompleteIndex;
 
                   Color backgroundColor;
                   Color foregroundColor;
@@ -100,8 +106,7 @@ class MemoryRecallSessionSelectScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      const MemoryRecallTrainingScreen(),
+                                  builder: (_) => MemoryRecallScentSelectScreen(sessionIndex: 4),
                                 ),
                               );
                             }
