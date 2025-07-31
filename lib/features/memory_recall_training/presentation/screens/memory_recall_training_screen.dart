@@ -62,6 +62,7 @@ class MemoryRecallTrainingScreenState
 
     if (context.mounted) {
       Navigator.pop(context);
+      Navigator.pop(context);
     }
   }
 
@@ -143,10 +144,7 @@ class MemoryRecallTrainingScreenState
                                 content: '훈련 끝내기',
                                 icon: Icon(Icons.exit_to_app, size: 20),
                                 function:
-                                    () => {
-                                      Navigator.pop(context),
-                                      Navigator.pop(context),
-                                    },
+                                    stopTrainingCycle,
                               ),
                             ),
                           ],

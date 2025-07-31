@@ -25,10 +25,12 @@ class _NormalOlfactoryTrainingAnswerScreenState
   int remainTime = 20;
   String message = "초 뒤, 다른 향기가 분출됩니다.";
   bool isLoading = false;
+  bool isStopped = false;
 
   @override
   void initState() {
     super.initState();
+    isStopped = false;
     if (normalOlfactoryTrainingController.currentRound.value != 4) {
       startTrainingCycle();
     }
@@ -42,6 +44,10 @@ class _NormalOlfactoryTrainingAnswerScreenState
     await Future.delayed(const Duration(seconds: 1));
 
     while (remainTime > 1) {
+      if (isStopped) {
+        return;
+      }
+
       setState(() {
         remainTime -= 1;
       });
@@ -60,6 +66,16 @@ class _NormalOlfactoryTrainingAnswerScreenState
     });
 
     nextRound();
+  }
+
+  Future<void> stopTrainingCycle() async {
+    isStopped = true;
+
+    if (context.mounted) {
+      normalOlfactoryTrainingController.reset();
+      Navigator.pop(context);
+      Navigator.pop(context);
+    }
   }
 
   void showTrainingStopModal(BuildContext context) {
@@ -133,7 +149,7 @@ class _NormalOlfactoryTrainingAnswerScreenState
                               child: ButtonBasic(
                                 content: '훈련 끝내기',
                                 icon: Icon(Icons.exit_to_app, size: 20),
-                                function: () => {Navigator.pop(context)},
+                                function: stopTrainingCycle,
                               ),
                             ),
                           ],
@@ -271,7 +287,6 @@ class _NormalOlfactoryTrainingAnswerScreenState
                               textAlign: TextAlign.center,
                             ),
                           ),
-                          // const SizedBox(height: 128),
                           normalOlfactoryTrainingController
                                       .currentRound
                                       .value !=
@@ -308,20 +323,33 @@ class _NormalOlfactoryTrainingAnswerScreenState
                                       vertical: 16,
                                     ),
                                     child: ButtonBasic(
-                                      content:
-                                          normalOlfactoryTrainingController
-                                                      .currentRound
-                                                      .value !=
-                                                  4
-                                              ? "다음 향 맡아보기"
-                                              : "훈련 결과 보기",
+                                      content: "훈련 결과 보기",
                                       icon: Icon(Icons.double_arrow),
                                       function: nextRound,
                                     ),
                                   ),
                                 ),
                               ),
-                          const SizedBox(height: 60),
+                          normalOlfactoryTrainingController
+                                      .currentRound
+                                      .value !=
+                                  4
+                              ? Column(
+                                children: [
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    "다음 단계를 위해, 표시된 시간 동안 편안하게 휴식해주세요!",
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF335928),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 100),
+                                ],
+                              )
+                              : SizedBox.shrink(),
                         ],
                       ),
                     ),

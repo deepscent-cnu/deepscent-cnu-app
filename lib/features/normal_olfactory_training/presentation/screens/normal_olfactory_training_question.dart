@@ -113,7 +113,12 @@ class _NormalOlfactoryTrainingQuestionScreenState
                               child: ButtonBasic(
                                 content: '훈련 끝내기',
                                 icon: Icon(Icons.exit_to_app, size: 20),
-                                function: () => {Navigator.pop(context)},
+                                function:
+                                    () => {
+                                      normalOlfactoryTrainingController.reset(),
+                                      Navigator.pop(context),
+                                      Navigator.pop(context),
+                                    },
                               ),
                             ),
                           ],

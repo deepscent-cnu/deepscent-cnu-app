@@ -62,7 +62,7 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '${sessionIndex}회차 기억회상 훈련',
+                        '$sessionIndex회차 기억회상 훈련',
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ],
