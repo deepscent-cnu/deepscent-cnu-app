@@ -56,11 +56,11 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
                   // 뒤로 가기 + 타이틀
                   Row(
                     children: [
+                      const SizedBox(height: 24),
                       IconButton(
                         onPressed: () => Navigator.pop(context),
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
-                      const SizedBox(width: 8),
                       Text(
                         '$sessionIndex회차 기억회상 훈련',
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -70,17 +70,18 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   const Text(
                     '오늘은 학교와 친구들에 대한 기억을 나누는 시간입니다.',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    '다음 중 떠오르는 향기를 하나 골라주세요',
-                    style: TextStyle(fontSize: 14),
+                    '다음 중 떠오르는 향기를 하나 골라주세요.',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 110, 110, 110),
+                    ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 60),
                   // 향기 버튼 8개 (2x4)
                   ...scentItems.map(
                     (pair) => Padding(

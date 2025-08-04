@@ -1,4 +1,4 @@
-import 'package:deepscent_cnu/features/memory_recall_training/memory_recall_scent_select_screen.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_scent_select_screen.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallSessionSelectScreen extends StatelessWidget {
@@ -51,11 +51,11 @@ class MemoryRecallSessionSelectScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Row(
                 children: [
+                  const SizedBox(height: 24),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                   ),
-                  const SizedBox(width: 8),
                   const Text(
                     '기억 회상 훈련 회차 선택',
                     style: TextStyle(
@@ -114,6 +114,9 @@ class MemoryRecallSessionSelectScreen extends StatelessWidget {
                       icon: const Icon(Icons.flag),
                       label: Text(
                         '${index + 1}회차${isDone ? " (완료)" : ""}',
+                        style: const TextStyle(
+                          fontSize: 16
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: backgroundColor,
