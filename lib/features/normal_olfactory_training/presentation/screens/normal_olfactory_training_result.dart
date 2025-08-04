@@ -282,7 +282,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                         vertical: 16,
                       ),
                       child: ButtonBasic(
-                        content: '훈련 목록 보기',
+                        content: '홈으로 돌아가기',
                         icon: Icon(Icons.list, size: 30),
                         function: () => returnTrainingList(context),
                       ),
