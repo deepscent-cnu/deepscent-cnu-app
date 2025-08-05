@@ -26,10 +26,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   late final Stopwatch stopwatch;
   Timer? timer;
 
-  List<String> testQuestionList = [
-    "이 향기를 맡았을 때 어떤 기억이 떠올랐나요",
-  ];
-
+  List<String> testQuestionList = [];
   List<String> testAnswerList = [
     "마이크를 누르고 말씀해주세요\n응답이 완료되었으면 마이크를 한번 더 눌러주시면 됩니다\n",
   ];
@@ -38,6 +35,18 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   void initState() {
     super.initState();
     stopwatch = Stopwatch();
+    fetchInitialQuestion();
+  }
+
+  Future<void> fetchInitialQuestion() async {
+    final firstQuestion = await MemoryRecallTrainingApi.sendChatToAI(1, "넌 지금 기억회상 후각훈련을 하고 있어 이 향기를 맡으면 어떤 기분이 떠오르나요와 같은 질문으로 대화를 시작해줘");
+    setState(() {
+      if (firstQuestion != null && firstQuestion.isNotEmpty) {
+        testQuestionList.add(firstQuestion);
+      } else {
+        testQuestionList.add("질문을 불러오지 못했습니다.");
+      }
+    });
   }
 
   @override
@@ -48,6 +57,32 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   }
 
   void toggleRecording() async {
+    if (transcriptText != null && transcriptText!.isNotEmpty && !isRecording) {
+      final shouldReRecord = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("재녹음 하시겠습니까?"),
+          content: const Text("이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text("취소"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text("확인"),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldReRecord != true) return;
+
+      setState(() {
+        transcriptText = null;
+      });
+    }
+
     if (!isRecording) {
       final dir = await getApplicationDocumentsDirectory();
       _filePath = '${dir.path}/recorded_audio.wav';
@@ -133,6 +168,11 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isNextEnabled = transcriptText != null &&
+        transcriptText!.isNotEmpty &&
+        transcriptText != '로딩 중...' &&
+        !isLoading;
+
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: Container(
@@ -190,36 +230,8 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
-                      testQuestionList[currentIndex],
+                      testQuestionList.isNotEmpty ? testQuestionList[currentIndex] : '',
                       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 7,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Scrollbar(
-                        thumbVisibility: true,
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Text(
-                            transcriptText ?? testAnswerList[0],
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -230,7 +242,8 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                         children: [
                           CircleAvatar(
                             radius: 36,
-                            backgroundColor: const Color(0xFF2E7D32),
+                            backgroundColor:
+                                isRecording ? Colors.red : const Color(0xFF2E7D32),
                             child: Icon(
                               isRecording ? Icons.stop : Icons.mic,
                               color: Colors.white,
@@ -250,9 +263,10 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
                     child: ButtonBasic(
-                      content: interactionCount >= 4 ? '훈련 저장하기' : '다음 질문으로',
+                      content:
+                          interactionCount >= 4 ? '훈련 저장하기' : '다음 질문으로',
                       icon: const Icon(Icons.double_arrow),
-                      function: _onNextPressed,
+                      function: isNextEnabled ? _onNextPressed : null,
                     ),
                   ),
                   const SizedBox(height: 24),
