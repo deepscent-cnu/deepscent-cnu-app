@@ -63,6 +63,7 @@ class MemoryRecallTrainingScreenState
     if (context.mounted) {
       Navigator.pop(context);
       Navigator.pop(context);
+      Navigator.pop(context);
     }
   }
 
@@ -195,7 +196,7 @@ class MemoryRecallTrainingScreenState
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
+            Positioned.fill(
               top: 80,
               child: Image.asset(
                 'assets/images/blurred_background.png',

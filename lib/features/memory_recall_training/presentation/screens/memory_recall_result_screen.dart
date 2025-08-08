@@ -1,4 +1,5 @@
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallResultScreen extends StatelessWidget {
@@ -34,8 +35,8 @@ class MemoryRecallResultScreen extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
-              top: 80,
+            Positioned.fill(
+              top: 50,
               child: Image.asset(
                 'assets/images/blurred_background_2.png',
                 fit: BoxFit.cover,
@@ -50,7 +51,10 @@ class MemoryRecallResultScreen extends StatelessWidget {
                     children: [
                       IconButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (_) => const OlfactoryTrainingListScreen()),
+                            (route) => false,
+                          );
                         },
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
@@ -133,7 +137,13 @@ class MemoryRecallResultScreen extends StatelessWidget {
                     child: ButtonBasic(
                       content: '훈련 목록 보기',
                       icon: Icon(Icons.list, size: 30),
-                      function: () {},
+                      function: () {
+                        // 스택을 비우고 목록으로 이동 (뒤로가기 눌러도 결과 화면 안 돌아오게)
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (_) => const OlfactoryTrainingListScreen()),
+                          (route) => false,
+                        );
+                      },
                     ),
                   ),
                 ],

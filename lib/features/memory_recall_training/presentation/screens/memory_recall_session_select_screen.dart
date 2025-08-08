@@ -40,6 +40,7 @@ class MemoryRecallSessionSelectScreen extends StatelessWidget {
         children: [
           // 흐릿한 배경 이미지
           Positioned.fill(
+            top: 50,
             child: Image.asset(
               'assets/images/blurred_background.png',
               fit: BoxFit.cover,
