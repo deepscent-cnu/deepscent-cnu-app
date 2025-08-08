@@ -13,7 +13,7 @@ class MemoryRecallTrainingScreen extends StatefulWidget {
 
 class MemoryRecallTrainingScreenState
     extends State<MemoryRecallTrainingScreen> {
-  int remainTime = 10;
+  int remainTime = 2;
   String message = "초 뒤, 발향이 중지됩니다.";
   bool isStopped = false;
   bool showHelp = false;
@@ -195,7 +195,7 @@ class MemoryRecallTrainingScreenState
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
+            Positioned.fill(
               top: 80,
               child: Image.asset(
                 'assets/images/blurred_background.png',

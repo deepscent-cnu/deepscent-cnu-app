@@ -166,12 +166,13 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
             child: Image.asset(
               'assets/images/blurred_background_2.png',
               fit: BoxFit.cover,
-              alignment: Alignment.center,
+              alignment: Alignment.topCenter
             ),
           ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20)
+                  .copyWith(bottom: 200),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
