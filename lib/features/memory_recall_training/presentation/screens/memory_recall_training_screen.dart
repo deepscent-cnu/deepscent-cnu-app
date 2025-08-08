@@ -13,7 +13,7 @@ class MemoryRecallTrainingScreen extends StatefulWidget {
 
 class MemoryRecallTrainingScreenState
     extends State<MemoryRecallTrainingScreen> {
-  int remainTime = 2;
+  int remainTime = 10;
   String message = "초 뒤, 발향이 중지됩니다.";
   bool isStopped = false;
   bool showHelp = false;
@@ -61,6 +61,7 @@ class MemoryRecallTrainingScreenState
     await DeviceApi.controlScentDeviceSlot(1, 0);
 
     if (context.mounted) {
+      Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context);
     }
