@@ -16,6 +16,7 @@ class MemoryRecallChatScreen extends StatefulWidget {
 }
 
 class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
+  final _scrollCtrl = ScrollController();
   int currentIndex = 0;
   int interactionCount = 0;
   final AudioRecorder _recorder = AudioRecorder();
@@ -42,6 +43,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
   @override
   void dispose() {
+    _scrollCtrl.dispose();
     stopwatch.stop();
     timer?.cancel();
     super.dispose();
@@ -211,8 +213,11 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                         ],
                       ),
                       child: Scrollbar(
+                        controller: _scrollCtrl,
                         thumbVisibility: true,
                         child: SingleChildScrollView(
+                          controller: _scrollCtrl,
+                          primary: false,
                           padding: const EdgeInsets.only(right: 10),
                           child: Text(
                             transcriptText ?? testAnswerList[0],
