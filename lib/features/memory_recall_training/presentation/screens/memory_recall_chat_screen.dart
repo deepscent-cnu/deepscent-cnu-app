@@ -51,6 +51,15 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
   void toggleRecording() async {
     if (!isRecording) {
+      // 권한 확인/요청
+      final hasPerm = await _recorder.hasPermission();
+      if (!hasPerm) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('마이크 권한이 필요합니다. 설정에서 허용해 주세요.')),
+        );
+        return;
+      }
+      
       final dir = await getApplicationDocumentsDirectory();
       _filePath = '${dir.path}/recorded_audio.wav';
 
@@ -172,7 +181,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20)
-                  .copyWith(bottom: 200),
+                  .copyWith(bottom: 500),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
