@@ -1,9 +1,8 @@
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/round_log.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/scent_options.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_answer.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_scent_strength.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -135,23 +134,17 @@ class _NormalOlfactoryTrainingQuestionScreenState
     );
   }
 
-  void goAnswerScreen(String selectedOption) {
+  void goScentStrengthScreen(String selectedOption) {
     final endTime = DateTime.now();
     final timeTaken = endTime.difference(startTime).inSeconds;
     final correctOption = scentOptions!.correctOption;
     final isCorrect = selectedOption == correctOption;
 
+    normalOlfactoryTrainingController.selectedOption = selectedOption;
     normalOlfactoryTrainingController.isCorrect = isCorrect;
-    normalOlfactoryTrainingController.logs.add(
-      RoundLog(
-        correctOption: correctOption,
-        selectedOption: selectedOption,
-        isCorrect: isCorrect,
-        timeTaken: timeTaken,
-      ),
-    );
+    normalOlfactoryTrainingController.timeTaken = timeTaken;
 
-    Get.off(() => NormalOlfactoryTrainingAnswerScreen());
+    Get.off(() => NormalOlfactoryTrainingScentStrengthScreen());
   }
 
   @override
@@ -262,7 +255,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                                   content: scentOptions!.scentOption1,
                                   fontSize: 24,
                                   function:
-                                      () => goAnswerScreen(
+                                      () => goScentStrengthScreen(
                                         scentOptions!.scentOption1,
                                       ),
                                 ),
@@ -270,7 +263,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                                   content: scentOptions!.scentOption2,
                                   fontSize: 24,
                                   function:
-                                      () => goAnswerScreen(
+                                      () => goScentStrengthScreen(
                                         scentOptions!.scentOption2,
                                       ),
                                 ),
@@ -278,7 +271,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                                   content: scentOptions!.scentOption3,
                                   fontSize: 24,
                                   function:
-                                      () => goAnswerScreen(
+                                      () => goScentStrengthScreen(
                                         scentOptions!.scentOption3,
                                       ),
                                 ),
@@ -286,7 +279,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                                   content: scentOptions!.scentOption4,
                                   fontSize: 24,
                                   function:
-                                      () => goAnswerScreen(
+                                      () => goScentStrengthScreen(
                                         scentOptions!.scentOption4,
                                       ),
                                 ),
@@ -301,7 +294,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                             ),
                             child: ButtonBasic(
                               content: "잘 모르겠어요",
-                              function: () => goAnswerScreen(""),
+                              function: () => goScentStrengthScreen(""),
                             ),
                           ),
                           const SizedBox(height: 12),
