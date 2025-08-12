@@ -41,7 +41,10 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   }
 
   Future<void> fetchInitialQuestion() async {
-    final firstQuestion = await MemoryRecallTrainingApi.sendChatToAI(1, "넌 지금 기억회상 후각훈련을 하고 있어 이 향기를 맡으면 어떤 기분이 떠오르나요와 같은 질문으로 대화를 시작해줘");
+    final firstQuestion = await MemoryRecallTrainingApi.sendChatToAI(
+      1,
+      "넌 지금 기억회상 후각훈련을 하고 있어 이 향기를 맡으면 어떤 기분이 떠오르나요와 같은 질문으로 대화를 시작해줘",
+    );
     setState(() {
       if (firstQuestion != null && firstQuestion.isNotEmpty) {
         testQuestionList.add(firstQuestion);
@@ -63,20 +66,23 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     if (transcriptText != null && transcriptText!.isNotEmpty && !isRecording) {
       final shouldReRecord = await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("재녹음 하시겠습니까?"),
-          content: const Text("이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text("취소"),
+        builder:
+            (context) => AlertDialog(
+              title: const Text("재녹음 하시겠습니까?"),
+              content: const Text(
+                "이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?",
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("취소"),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text("확인"),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text("확인"),
-            ),
-          ],
-        ),
       );
 
       if (shouldReRecord != true) return;
@@ -95,7 +101,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         );
         return;
       }
-      
+
       final dir = await getApplicationDocumentsDirectory();
       _filePath = '${dir.path}/recorded_audio.wav';
 
@@ -136,7 +142,9 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       transcriptText = '로딩 중...';
     });
 
-    final sttResult = await MemoryRecallTrainingApi.sendAudioToSTT(File(filePath));
+    final sttResult = await MemoryRecallTrainingApi.sendAudioToSTT(
+      File(filePath),
+    );
 
     setState(() {
       isLoading = false;
@@ -146,7 +154,10 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
   void _onNextPressed() async {
     if (transcriptText != null && transcriptText!.isNotEmpty) {
-      final chatResult = await MemoryRecallTrainingApi.sendChatToAI(1, transcriptText!);
+      final chatResult = await MemoryRecallTrainingApi.sendChatToAI(
+        1,
+        transcriptText!,
+      );
 
       if (chatResult != null && chatResult.isNotEmpty) {
         currentIndex++;
@@ -252,7 +263,11 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                                 icon: Icon(Icons.exit_to_app, size: 20),
                                 function: () {
                                   Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(builder: (_) => const OlfactoryTrainingListScreen()),
+                                    MaterialPageRoute(
+                                      builder:
+                                          (_) =>
+                                              const OlfactoryTrainingListScreen(),
+                                    ),
                                     (route) => false,
                                   );
                                 },
@@ -275,7 +290,8 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isNextEnabled = transcriptText != null &&
+    final bool isNextEnabled =
+        transcriptText != null &&
         transcriptText!.isNotEmpty &&
         transcriptText != '로딩 중...' &&
         !isLoading;
@@ -305,23 +321,23 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
           SizedBox(width: 12),
         ],
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/blurred_background_2.png',
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/blurred_background_2.png',
+                fit: BoxFit.cover,
+                opacity: AlwaysStoppedAnimation(0.5),
+              ),
             ),
-          ),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20)
-                  .copyWith(bottom: 500),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 24),
                   Row(
                     children: [
                       IconButton(
@@ -330,59 +346,95 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                       ),
                       const Text(
                         '기억 회상 훈련',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(
-                      testQuestionList.isNotEmpty ? testQuestionList[currentIndex] : '',
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  Center(
-                    child: GestureDetector(
-                      onTap: toggleRecording,
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            radius: 36,
-                            backgroundColor:
-                                isRecording ? Colors.red : const Color(0xFF2E7D32),
-                            child: Icon(
-                              isRecording ? Icons.stop : Icons.mic,
-                              color: Colors.white,
-                              size: 36,
+                  Expanded(
+                    flex: 6,
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            testQuestionList.isNotEmpty
+                                ? testQuestionList[currentIndex]
+                                : '',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            formattedTime(),
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
-                    child: ButtonBasic(
-                      content:
-                          interactionCount >= 4 ? '훈련 저장하기' : '다음 질문으로',
-                      icon: const Icon(Icons.double_arrow),
-                      function: isNextEnabled ? _onNextPressed : null,
+                  const Divider(
+                    color: Color.fromARGB(255, 205, 205, 205),
+                    thickness: 5,
+                    height: 32,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: GestureDetector(
+                            onTap: toggleRecording,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 36,
+                                  backgroundColor:
+                                      isRecording
+                                          ? Colors.red
+                                          : const Color(0xFF2E7D32),
+                                  child: Icon(
+                                    isRecording ? Icons.stop : Icons.mic,
+                                    color: Colors.white,
+                                    size: 36,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  formattedTime(),
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 6,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 16,
+                            ),
+                            child: ButtonBasic(
+                              content:
+                                  interactionCount >= 4 ? '훈련 저장하기' : '다음 질문으로',
+                              icon: const Icon(Icons.double_arrow),
+                              function: isNextEnabled ? _onNextPressed : null,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 24),
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

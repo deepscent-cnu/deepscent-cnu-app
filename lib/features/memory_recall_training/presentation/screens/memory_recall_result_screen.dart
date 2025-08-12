@@ -36,7 +36,6 @@ class MemoryRecallResultScreen extends StatelessWidget {
         child: Stack(
           children: [
             Positioned.fill(
-              top: 50,
               child: Image.asset(
                 'assets/images/blurred_background_2.png',
                 fit: BoxFit.cover,
@@ -52,7 +51,10 @@ class MemoryRecallResultScreen extends StatelessWidget {
                       IconButton(
                         onPressed: () {
                           Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (_) => const OlfactoryTrainingListScreen()),
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => const OlfactoryTrainingListScreen(),
+                            ),
                             (route) => false,
                           );
                         },
@@ -140,7 +142,9 @@ class MemoryRecallResultScreen extends StatelessWidget {
                       function: () {
                         // 스택을 비우고 목록으로 이동 (뒤로가기 눌러도 결과 화면 안 돌아오게)
                         Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => const OlfactoryTrainingListScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const OlfactoryTrainingListScreen(),
+                          ),
                           (route) => false,
                         );
                       },
