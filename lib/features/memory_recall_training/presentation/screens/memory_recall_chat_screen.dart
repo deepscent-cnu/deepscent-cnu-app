@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/common/widgets/question_step_chip.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_result_screen.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/memory_recall_training_api.dart';
 import 'package:flutter/material.dart';
-import 'package:animations/animations.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -276,7 +276,6 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final int currentStep = interactionCount + 1;
     final bool isNextEnabled = transcriptText != null &&
         transcriptText!.isNotEmpty &&
         transcriptText != '로딩 중...' &&
@@ -341,86 +340,9 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                     padding: const EdgeInsets.only(left: 8),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: RawChip(
-                        backgroundColor: const Color(0xFF2E7D32),
-                        shape: const StadiumBorder(),
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        elevation: 4,
-                        shadowColor: Colors.black45,
-                        label: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              'Q.',
-                              style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white,
-                                height: 1.1, // 라인 높이 고정
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-
-                            // 애니메이션
-                            SizedBox(
-                              height: 20, // 고정 높이(레이아웃 흔들림/번짐 방지)
-                              child: ClipRect(
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 500),
-                                  switchInCurve: Curves.easeOut,
-                                  switchOutCurve: Curves.easeIn,
-                                  layoutBuilder: (currentChild, previousChildren) {
-                                    // 이전/새 위젯이 겹치도록 스택 (부드러운 전환)
-                                    return Stack(
-                                      alignment: Alignment.centerLeft,
-                                      children: [
-                                        ...previousChildren,
-                                        if (currentChild != null) currentChild,
-                                      ],
-                                    );
-                                  },
-                                  transitionBuilder: (child, anim) {
-                                    // child.key로 "새로 들어오는지/나가는지" 판별
-                                    final isNew =
-                                        (child.key as ValueKey<int>).value == currentStep;
-
-                                    final offsetTween = Tween<Offset>(
-                                      // 새 숫자: 위(-Y)에서 내려오기, 이전 숫자: 아래(+Y)로 내려가기
-                                      begin: isNew ? const Offset(0, -0.7) : Offset.zero,
-                                      end: isNew ? Offset.zero : const Offset(0, 0.7),
-                                    );
-
-                                    return SlideTransition(
-                                      position: offsetTween.animate(
-                                        CurvedAnimation(parent: anim, curve: Curves.ease),
-                                      ),
-                                      child: FadeTransition(
-                                        opacity: anim,
-                                        child: child,
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    '$currentStep',
-                                    key: ValueKey<int>(currentStep), // 값 바뀔 때 전환 트리거
-                                    style: const TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white,
-                                      height: 1.1,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            // 고정 텍스트
-                            const SizedBox(width: 2),
-                            const Text(
-                              ' / 5',
-                              style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white,
-                                height: 1.1,
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: QuestionStepChip(
+                        currentStep: interactionCount + 1,
+                        totalSteps: 5,
                       ),
                     ),
                   ),
