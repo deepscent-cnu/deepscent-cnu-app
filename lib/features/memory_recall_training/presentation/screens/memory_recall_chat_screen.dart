@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/common/widgets/question_step_chip.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_result_screen.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/memory_recall_training_api.dart';
 import 'package:flutter/material.dart';
+import 'package:animations/animations.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -336,10 +338,31 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                   ),
                   const SizedBox(height: 16),
                   Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: QuestionStepChip(
+                        currentStep: interactionCount + 1,
+                        totalSteps: 5,
+                      ),
+                    ),
+                  ),
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(
-                      testQuestionList.isNotEmpty ? testQuestionList[currentIndex] : '',
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    child: PageTransitionSwitcher(
+                      duration: const Duration(milliseconds: 350),
+                      transitionBuilder: (child, primary, secondary) =>
+                          FadeThroughTransition(
+                            animation: primary,
+                            secondaryAnimation: secondary,
+                            fillColor: Colors.transparent,
+                            child: child,
+                          ),
+                      child: Text(
+                        testQuestionList.isNotEmpty ? testQuestionList[currentIndex] : '',
+                        key: ValueKey(currentIndex),
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 32),
