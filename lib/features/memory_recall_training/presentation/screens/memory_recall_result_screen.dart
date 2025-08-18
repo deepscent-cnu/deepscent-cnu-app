@@ -60,21 +60,25 @@ class MemoryRecallResultScreen extends StatelessWidget {
                       ),
                       const Text(
                         '기억 회상 훈련',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
+
+                  // 큰 타이틀
                   const Text(
-                    '훈련이 끝났어요!',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    '4회차 훈련이 끝났어요!',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 28),
+
+                  // 오늘의 향기
                   const Text(
-                    '오늘의 향기: 🍋 레몬그라스',
+                    '오늘의 향기:',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -83,11 +87,12 @@ class MemoryRecallResultScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    '상쾌하고 활력을 주는 허브 향입니다.',
+                    '🌬️ 연기 향',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
 
+                  // 오늘의 회상
                   const Text(
                     '오늘의 회상:',
                     style: TextStyle(
@@ -96,25 +101,44 @@ class MemoryRecallResultScreen extends StatelessWidget {
                       color: Color(0xFF335928),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   const Text(
-                    ' 📝 외갓집 마당에서의 봄날, 풀냄새와 함께 떠오른 따뜻한 기억을 이야기해주셨어요.',
+                    '📝 외갓집 마당에서의 봄날, 풀냄새와 함께 떠오른 따뜻한 기억을 이야기해 주셨어요.',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
 
+                  // 오늘 느낀 점
                   const Text(
-                    '오늘의 감정:',
+                    '오늘의 느낀 점:',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF335928),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    '☺ 편안함, 🥲 그리움',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  const SizedBox(height: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x33000000),
+                          blurRadius: 12,
+                          offset: Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: const TextField(
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        hintText: '오늘 훈련을 통해 느낀 점을 적어주세요. (선택사항)',
+                        border: InputBorder.none,
+                      ),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    ),
                   ),
                   const SizedBox(height: 48),
                   Padding(
@@ -147,7 +171,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
+              )
             ),
           ],
         ),
