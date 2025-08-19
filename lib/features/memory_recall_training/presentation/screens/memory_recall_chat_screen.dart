@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/common/widgets/question_step_chip.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_result_screen.dart';
@@ -80,16 +79,13 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
           ],
         ),
       );
-
       if (shouldReRecord != true) return;
-
       setState(() {
         transcriptText = null;
       });
     }
 
     if (!isRecording) {
-      // 권한 확인/요청
       final hasPerm = await _recorder.hasPermission();
       if (!hasPerm) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -97,7 +93,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         );
         return;
       }
-      
+
       final dir = await getApplicationDocumentsDirectory();
       _filePath = '${dir.path}/recorded_audio.wav';
 
@@ -123,9 +119,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       await _recorder.stop();
       stopwatch.stop();
       timer?.cancel();
-
       setState(() => isRecording = false);
-
       if (_filePath != null && File(_filePath!).existsSync()) {
         await sendRecordingToServer(_filePath!);
       }
@@ -139,7 +133,6 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     });
 
     final sttResult = await MemoryRecallTrainingApi.sendAudioToSTT(File(filePath));
-
     setState(() {
       isLoading = false;
       transcriptText = sttResult ?? '음성을 인식하지 못했어요.';
@@ -147,7 +140,9 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   }
 
   void _onNextPressed() async {
-    if (transcriptText != null && transcriptText!.isNotEmpty) {
+    final bool isLastStep = interactionCount >= 4;
+
+    if (!isLastStep && transcriptText != null && transcriptText!.isNotEmpty) {
       final chatResult = await MemoryRecallTrainingApi.sendChatToAI(1, transcriptText!);
 
       if (chatResult != null && chatResult.isNotEmpty) {
@@ -166,7 +161,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       }
     }
 
-    if (interactionCount >= 5) {
+    if (isLastStep) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const MemoryRecallResultScreen()),
@@ -181,145 +176,25 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     return "$minutes:$remainingSeconds";
   }
 
-  void showTrainingCarouselModal(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          // 둥근 모양의 다이얼로그 박스
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: StatefulBuilder(
-            builder: (context, setState) {
-              return SizedBox(
-                width: 300, // 모달 너비
-                height: 450, // 모달 높이
-                child: Column(
-                  children: [
-                    Expanded(
-                      // 남은 영역을 PageView로 채움 (좌우로 넘길 수 있는 영역)
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0), // 내용 여백
-                        child: Column(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center, // 세로 중앙 정렬
-                          children: [
-                            Text(
-                              // 안내 멘트 텍스트
-                              '훈련 중지를 원하시나요?',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 20), // 위아래 여백
-                            Text(
-                              // 안내 멘트 텍스트
-                              '지금까지 진행한 훈련 기록이 모두 삭제됩니다.',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 20),
-                            const Divider(
-                              // 구분선
-                              thickness: 1,
-                              height: 1,
-                              color: Color(0xFFE0E0E0),
-                            ),
-                            const SizedBox(height: 24),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
-                              ),
-                              child: ButtonBasic(
-                                content: '훈련 재개하기',
-                                icon: Icon(Icons.rocket_launch, size: 20),
-                                function: () => {Navigator.pop(context)},
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
-                              ),
-                              child: ButtonBasic(
-                                content: '훈련 끝내기',
-                                icon: Icon(Icons.exit_to_app, size: 20),
-                                function: () {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(builder: (_) => const OlfactoryTrainingListScreen()),
-                                    (route) => false,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final bool isNextEnabled = transcriptText != null &&
-        transcriptText!.isNotEmpty &&
-        transcriptText != '로딩 중...' &&
-        !isLoading;
+    final bool isLastStep = interactionCount >= 4;
+    final bool isNextEnabled = (isLastStep || (transcriptText != null && transcriptText!.isNotEmpty && transcriptText != '로딩 중...' && !isLoading));
 
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: Container(
-        height: 56,
-        color: Colors.grey[200],
-        alignment: Alignment.center,
-        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
-      ),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: const [
-          Icon(Icons.help_outline, color: Colors.black),
-          SizedBox(width: 12),
-        ],
-      ),
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
               'assets/images/blurred_background_2.png',
               fit: BoxFit.cover,
-              alignment: Alignment.topCenter
+              alignment: Alignment.topCenter,
             ),
           ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20)
-                  .copyWith(bottom: 500),
+              padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(bottom: 500),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -327,7 +202,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () => showTrainingCarouselModal(context),
+                        onPressed: () {},
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
                       const Text(
@@ -351,13 +226,12 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: PageTransitionSwitcher(
                       duration: const Duration(milliseconds: 350),
-                      transitionBuilder: (child, primary, secondary) =>
-                          FadeThroughTransition(
-                            animation: primary,
-                            secondaryAnimation: secondary,
-                            fillColor: Colors.transparent,
-                            child: child,
-                          ),
+                      transitionBuilder: (child, primary, secondary) => FadeThroughTransition(
+                        animation: primary,
+                        secondaryAnimation: secondary,
+                        fillColor: Colors.transparent,
+                        child: child,
+                      ),
                       child: Text(
                         testQuestionList.isNotEmpty ? testQuestionList[currentIndex] : '',
                         key: ValueKey(currentIndex),
@@ -366,41 +240,42 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  Center(
-                    child: GestureDetector(
-                      onTap: toggleRecording,
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            radius: 36,
-                            backgroundColor:
-                                isRecording ? Colors.red : const Color(0xFF2E7D32),
-                            child: Icon(
-                              isRecording ? Icons.stop : Icons.mic,
-                              color: Colors.white,
-                              size: 36,
+
+                  // 마이크 버튼: 마지막 단계에서는 숨기기
+                  if (!isLastStep)
+                    Center(
+                      child: GestureDetector(
+                        onTap: toggleRecording,
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 36,
+                              backgroundColor: isRecording ? Colors.red : const Color(0xFF2E7D32),
+                              child: Icon(
+                                isRecording ? Icons.stop : Icons.mic,
+                                color: Colors.white,
+                                size: 36,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            formattedTime(),
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        ],
+                            const SizedBox(height: 12),
+                            Text(
+                              formattedTime(),
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+
                   const SizedBox(height: 32),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
                     child: ButtonBasic(
-                      content:
-                          interactionCount >= 4 ? '훈련 저장하기' : '다음 질문으로',
+                      content: interactionCount >= 4 ? '훈련 저장하기' : '다음 질문으로',
                       icon: const Icon(Icons.double_arrow),
                       function: isNextEnabled ? _onNextPressed : null,
                     ),
                   ),
-                  const SizedBox(height: 24),
                 ],
               ),
             ),
