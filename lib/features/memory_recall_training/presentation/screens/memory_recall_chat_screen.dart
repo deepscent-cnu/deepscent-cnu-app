@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/common/widgets/question_step_chip.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_result_screen.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/memory_recall_training_api.dart';
 import 'package:flutter/material.dart';
+import 'package:animations/animations.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -84,16 +85,13 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
               ],
             ),
       );
-
       if (shouldReRecord != true) return;
-
       setState(() {
         transcriptText = null;
       });
     }
 
     if (!isRecording) {
-      // 권한 확인/요청
       final hasPerm = await _recorder.hasPermission();
       if (!hasPerm) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -127,9 +125,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       await _recorder.stop();
       stopwatch.stop();
       timer?.cancel();
-
       setState(() => isRecording = false);
-
       if (_filePath != null && File(_filePath!).existsSync()) {
         await sendRecordingToServer(_filePath!);
       }
@@ -153,7 +149,9 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   }
 
   void _onNextPressed() async {
-    if (transcriptText != null && transcriptText!.isNotEmpty) {
+    final bool isLastStep = interactionCount >= 4;
+
+    if (!isLastStep && transcriptText != null && transcriptText!.isNotEmpty) {
       final chatResult = await MemoryRecallTrainingApi.sendChatToAI(
         1,
         transcriptText!,
@@ -175,7 +173,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       }
     }
 
-    if (interactionCount >= 5) {
+    if (isLastStep) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const MemoryRecallResultScreen()),
@@ -290,11 +288,13 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isLastStep = interactionCount >= 4;
     final bool isNextEnabled =
-        transcriptText != null &&
-        transcriptText!.isNotEmpty &&
-        transcriptText != '로딩 중...' &&
-        !isLoading;
+        (isLastStep ||
+            (transcriptText != null &&
+                transcriptText!.isNotEmpty &&
+                transcriptText != '로딩 중...' &&
+                !isLoading));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -341,7 +341,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () => showTrainingCarouselModal(context),
+                        onPressed: () {},
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
                       const Text(
@@ -354,6 +354,16 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: QuestionStepChip(
+                        currentStep: interactionCount + 1,
+                        totalSteps: 5,
+                      ),
+                    ),
+                  ),
                   Expanded(
                     flex: 6,
                     child: Scrollbar(
@@ -361,13 +371,25 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                       child: SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            testQuestionList.isNotEmpty
-                                ? testQuestionList[currentIndex]
-                                : '',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                          child: PageTransitionSwitcher(
+                            duration: const Duration(milliseconds: 350),
+                            transitionBuilder:
+                                (child, primary, secondary) =>
+                                    FadeThroughTransition(
+                                      animation: primary,
+                                      secondaryAnimation: secondary,
+                                      fillColor: Colors.transparent,
+                                      child: child,
+                                    ),
+                            child: Text(
+                              testQuestionList.isNotEmpty
+                                  ? testQuestionList[currentIndex]
+                                  : '',
+                              key: ValueKey(currentIndex),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -383,37 +405,39 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                     flex: 2,
                     child: Row(
                       children: [
-                        Expanded(
-                          flex: 3,
-                          child: GestureDetector(
-                            onTap: toggleRecording,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  radius: 36,
-                                  backgroundColor:
-                                      isRecording
-                                          ? Colors.red
-                                          : const Color(0xFF2E7D32),
-                                  child: Icon(
-                                    isRecording ? Icons.stop : Icons.mic,
-                                    color: Colors.white,
-                                    size: 36,
-                                  ),
+                        isLastStep
+                            ? SizedBox.shrink()
+                            : Expanded(
+                              flex: 3,
+                              child: GestureDetector(
+                                onTap: toggleRecording,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 36,
+                                      backgroundColor:
+                                          isRecording
+                                              ? Colors.red
+                                              : const Color(0xFF2E7D32),
+                                      child: Icon(
+                                        isRecording ? Icons.stop : Icons.mic,
+                                        color: Colors.white,
+                                        size: 36,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      formattedTime(),
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  formattedTime(),
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
                         Expanded(
-                          flex: 6,
+                          flex: isLastStep ? 9 : 6,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
@@ -430,6 +454,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
