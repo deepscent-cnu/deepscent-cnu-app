@@ -65,7 +65,7 @@ class MemoryRecallTrainingApi {
       if (response.statusCode == 200) {
         return response.body;
       } else {
-        debugPrint('Chat 실패: ${response.statusCode} - ${response.body}');
+        debugPrint('Chat 실패: ${response.statusCode} - ${jsonDecode(utf8.decode(response.bodyBytes))}');
         return null;
       }
     } catch (e) {

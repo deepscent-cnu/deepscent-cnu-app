@@ -190,6 +190,7 @@ class _NormalOlfactoryTrainingAnswerScreenState
       Get.off(() => NormalOlfactoryTrainingResultScreen());
     } else {
       normalOlfactoryTrainingController.currentRound.value++;
+      normalOlfactoryTrainingController.resetRound();
       Get.off(() => NormalOlfactoryTrainingScreen());
     }
   }
