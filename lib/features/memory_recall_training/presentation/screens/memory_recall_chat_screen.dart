@@ -203,24 +203,27 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
+          // 둥근 모양의 다이얼로그 박스
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           child: StatefulBuilder(
             builder: (context, setState) {
               return SizedBox(
-                width: 300,
-                height: 450,
+                width: 300, // 모달 너비
+                height: 450, // 모달 높이
                 child: Column(
                   children: [
                     Expanded(
+                      // 남은 영역을 PageView로 채움 (좌우로 넘길 수 있는 영역)
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0), // 내용 여백
                         child: Column(
                           mainAxisAlignment:
-                              MainAxisAlignment.center,
+                              MainAxisAlignment.center, // 세로 중앙 정렬
                           children: [
                             Text(
+                              // 안내 멘트 텍스트
                               '훈련 중지를 원하시나요?',
                               style: const TextStyle(
                                 fontSize: 18,
@@ -228,8 +231,9 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 20), // 위아래 여백
                             Text(
+                              // 안내 멘트 텍스트
                               '지금까지 진행한 훈련 기록이 모두 삭제됩니다.',
                               style: const TextStyle(
                                 fontSize: 18,
@@ -239,6 +243,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                             ),
                             const SizedBox(height: 20),
                             const Divider(
+                              // 구분선
                               thickness: 1,
                               height: 1,
                               color: Color(0xFFE0E0E0),
@@ -475,7 +480,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                     CircularProgressIndicator(),
                     SizedBox(height: 12),
                     Text(
-                      '질문을 생성하는 중...',
+                      '질문을 생성중입니다',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
