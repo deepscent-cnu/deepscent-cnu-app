@@ -42,17 +42,22 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   }
 
   Future<void> fetchInitialQuestion() async {
-    final firstQuestion = await MemoryRecallTrainingApi.sendChatToAI(
-      1,
-      "넌 지금 기억회상 후각훈련을 하고 있어 이 향기를 맡으면 어떤 기분이 떠오르나요와 같은 질문으로 대화를 시작해줘",
-    );
-    setState(() {
-      if (firstQuestion != null && firstQuestion.isNotEmpty) {
-        testQuestionList.add(firstQuestion);
-      } else {
-        testQuestionList.add("질문을 불러오지 못했습니다.");
-      }
-    });
+    setState(() => isLoading = true);
+    try {
+      final firstQuestion = await MemoryRecallTrainingApi.sendChatToAI(
+        1,
+        "넌 지금 기억회상 후각훈련을 하고 있어 이 향기를 맡으면 어떤 기분이 떠오르나요와 같은 질문으로 대화를 시작해줘",
+      );
+      setState(() {
+        if (firstQuestion != null && firstQuestion.isNotEmpty) {
+          testQuestionList.add(firstQuestion);
+        } else {
+          testQuestionList.add("질문을 불러오지 못했습니다.");
+        }
+      });
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   @override
@@ -152,24 +157,29 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     final bool isLastStep = interactionCount >= 4;
 
     if (!isLastStep && transcriptText != null && transcriptText!.isNotEmpty) {
-      final chatResult = await MemoryRecallTrainingApi.sendChatToAI(
-        1,
-        transcriptText!,
-      );
+      setState(() => isLoading = true);
+      try {
+        final chatResult = await MemoryRecallTrainingApi.sendChatToAI(
+          1,
+          transcriptText!,
+        );
 
-      if (chatResult != null && chatResult.isNotEmpty) {
-        currentIndex++;
-        interactionCount++;
+        if (chatResult != null && chatResult.isNotEmpty) {
+          currentIndex++;
+          interactionCount++;
 
-        setState(() {
-          transcriptText = null;
-          stopwatch.reset();
-          if (testQuestionList.length <= currentIndex) {
-            testQuestionList.add(chatResult);
-          } else {
-            testQuestionList[currentIndex] = chatResult;
-          }
-        });
+          setState(() {
+            transcriptText = null;
+            stopwatch.reset();
+            if (testQuestionList.length <= currentIndex) {
+              testQuestionList.add(chatResult);
+            } else {
+              testQuestionList[currentIndex] = chatResult;
+            }
+          });
+        }
+      } finally {
+        if (mounted) setState(() => isLoading = false);
       }
     }
 
@@ -458,6 +468,30 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                 ],
               ),
             ),
+            if (isLoading) ...[
+              const ModalBarrier(
+                dismissible: false,
+                color: Colors.black26,
+              ),
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 12),
+                    Text(
+                      '질문을 생성중입니다',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        shadows: [Shadow(blurRadius: 4, color: Colors.black87)],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),
