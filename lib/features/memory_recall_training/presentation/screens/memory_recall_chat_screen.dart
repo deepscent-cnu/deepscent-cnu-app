@@ -42,17 +42,22 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   }
 
   Future<void> fetchInitialQuestion() async {
-    final firstQuestion = await MemoryRecallTrainingApi.sendChatToAI(
-      1,
-      "넌 지금 기억회상 후각훈련을 하고 있어 이 향기를 맡으면 어떤 기분이 떠오르나요와 같은 질문으로 대화를 시작해줘",
-    );
-    setState(() {
-      if (firstQuestion != null && firstQuestion.isNotEmpty) {
-        testQuestionList.add(firstQuestion);
-      } else {
-        testQuestionList.add("질문을 불러오지 못했습니다.");
-      }
-    });
+    setState(() => isLoading = true);
+    try {
+      final firstQuestion = await MemoryRecallTrainingApi.sendChatToAI(
+        1,
+        "넌 지금 기억회상 후각훈련을 하고 있어 이 향기를 맡으면 어떤 기분이 떠오르나요와 같은 질문으로 대화를 시작해줘",
+      );
+      setState(() {
+        if (firstQuestion != null && firstQuestion.isNotEmpty) {
+          testQuestionList.add(firstQuestion);
+        } else {
+          testQuestionList.add("질문을 불러오지 못했습니다.");
+        }
+      });
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   @override
@@ -152,24 +157,29 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     final bool isLastStep = interactionCount >= 4;
 
     if (!isLastStep && transcriptText != null && transcriptText!.isNotEmpty) {
-      final chatResult = await MemoryRecallTrainingApi.sendChatToAI(
-        1,
-        transcriptText!,
-      );
+      setState(() => isLoading = true);
+      try {
+        final chatResult = await MemoryRecallTrainingApi.sendChatToAI(
+          1,
+          transcriptText!,
+        );
 
-      if (chatResult != null && chatResult.isNotEmpty) {
-        currentIndex++;
-        interactionCount++;
+        if (chatResult != null && chatResult.isNotEmpty) {
+          currentIndex++;
+          interactionCount++;
 
-        setState(() {
-          transcriptText = null;
-          stopwatch.reset();
-          if (testQuestionList.length <= currentIndex) {
-            testQuestionList.add(chatResult);
-          } else {
-            testQuestionList[currentIndex] = chatResult;
-          }
-        });
+          setState(() {
+            transcriptText = null;
+            stopwatch.reset();
+            if (testQuestionList.length <= currentIndex) {
+              testQuestionList.add(chatResult);
+            } else {
+              testQuestionList[currentIndex] = chatResult;
+            }
+          });
+        }
+      } finally {
+        if (mounted) setState(() => isLoading = false);
       }
     }
 
@@ -193,27 +203,24 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          // 둥근 모양의 다이얼로그 박스
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           child: StatefulBuilder(
             builder: (context, setState) {
               return SizedBox(
-                width: 300, // 모달 너비
-                height: 450, // 모달 높이
+                width: 300,
+                height: 450,
                 child: Column(
                   children: [
                     Expanded(
-                      // 남은 영역을 PageView로 채움 (좌우로 넘길 수 있는 영역)
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0), // 내용 여백
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           mainAxisAlignment:
-                              MainAxisAlignment.center, // 세로 중앙 정렬
+                              MainAxisAlignment.center,
                           children: [
                             Text(
-                              // 안내 멘트 텍스트
                               '훈련 중지를 원하시나요?',
                               style: const TextStyle(
                                 fontSize: 18,
@@ -221,9 +228,8 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 20), // 위아래 여백
+                            const SizedBox(height: 20),
                             Text(
-                              // 안내 멘트 텍스트
                               '지금까지 진행한 훈련 기록이 모두 삭제됩니다.',
                               style: const TextStyle(
                                 fontSize: 18,
@@ -233,7 +239,6 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                             ),
                             const SizedBox(height: 20),
                             const Divider(
-                              // 구분선
                               thickness: 1,
                               height: 1,
                               color: Color(0xFFE0E0E0),
@@ -458,6 +463,30 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                 ],
               ),
             ),
+            if (isLoading) ...[
+              const ModalBarrier(
+                dismissible: false,
+                color: Colors.black26,
+              ),
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 12),
+                    Text(
+                      '질문을 생성하는 중...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        shadows: [Shadow(blurRadius: 4, color: Colors.black87)],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),
