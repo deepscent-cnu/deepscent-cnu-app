@@ -263,44 +263,45 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 24),
-              const Text(
-                '후각 훈련 목록',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                '오늘은\n어떤 훈련을 진행할까요?',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-              Expanded(
-                child: Column(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 24),
+                const Text(
+                  '후각 훈련 목록',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  '오늘은\n어떤 훈련을 진행할까요?',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 32),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    const SizedBox(height: 40),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: _buildTrainingCard(
                         context,
                         icon: Icons.local_florist,
                         title: '일반 후각 훈련',
-                        subtitle: '의료기관에서 진행하는 훈련',
+                        subtitle: '의료기관에서\n진행하는 훈련',
                         onPressed:
                             () => {
                               showTrainingCarouselModal(context, NORMAL_MODE),
                             },
                       ),
                     ),
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 32),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: _buildTrainingCard(
                         context,
                         icon: Icons.lightbulb,
                         title: '기억 회상 훈련',
-                        subtitle: '향을 맡고 기억을 회상하는 훈련',
+                        subtitle: '향을 맡고 기억을\n회상하는 훈련',
                         onPressed:
                             () => {
                               showTrainingCarouselModal(
@@ -310,11 +311,11 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
                             },
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 32),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -354,7 +355,7 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF335928),
                   ),
@@ -365,16 +366,17 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
             Text(
               subtitle,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             const Text(
               '≫ 클릭하여 훈련 진행하기',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 24,
                 fontWeight: FontWeight.w600,
                 color: Colors.black,
               ),

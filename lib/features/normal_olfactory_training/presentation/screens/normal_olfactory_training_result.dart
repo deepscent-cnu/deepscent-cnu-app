@@ -84,7 +84,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                     const Text(
                       '총 점수',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF335928),
                       ),
@@ -93,7 +93,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                     Text(
                       '4개의 향기 중, ${normalOlfactoryTrainingController.totalScore}개의 향기를 맞추었어요!',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -101,7 +101,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                     const Text(
                       '답안지',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF335928),
                       ),
@@ -110,147 +110,209 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        resultLabel(context, isCorrect: normalOlfactoryTrainingController.logs[0].isCorrect),
-                        const SizedBox(width: 12),
                         Container(
-                          width: 32,
-                          height: 32,
-                          decoration: const BoxDecoration(
-                            color: Colors.black87,
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 3),
                           ),
                           alignment: Alignment.center,
                           child: const Text(
-                            '1번',
+                            '1',
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
+                              color: Colors.black,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text(
-                          '정답: ${normalOlfactoryTrainingController.logs[0].correctOption}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        resultLabel(
+                          context,
+                          isCorrect:
+                              normalOlfactoryTrainingController
+                                  .logs[0]
+                                  .isCorrect,
                         ),
-                        const SizedBox(width: 12),
-                        Text('선택: ${normalOlfactoryTrainingController.logs[0].selectedOption}', style: TextStyle(fontSize: 18)),
+                        const SizedBox(width: 32),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '정답: ${normalOlfactoryTrainingController.logs[0].correctOption}',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              '선택: ${normalOlfactoryTrainingController.logs[0].selectedOption}',
+                              style: TextStyle(fontSize: 28),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 18),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        resultLabel(context, isCorrect: normalOlfactoryTrainingController.logs[1].isCorrect),
-                        const SizedBox(width: 12),
                         Container(
-                          width: 32,
-                          height: 32,
-                          decoration: const BoxDecoration(
-                            color: Colors.black87,
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 3),
                           ),
                           alignment: Alignment.center,
                           child: const Text(
-                            '2번',
+                            '2',
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
+                              color: Colors.black,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text(
-                          '정답: ${normalOlfactoryTrainingController.logs[1].correctOption}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        resultLabel(
+                          context,
+                          isCorrect:
+                              normalOlfactoryTrainingController
+                                  .logs[1]
+                                  .isCorrect,
                         ),
-                        const SizedBox(width: 12),
-                        Text('선택: ${normalOlfactoryTrainingController.logs[1].selectedOption}', style: TextStyle(fontSize: 18)),
+
+                        const SizedBox(width: 32),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '정답: ${normalOlfactoryTrainingController.logs[1].correctOption}',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              '선택: ${normalOlfactoryTrainingController.logs[1].selectedOption}',
+                              style: TextStyle(fontSize: 28),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 18),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        resultLabel(context, isCorrect: normalOlfactoryTrainingController.logs[2].isCorrect),
-                        const SizedBox(width: 12),
                         Container(
-                          width: 32,
-                          height: 32,
-                          decoration: const BoxDecoration(
-                            color: Colors.black87,
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 3),
                           ),
                           alignment: Alignment.center,
                           child: const Text(
-                            '3번',
+                            '3',
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
+                              color: Colors.black,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text(
-                          '정답: ${normalOlfactoryTrainingController.logs[2].correctOption}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        resultLabel(
+                          context,
+                          isCorrect:
+                              normalOlfactoryTrainingController
+                                  .logs[2]
+                                  .isCorrect,
                         ),
-                        const SizedBox(width: 12),
-                        Text('선택: ${normalOlfactoryTrainingController.logs[2].selectedOption}', style: TextStyle(fontSize: 18)),
+
+                        const SizedBox(width: 32),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '정답: ${normalOlfactoryTrainingController.logs[2].correctOption}',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              '선택: ${normalOlfactoryTrainingController.logs[2].selectedOption}',
+                              style: TextStyle(fontSize: 28),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 18),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        resultLabel(context, isCorrect: normalOlfactoryTrainingController.logs[3].isCorrect),
-                        const SizedBox(width: 12),
                         Container(
-                          width: 32,
-                          height: 32,
-                          decoration: const BoxDecoration(
-                            color: Colors.black87,
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 3),
                           ),
                           alignment: Alignment.center,
                           child: const Text(
-                            '4번',
+                            '4',
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
+                              color: Colors.black,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text(
-                          '정답: ${normalOlfactoryTrainingController.logs[3].correctOption}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        resultLabel(
+                          context,
+                          isCorrect:
+                              normalOlfactoryTrainingController
+                                  .logs[3]
+                                  .isCorrect,
                         ),
-                        const SizedBox(width: 12),
-                        Text('선택: ${normalOlfactoryTrainingController.logs[3].selectedOption}', style: TextStyle(fontSize: 18)),
+                        const SizedBox(width: 32),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '정답: ${normalOlfactoryTrainingController.logs[3].correctOption}',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              '선택: ${normalOlfactoryTrainingController.logs[3].selectedOption}',
+                              style: TextStyle(fontSize: 28),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 48),
                     const Text(
                       '문제 풀이에 소요된 총 시간',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF335928),
                       ),
@@ -259,31 +321,33 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                     Text(
                       '${normalOlfactoryTrainingController.totalTimeTaken ~/ 60}분 ${normalOlfactoryTrainingController.totalTimeTaken % 60}초',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 48),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 48,
+                        horizontal: 32,
                         vertical: 16,
                       ),
                       child: ButtonBasic(
                         content: '훈련 기록 보기',
-                        icon: Icon(Icons.edit_document, size: 25),
+                        fontSize: 30,
+                        icon: Icon(Icons.edit_document, size: 32),
                         function: () {},
                       ),
                     ),
                     const SizedBox(height: 6),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 48,
+                        horizontal: 32,
                         vertical: 16,
                       ),
                       child: ButtonBasic(
                         content: '홈으로 돌아가기',
-                        icon: Icon(Icons.list, size: 30),
+                        fontSize: 30,
+                        icon: Icon(Icons.list, size: 36),
                         function: () => returnTrainingList(context),
                       ),
                     ),
@@ -300,7 +364,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
   Widget resultLabel(BuildContext context, {required bool isCorrect}) {
     return isCorrect
         ? Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: Color(0xFF335928),
             borderRadius: BorderRadius.circular(4),
@@ -309,13 +373,13 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
             '정답',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 20,
+              fontSize: 30,
               fontWeight: FontWeight.bold,
             ),
           ),
         )
         : Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: Color(0xFFFF5353),
             borderRadius: BorderRadius.circular(4),
@@ -324,7 +388,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
             '오답',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 20,
+              fontSize: 30,
               fontWeight: FontWeight.bold,
             ),
           ),

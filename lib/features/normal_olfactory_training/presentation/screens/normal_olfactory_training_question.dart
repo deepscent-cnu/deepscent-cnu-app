@@ -253,7 +253,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                               children: [
                                 ButtonBasic(
                                   content: scentOptions!.scentOption1,
-                                  fontSize: 24,
+                                  fontSize: 32,
                                   function:
                                       () => goScentStrengthScreen(
                                         scentOptions!.scentOption1,
@@ -261,7 +261,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                                 ),
                                 ButtonBasic(
                                   content: scentOptions!.scentOption2,
-                                  fontSize: 24,
+                                  fontSize: 32,
                                   function:
                                       () => goScentStrengthScreen(
                                         scentOptions!.scentOption2,
@@ -269,7 +269,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                                 ),
                                 ButtonBasic(
                                   content: scentOptions!.scentOption3,
-                                  fontSize: 24,
+                                  fontSize: 32,
                                   function:
                                       () => goScentStrengthScreen(
                                         scentOptions!.scentOption3,
@@ -277,7 +277,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                                 ),
                                 ButtonBasic(
                                   content: scentOptions!.scentOption4,
-                                  fontSize: 24,
+                                  fontSize: 32,
                                   function:
                                       () => goScentStrengthScreen(
                                         scentOptions!.scentOption4,
@@ -294,6 +294,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                             ),
                             child: ButtonBasic(
                               content: "잘 모르겠어요",
+                              fontSize: 32,
                               function: () => goScentStrengthScreen(""),
                             ),
                           ),

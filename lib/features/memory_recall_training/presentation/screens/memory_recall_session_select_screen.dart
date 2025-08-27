@@ -122,7 +122,7 @@ class _MemoryRecallSessionSelectScreenState
                           const Text(
                             '기억 회상 훈련 회차 선택',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -181,10 +181,10 @@ class _MemoryRecallSessionSelectScreenState
                                           );
                                         }
                                         : () {}, // 나머지는 눌러도 아무 일 없음
-                                icon: const Icon(Icons.flag),
+                                icon: const Icon(Icons.flag, size: 32),
                                 label: Text(
                                   '${index + 1}회차${isDone ? " (완료)" : ""}',
-                                  style: const TextStyle(fontSize: 16),
+                                  style: const TextStyle(fontSize: 32),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: backgroundColor,

@@ -187,7 +187,7 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
                     child: Text(
                       "향을 맡으셨을 때 느끼신\n강도를 선택해주세요.",
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
@@ -207,17 +207,17 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
                           children: [
                             ButtonBasic(
                               content: "약함",
-                              fontSize: 24,
+                              fontSize: 32,
                               function: () => goAnswerScreen(1),
                             ),
                             ButtonBasic(
                               content: "보통",
-                              fontSize: 24,
+                              fontSize: 32,
                               function: () => goAnswerScreen(2),
                             ),
                             ButtonBasic(
                               content: "강함",
-                              fontSize: 24,
+                              fontSize: 32,
                               function: () => goAnswerScreen(3),
                             ),
                           ],

@@ -144,8 +144,7 @@ class MemoryRecallTrainingScreenState
                               child: ButtonBasic(
                                 content: '훈련 끝내기',
                                 icon: Icon(Icons.exit_to_app, size: 20),
-                                function:
-                                    stopTrainingCycle,
+                                function: stopTrainingCycle,
                               ),
                             ),
                           ],
@@ -227,7 +226,7 @@ class MemoryRecallTrainingScreenState
                   const SizedBox(height: 16),
                   const Text(
                     '향을 발향하는 중입니다.',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                   Expanded(
                     child: Center(
@@ -245,7 +244,7 @@ class MemoryRecallTrainingScreenState
                           const Text(
                             "초 뒤, 발향이 중지됩니다.",
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -255,12 +254,13 @@ class MemoryRecallTrainingScreenState
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 48,
+                      horizontal: 32,
                       vertical: 16,
                     ),
                     child: ButtonBasic(
                       content: '시간 연장하기',
-                      icon: Icon(Icons.timer),
+                      fontSize: 32,
+                      icon: Icon(Icons.timer, size: 32),
                       function: () => extendTime(),
                     ),
                   ),

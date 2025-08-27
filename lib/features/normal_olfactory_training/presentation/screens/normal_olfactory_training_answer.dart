@@ -280,9 +280,9 @@ class _NormalOlfactoryTrainingAnswerScreenState
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: Text(
-                              '${normalOlfactoryTrainingController.isCorrect ? "맞았어요!" : "앗, 아쉬워요!"} 방금 맡은 향은\n${normalOlfactoryTrainingController.correctOption} 향이었습니다.',
+                              '${normalOlfactoryTrainingController.isCorrect ? "맞았어요!" : "앗, 아쉬워요!"} \n방금 맡은 향은\n${normalOlfactoryTrainingController.correctOption} 향이었습니다.',
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: 32,
                                 fontWeight: FontWeight.bold,
                               ),
                               textAlign: TextAlign.center,
@@ -308,9 +308,10 @@ class _NormalOlfactoryTrainingAnswerScreenState
                                       Text(
                                         message,
                                         style: TextStyle(
-                                          fontSize: 24,
+                                          fontSize: 32,
                                           fontWeight: FontWeight.bold,
                                         ),
+                                        textAlign: TextAlign.center,
                                       ),
                                     ],
                                   ),
