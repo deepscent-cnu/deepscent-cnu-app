@@ -4,7 +4,7 @@ import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/common/widgets/question_step_chip.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_result_screen.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/memory_recall_training_api.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'package:record/record.dart';
@@ -74,18 +74,22 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         context: context,
         builder:
             (context) => AlertDialog(
-              title: const Text("재녹음 하시겠습니까?"),
+              title: const Text(
+                "재녹음 하시겠습니까?",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
               content: const Text(
                 "이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?",
+                style: TextStyle(fontSize: 24),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text("취소"),
+                  child: const Text("취소", style: TextStyle(fontSize: 24)),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text("확인"),
+                  child: const Text("확인", style: TextStyle(fontSize: 24)),
                 ),
               ],
             ),
@@ -357,7 +361,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                       const Text(
                         '기억 회상 훈련',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -397,7 +401,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                                   : '',
                               key: ValueKey(currentIndex),
                               style: const TextStyle(
-                                fontSize: 20,
+                                fontSize: 28,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -450,13 +454,14 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                           flex: isLastStep ? 9 : 6,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 16,
+                              horizontal: 16,
+                              vertical: 8,
                             ),
                             child: ButtonBasic(
                               content:
                                   interactionCount >= 4 ? '훈련 저장하기' : '다음 질문으로',
-                              icon: const Icon(Icons.double_arrow),
+                              icon: const Icon(Icons.double_arrow, size: 24),
+                              fontSize: 24,
                               function: isNextEnabled ? _onNextPressed : null,
                             ),
                           ),
@@ -469,10 +474,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
               ),
             ),
             if (isLoading) ...[
-              const ModalBarrier(
-                dismissible: false,
-                color: Colors.black26,
-              ),
+              const ModalBarrier(dismissible: false, color: Colors.black26),
               Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -483,7 +485,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                       '질문을 생성중입니다',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 32,
                         fontWeight: FontWeight.w600,
                         shadows: [Shadow(blurRadius: 4, color: Colors.black87)],
                       ),

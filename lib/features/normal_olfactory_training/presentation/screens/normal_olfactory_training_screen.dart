@@ -229,7 +229,7 @@ class _NormalOlfactoryTrainingScreenState
                     child: Text(
                       '${normalOlfactoryTrainingController.currentRound.value} 번째 향을 발향 중입니다.\n향을 집중해서 맡아보세요!',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -250,9 +250,10 @@ class _NormalOlfactoryTrainingScreenState
                           const Text(
                             "초 뒤, 발향이 중지됩니다.",
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 30,
                               fontWeight: FontWeight.bold,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),

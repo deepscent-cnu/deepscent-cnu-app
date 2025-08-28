@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/memory_recall_training_api.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
 
 class MemoryRecallTrainingScreen extends StatefulWidget {
   const MemoryRecallTrainingScreen({super.key});

@@ -24,7 +24,9 @@ class QuestionStepChip extends StatelessWidget {
           const Text(
             'Q.',
             style: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
               height: 1.1,
             ),
           ),
@@ -58,8 +60,10 @@ class QuestionStepChip extends StatelessWidget {
                   '$currentStep',
                   key: ValueKey<int>(currentStep),
                   style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white,
-                    height: 1.1,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 0.5,
                   ),
                 ),
               ),
@@ -70,7 +74,9 @@ class QuestionStepChip extends StatelessWidget {
           Text(
             ' / $totalSteps',
             style: const TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
               height: 1.1,
             ),
           ),

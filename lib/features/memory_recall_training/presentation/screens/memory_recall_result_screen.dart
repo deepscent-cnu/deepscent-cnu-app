@@ -90,7 +90,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                           const Text(
                             '오늘의 향기:',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF335928),
                             ),
@@ -99,17 +99,17 @@ class MemoryRecallResultScreen extends StatelessWidget {
                           const Text(
                             '🌬️ 연기 향',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 32),
 
                           // 오늘의 회상
                           const Text(
                             '오늘의 회상:',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF335928),
                             ),
@@ -118,17 +118,17 @@ class MemoryRecallResultScreen extends StatelessWidget {
                           const Text(
                             '📝 외갓집 마당에서의 봄날, 풀냄새와 함께 떠오른 따뜻한 기억을 이야기해 주셨어요.',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 20),
-
+                          const SizedBox(height: 32),
+ 
                           // 오늘 느낀 점
                           const Text(
                             '오늘의 느낀 점:',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF335928),
                             ),
@@ -157,7 +157,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                                 border: InputBorder.none,
                               ),
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 24,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -165,24 +165,26 @@ class MemoryRecallResultScreen extends StatelessWidget {
                           const SizedBox(height: 48),
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 48,
+                              horizontal: 32,
                               vertical: 16,
                             ),
                             child: ButtonBasic(
                               content: '훈련 기록 보기',
-                              icon: Icon(Icons.edit_document, size: 25),
+                              fontSize: 32,
+                              icon: Icon(Icons.edit_document, size: 32),
                               function: () {},
                             ),
                           ),
                           const SizedBox(height: 6),
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 48,
+                              horizontal: 32,
                               vertical: 16,
                             ),
                             child: ButtonBasic(
                               content: '훈련 목록 보기',
-                              icon: Icon(Icons.list, size: 30),
+                              icon: Icon(Icons.list, size: 36),
+                              fontSize: 32,
                               function: () {
                                 // 스택을 비우고 목록으로 이동 (뒤로가기 눌러도 결과 화면 안 돌아오게)
                                 Navigator.of(context).pushAndRemoveUntil(
