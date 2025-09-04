@@ -87,10 +87,10 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
+      body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            padding: const EdgeInsets.all(32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -258,8 +258,10 @@ Widget _buildTextFormField({
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
       validator: validator,
+      style: TextStyle(fontSize: 24),
       decoration: InputDecoration(
         hintText: hintText,
+        hintStyle: TextStyle(fontSize: 24),
         // 기본 테두리
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -280,7 +282,7 @@ Widget _buildTextFormField({
           vertical: 12,
         ),
         errorMaxLines: 3,
-        errorStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        errorStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
       ),
     ),
   );

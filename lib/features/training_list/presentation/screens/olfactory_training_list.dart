@@ -1,14 +1,59 @@
+
+import 'package:deepscent_cnu/features/device_register/data/device_register_api.dart';
+import 'package:deepscent_cnu/features/device_register/model/device_ids.dart';
+import 'package:deepscent_cnu/features/device_register/presentation/device_register_screen.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_session_select_screen.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class OlfactoryTrainingListScreen extends StatelessWidget {
-  final String NORMAL_MODE = "NORMAL";
-  final String MEMORY_RECALL_MODE = "MEMORY_RECALL";
+class OlfactoryTrainingListScreen extends StatefulWidget {
   const OlfactoryTrainingListScreen({super.key});
 
-  // 훈련 시작 전 보여줄 스와이프 가능한 안내 모달 함수
+  @override
+  State<OlfactoryTrainingListScreen> createState() =>
+      _OlfactoryTrainingListScreenState();
+}
+
+class _OlfactoryTrainingListScreenState
+    extends State<OlfactoryTrainingListScreen> {
+  final String NORMAL_MODE = "NORMAL";
+  final String MEMORY_RECALL_MODE = "MEMORY_RECALL";
+  bool isLoading = false;
+  DeviceIds? deviceIds;
+
+  Future<bool> checkDeviceRegistration() async {
+    deviceIds = await DeviceRegisterApi.getDeviceIds();
+
+    if (deviceIds == null) return false;
+
+    if (deviceIds!.deviceId1 == null ||
+        deviceIds!.deviceId2 == null ||
+        deviceIds!.deviceId3 == null) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder:
+              (_) => AlertDialog(
+                title: const Text("기기 등록 필요", style: TextStyle(fontSize: 28)),
+                content: const Text(
+                  "훈련을 진행하기 전, 기기 등록 페이지에서 모든 기기의 ID를 등록해주세요.",
+                  style: TextStyle(fontSize: 24),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("확인", style: TextStyle(fontSize: 24)),
+                  ),
+                ],
+              ),
+        );
+      }
+      return false;
+    }
+    return true;
+  }
+
   Future<void> showTrainingCarouselModal(
     BuildContext context,
     String mode,
@@ -31,6 +76,16 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
       'assets/images/recall_memory_scent.png',
       '', // 마지막은 버튼만 표시할 예정
     ];
+
+    setState(() => isLoading = true);
+
+    final bool isDevicesRegistered = await checkDeviceRegistration();
+    if (!isDevicesRegistered) {
+      setState(() => isLoading = false);
+      return;
+    }
+
+    setState(() => isLoading = false);
 
     final prefs = await SharedPreferences.getInstance();
     final hasSeenModal = prefs.getBool(mode) ?? false;
@@ -261,62 +316,128 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 24),
-                const Text(
-                  '후각 훈련 목록',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  '오늘은\n어떤 훈련을 진행할까요?',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 32),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: _buildTrainingCard(
-                        context,
-                        icon: Icons.local_florist,
-                        title: '일반 후각 훈련',
-                        subtitle: '의료기관에서\n진행하는 훈련',
-                        onPressed:
-                            () => {
-                              showTrainingCarouselModal(context, NORMAL_MODE),
-                            },
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: _buildTrainingCard(
-                        context,
-                        icon: Icons.lightbulb,
-                        title: '기억 회상 훈련',
-                        subtitle: '향을 맡고 기억을\n회상하는 훈련',
-                        onPressed:
-                            () => {
-                              showTrainingCarouselModal(
-                                context,
-                                MEMORY_RECALL_MODE,
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          '후각 훈련 목록',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFF2F2F2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed:
+                              () => {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => DeviceRegisterScreen(),
+                                  ),
+                                ),
+                              },
+                          child: Padding(
+                            padding: const EdgeInsets.all(2),
+                            child: const Text(
+                              '기기 등록',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Color(0xFF335928),
+                                fontWeight: FontWeight.bold,
                               ),
-                            },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+                    const Text(
+                      '오늘은\n어떤 훈련을 진행할까요?',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 32),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: _buildTrainingCard(
+                            context,
+                            icon: Icons.local_florist,
+                            title: '일반 후각 훈련',
+                            subtitle: '의료기관에서\n진행하는 훈련',
+                            onPressed:
+                                () => {
+                                  showTrainingCarouselModal(
+                                    context,
+                                    NORMAL_MODE,
+                                  ),
+                                },
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: _buildTrainingCard(
+                            context,
+                            icon: Icons.lightbulb,
+                            title: '기억 회상 훈련',
+                            subtitle: '향을 맡고 기억을\n회상하는 훈련',
+                            onPressed:
+                                () => {
+                                  showTrainingCarouselModal(
+                                    context,
+                                    MEMORY_RECALL_MODE,
+                                  ),
+                                },
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
+            isLoading
+                ? Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(color: Colors.white),
+                        SizedBox(height: 16),
+                        Text(
+                          '로딩 중...',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                : SizedBox.shrink(),
+          ],
         ),
       ),
     );
