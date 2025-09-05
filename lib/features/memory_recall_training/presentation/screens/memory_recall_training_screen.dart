@@ -233,8 +233,10 @@ class MemoryRecallTrainingScreenState
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    '향을 발향하는 중입니다.',
+                  Text(
+                    memoryRecallTrainingController.scentName.isNotEmpty
+                    ? '${memoryRecallTrainingController.scentName} 향이 분비됩니다.'
+                    : '향을 발향하는 중입니다.',
                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                   Expanded(
