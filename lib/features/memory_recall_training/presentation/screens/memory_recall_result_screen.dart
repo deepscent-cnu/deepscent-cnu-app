@@ -5,16 +5,23 @@ import 'package:deepscent_cnu/features/training_list/presentation/screens/olfact
 import 'package:flutter/material.dart';
 
 class MemoryRecallResultScreen extends StatelessWidget {
-  const MemoryRecallResultScreen({super.key});
+  final int sessionIndex;
+  final String selectedScent;
+
+  MemoryRecallResultScreen({
+    super.key,
+    required this.sessionIndex,
+    required this.selectedScent,
+  });
 
   /// 오늘 느낀 점 입력 필드를 제어하기 위한 컨트롤러
-  static final TextEditingController _feelingController = TextEditingController();
+  final TextEditingController _feelingController = TextEditingController();
 
   /// 느낀점 저장
   Future<void> _saveFeelingIfNeeded() async {
     final feeling = _feelingController.text.trim();
     if (feeling.isNotEmpty) {
-      final success = await MemoryRecallTrainingApi.saveFeeling(1, feeling); // 실제 회차 반영 필요
+      final success = await MemoryRecallTrainingApi.saveFeeling(sessionIndex, feeling); // 실제 회차 반영
       if (success) {
         debugPrint('느낀점 저장 성공');
       } else {
@@ -105,8 +112,8 @@ class MemoryRecallResultScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           // 큰 타이틀
-                          const Text(
-                            '1회차 훈련이 끝났어요!',
+                          Text(
+                            '$sessionIndex회차 훈련이 끝났어요!',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -115,20 +122,12 @@ class MemoryRecallResultScreen extends StatelessWidget {
                           const SizedBox(height: 28),
 
                           // 오늘의 향기
-                          const Text(
-                            '오늘의 향기:',
+                          Text(
+                            '오늘의 향기: $selectedScent',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF335928),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            '🌬️ 연기 향',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 32),

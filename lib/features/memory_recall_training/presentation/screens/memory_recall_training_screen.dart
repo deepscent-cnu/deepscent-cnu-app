@@ -58,7 +58,12 @@ class MemoryRecallTrainingScreenState
       await DeviceApi.controlScentDeviceSlot(1, 0);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const MemoryRecallChatScreen()),
+        MaterialPageRoute(
+          builder: (_) => MemoryRecallChatScreen(
+            sessionIndex: widget.sessionIndex,
+            selectedScent: widget.selectedScent,
+          ),
+        ),
       );
     }
   }
@@ -221,8 +226,8 @@ class MemoryRecallTrainingScreenState
                         onPressed: () => {showTrainingCarouselModal(context)},
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
-                      const Text(
-                        '기억 회상 훈련',
+                      Text(
+                        '[${widget.sessionIndex}회차] 기억 회상 훈련',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

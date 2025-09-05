@@ -11,7 +11,14 @@ import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 
 class MemoryRecallChatScreen extends StatefulWidget {
-  const MemoryRecallChatScreen({super.key});
+  final int sessionIndex;
+  final String selectedScent;
+
+  const MemoryRecallChatScreen({
+    super.key,
+    required this.sessionIndex,
+    required this.selectedScent,
+  });
 
   @override
   State<MemoryRecallChatScreen> createState() => _MemoryRecallChatScreenState();
@@ -190,7 +197,12 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     if (isLastStep) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const MemoryRecallResultScreen()),
+        MaterialPageRoute(
+          builder: (_) => MemoryRecallResultScreen(
+            sessionIndex: widget.sessionIndex,
+            selectedScent: widget.selectedScent,
+          ),
+        ),
       );
     }
   }
@@ -358,8 +370,8 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                         onPressed: () {},
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
-                      const Text(
-                        '기억 회상 훈련',
+                      Text(
+                        '[${widget.sessionIndex}회차] 기억 회상 훈련',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,

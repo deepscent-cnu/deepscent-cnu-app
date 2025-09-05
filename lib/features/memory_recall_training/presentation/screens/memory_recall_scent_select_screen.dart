@@ -78,7 +78,7 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
                           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                         ),
                         Text(
-                          '$sessionIndex회차 기억회상 훈련',
+                          '[$sessionIndex회차] 기억 회상 훈련',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
