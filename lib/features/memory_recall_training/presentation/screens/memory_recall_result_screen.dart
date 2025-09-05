@@ -1,9 +1,47 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallResultScreen extends StatelessWidget {
   const MemoryRecallResultScreen({super.key});
+
+  /// 오늘 느낀 점 입력 필드를 제어하기 위한 컨트롤러
+  static final TextEditingController _feelingController = TextEditingController();
+
+  /// 느낀점 저장
+  Future<void> _saveFeelingIfNeeded() async {
+    final feeling = _feelingController.text.trim();
+    if (feeling.isNotEmpty) {
+      final success = await MemoryRecallTrainingApi.saveFeeling(1, feeling); // 실제 회차 반영 필요
+      if (success) {
+        debugPrint('느낀점 저장 성공');
+      } else {
+        debugPrint('느낀점 저장 실패');
+      }
+    }
+  }
+
+  /// 훈련 목록 보기
+  Future<void> _goToTrainingList(BuildContext context) async {
+    await _saveFeelingIfNeeded();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const OlfactoryTrainingListScreen()),
+      (route) => false,
+    );
+  }
+
+  /// 훈련 기록 보기
+  Future<void> _goToTrainingLog(BuildContext context) async {
+    await _saveFeelingIfNeeded();
+    // 실제 이동 구현 필요
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('훈련 기록 보기 실행')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,15 +87,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder:
-                                  (_) => const OlfactoryTrainingListScreen(),
-                            ),
-                            (route) => false,
-                          );
-                        },
+                        onPressed: () => _goToTrainingList(context),
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
                       const Text(
@@ -78,7 +108,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                         children: [
                           // 큰 타이틀
                           const Text(
-                            '4회차 훈련이 끝났어요!',
+                            '1회차 훈련이 끝났어요!',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -150,7 +180,8 @@ class MemoryRecallResultScreen extends StatelessWidget {
                               horizontal: 12,
                               vertical: 4,
                             ),
-                            child: const TextField(
+                            child: TextField(
+                              controller: _feelingController,
                               maxLines: 4,
                               decoration: InputDecoration(
                                 hintText: '오늘 훈련을 통해 느낀 점을 적어주세요. (선택사항)',
@@ -172,7 +203,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                               content: '훈련 기록 보기',
                               fontSize: 32,
                               icon: Icon(Icons.edit_document, size: 32),
-                              function: () {},
+                              function: () => _goToTrainingLog(context),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -185,17 +216,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                               content: '훈련 목록 보기',
                               icon: Icon(Icons.list, size: 36),
                               fontSize: 32,
-                              function: () {
-                                // 스택을 비우고 목록으로 이동 (뒤로가기 눌러도 결과 화면 안 돌아오게)
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) =>
-                                            const OlfactoryTrainingListScreen(),
-                                  ),
-                                  (route) => false,
-                                );
-                              },
+                              function: () => _goToTrainingList(context),
                             ),
                           ),
                           const SizedBox(height: 24),
