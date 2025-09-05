@@ -360,7 +360,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () => {showTrainingCarouselModal(context)},
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
                       Text(
