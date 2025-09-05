@@ -8,7 +8,7 @@ import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dar
 import 'package:get/get.dart';
 
 class MemoryRecallTrainingApi {
-  /// 🧠 1. STT만 처리 (userId 필요 없음)
+  /// 🧠 1. STT 업로드
   static Future<String?> sendAudioToSTT(File audioFile) async {
     final authController = Get.find<AuthController>();
     final accessToken = authController.accessToken.value;
@@ -16,9 +16,7 @@ class MemoryRecallTrainingApi {
     final sttApiUrl = 'http://10.0.2.2:8080/api/stt/upload';
 
     final request = http.MultipartRequest("POST", Uri.parse(sttApiUrl));
-    request.files.add(
-      await http.MultipartFile.fromPath("audio", audioFile.path),
-    );
+    request.files.add(await http.MultipartFile.fromPath("audio", audioFile.path));
     request.headers.addAll({
       'Content-type': 'multipart/form-data',
       'Authorization': 'Bearer $accessToken',
@@ -29,34 +27,24 @@ class MemoryRecallTrainingApi {
       final responseBody = await response.stream.bytesToString();
 
       if (response.statusCode == 200) {
-        debugPrint('(Debug) STT 응답 상태 코드: ${response.statusCode}');
-        debugPrint('(Debug) STT 응답 본문: $responseBody');
-
-        final match = RegExp(
-          r'"transcript"\s*:\s*"([^"]+)"',
-        ).firstMatch(responseBody);
-        if (match != null) {
-          return match.group(1); // 텍스트만 반환
-        } else {
-          debugPrint('(Debug) 정규식 매칭 실패');
-          return null;
-        }
+        final match = RegExp(r'"transcript"\s*:\s*"([^"]+)"').firstMatch(responseBody);
+        return match?.group(1);
       } else {
         debugPrint('(Debug) STT 요청 실패: $responseBody');
         return null;
       }
     } catch (e) {
-      debugPrint('(Debug) STT 요청 중 예외 발생: $e');
+      debugPrint('(Debug) STT 예외: $e');
       return null;
     }
   }
 
-  /// 💬 2. Chat API (userId 필요)
-  static Future<String?> sendChatToAI(int userId, String userMessage) async {
+//일반 대화
+  static Future<String?> sendChatToAI(int roundId, String userMessage) async {
     final authController = Get.find<AuthController>();
     final accessToken = authController.accessToken.value;
 
-    final chatApiUrl = 'http://10.0.2.2:8080/api/chat1/$userId';
+    final chatApiUrl = 'http://10.0.2.2:8080/api/chat1/$roundId';
 
     try {
       final response = await http.post(
@@ -71,9 +59,7 @@ class MemoryRecallTrainingApi {
       if (response.statusCode == 200) {
         return response.body;
       } else {
-        debugPrint(
-          'Chat 실패: ${response.statusCode} - ${jsonDecode(utf8.decode(response.bodyBytes))}',
-        );
+        debugPrint('Chat 실패: ${response.statusCode} - ${utf8.decode(response.bodyBytes)}');
         return null;
       }
     } catch (e) {
@@ -112,6 +98,7 @@ class MemoryRecallTrainingApi {
     return 0;
   }
 
+
   static Future<List<ScentInfo>?> getScentAll() async {
     final authController = Get.find<AuthController>();
     final apiUrl = '$apiBaseUrl/api/device/fragrance/capsule-info';
@@ -140,7 +127,48 @@ class MemoryRecallTrainingApi {
       }
     } catch (e) {
       debugPrint('(Debug) 일반 후각 훈련 정답 향기 4개 선별 API 호출 중 오류 발생: $e');
+      return null;
     }
-    return null;
+  }
+
+  static Future<Map<String, dynamic>?> startChatWithScent({
+    required int roundId,
+    required String scent,
+  }) async {
+    final authController = Get.find<AuthController>();
+    final accessToken = authController.accessToken.value;
+
+    const userId = 1; // 하드코딩
+    final url =
+        '$apiBaseUrl/api/chat/$userId/$roundId?scent=${Uri.encodeQueryComponent(scent)}';
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({}), 
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        if (decoded is Map<String, dynamic>) {
+          return decoded;
+        } else {
+          debugPrint('(Debug) JSON 객체가 아님: $decoded');
+          return null;
+        }
+      } else {
+        debugPrint('(Debug) startChatWithScent 실패: '
+            '${response.statusCode} - ${utf8.decode(response.bodyBytes)}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('(Debug) startChatWithScent 예외: $e');
+      return null;
+    }
   }
 }
