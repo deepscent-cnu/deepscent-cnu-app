@@ -356,12 +356,12 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 32),
                       ),
                       const Text(
                         '기억 회상 훈련',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 32,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

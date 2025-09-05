@@ -116,7 +116,7 @@ class _MemoryRecallSessionSelectScreenState
                             onPressed: () => Navigator.pop(context),
                             icon: const Icon(
                               Icons.arrow_back_ios_new,
-                              size: 20,
+                              size: 32,
                             ),
                           ),
                           const Text(

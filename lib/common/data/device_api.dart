@@ -8,12 +8,12 @@ import 'package:http/http.dart' as http;
 
 class DeviceApi {
   static Future<void> controlScentDeviceSlot(
+    int deviceNumber,
     int fanNumber,
     int fanSpeed,
   ) async {
     final authController = Get.find<AuthController>();
-    final apiUrl =
-        apiBaseUrl + '/api/device/' + deviceId + "/fragrance/fan-state";
+    final apiUrl = '$apiBaseUrl/api/device/fragrance/fan-state';
 
     final requestHeaders = {
       'Content-type': 'application/json',
@@ -21,8 +21,9 @@ class DeviceApi {
     };
 
     final requestBody = jsonEncode({
-      'fan_number': fanNumber,
-      'fan_speed': fanSpeed,
+      'deviceNumber': deviceNumber,
+      'fanNumber': fanNumber,
+      'fanSpeed': fanSpeed,
     });
 
     try {

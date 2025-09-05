@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/correct_scent.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/scent_options.dart';
 import 'package:deepscent_cnu/secrets.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +9,40 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class NormalOlfactoryTrainingApi {
-  static Future<ScentOptions?> getScentOptions(int round) async {
+  static Future<ScentOptions?> getScentOptions(String correctOption) async {
     final authController = Get.find<AuthController>();
-    final apiUrl =
-        '$apiBaseUrl/api/device/$deviceId/fragrance/scent-option?round=$round';
+    final apiUrl = '$apiBaseUrl/api/device/fragrance/scent-option';
+    final requestHeaders = {
+      'Content-type': 'application/json',
+      'Authorization': 'Bearer ${authController.accessToken.value}',
+    };
+    final requestBody = jsonEncode({'correctOption': correctOption});
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: requestHeaders,
+        body: requestBody,
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('(Debug) 응답 상태 코드: ${response.statusCode}');
+
+        final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        return ScentOptions.fromJson(jsonData);
+      } else {
+        debugPrint('(Debug) 문제 선택지 API 호출 중 오류 발생');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('(Debug) 문제 선택지 API 호출 중 오류 발생: $e');
+    }
+    return null;
+  }
+
+  static Future<List<CorrectScent>?> getCorrectScentList() async {
+    final authController = Get.find<AuthController>();
+    final apiUrl = '$apiBaseUrl/api/device/fragrance/correct-list';
     final requestHeaders = {
       'Content-type': 'application/json',
       'Authorization': 'Bearer ${authController.accessToken.value}',
@@ -26,14 +57,19 @@ class NormalOlfactoryTrainingApi {
       if (response.statusCode == 200) {
         debugPrint('(Debug) 응답 상태 코드: ${response.statusCode}');
 
-        final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-        return ScentOptions.fromJson(jsonData);
+        final Map<String, dynamic> jsonData = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
+        final List<dynamic> correctScentListJson = jsonData['correctScentList'];
+        return correctScentListJson
+            .map((item) => CorrectScent.fromJson(item))
+            .toList();
       } else {
-        debugPrint('(Debug) 문제 선택지 API 호출 중 오류 발생');
+        debugPrint('(Debug) 일반 후각 훈련 정답 향기 4개 선별 API 호출 중 오류 발생');
         return null;
       }
     } catch (e) {
-      debugPrint('(Debug) 문제 선택지 API 호출 중 오류 발생: $e');
+      debugPrint('(Debug) 일반 후각 훈련 정답 향기 4개 선별 API 호출 중 오류 발생: $e');
     }
     return null;
   }

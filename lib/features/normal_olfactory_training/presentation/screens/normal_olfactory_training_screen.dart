@@ -1,5 +1,6 @@
 import 'package:deepscent_cnu/common/data/device_api.dart';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/correct_scent.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_question.dart';
 import 'package:flutter/material.dart';
@@ -29,8 +30,12 @@ class _NormalOlfactoryTrainingScreenState
 
   Future<void> startTrainingCycle() async {
     isStopped = false;
+    CorrectScent correctScent =
+        normalOlfactoryTrainingController.getCorrectScentByRound();
+
     await DeviceApi.controlScentDeviceSlot(
-      normalOlfactoryTrainingController.currentRound.value,
+      correctScent.deviceNumber,
+      correctScent.fanNumber,
       3,
     );
     await Future.delayed(const Duration(seconds: 1));
@@ -49,7 +54,8 @@ class _NormalOlfactoryTrainingScreenState
 
     if (!isStopped && context.mounted) {
       await DeviceApi.controlScentDeviceSlot(
-        normalOlfactoryTrainingController.currentRound.value,
+        correctScent.deviceNumber,
+        correctScent.fanNumber,
         0,
       );
       Navigator.pushReplacement(
@@ -63,8 +69,12 @@ class _NormalOlfactoryTrainingScreenState
 
   Future<void> stopTrainingCycle() async {
     isStopped = true;
+    CorrectScent correctScent =
+        normalOlfactoryTrainingController.getCorrectScentByRound();
+
     await DeviceApi.controlScentDeviceSlot(
-      normalOlfactoryTrainingController.currentRound.value,
+      correctScent.deviceNumber,
+      correctScent.fanNumber,
       0,
     );
 
