@@ -1,10 +1,13 @@
-
 import 'package:deepscent_cnu/features/device_register/data/device_register_api.dart';
 import 'package:deepscent_cnu/features/device_register/model/device_ids.dart';
 import 'package:deepscent_cnu/features/device_register/presentation/device_register_screen.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_session_select_screen.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/correct_scent.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OlfactoryTrainingListScreen extends StatefulWidget {
@@ -17,6 +20,9 @@ class OlfactoryTrainingListScreen extends StatefulWidget {
 
 class _OlfactoryTrainingListScreenState
     extends State<OlfactoryTrainingListScreen> {
+  final normalOlfactoryTrainingController =
+      Get.find<NormalOlfactoryTrainingController>();
+
   final String NORMAL_MODE = "NORMAL";
   final String MEMORY_RECALL_MODE = "MEMORY_RECALL";
   bool isLoading = false;
@@ -52,6 +58,12 @@ class _OlfactoryTrainingListScreenState
       return false;
     }
     return true;
+  }
+
+  Future<void> getCorrectScentList() async {
+    List<CorrectScent>? correctScentList =
+        await NormalOlfactoryTrainingApi.getCorrectScentList();
+    normalOlfactoryTrainingController.addCorrectScentList(correctScentList!);
   }
 
   Future<void> showTrainingCarouselModal(
@@ -267,6 +279,10 @@ class _OlfactoryTrainingListScreenState
       );
       await prefs.setBool(mode, true);
     } else {
+      if (mode == NORMAL_MODE) {
+        await getCorrectScentList();
+      }
+
       Navigator.push(
         context,
         MaterialPageRoute(

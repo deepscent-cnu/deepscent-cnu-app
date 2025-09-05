@@ -25,19 +25,20 @@ class _NormalOlfactoryTrainingQuestionScreenState
   @override
   void initState() {
     super.initState();
-    getScentOptions(normalOlfactoryTrainingController.currentRound.value);
+    getScentOptions();
     startTime = DateTime.now();
   }
 
-  Future<void> getScentOptions(int round) async {
-    scentOptions = await NormalOlfactoryTrainingApi.getScentOptions(round);
+  Future<void> getScentOptions() async {
+    String correctOption =
+        normalOlfactoryTrainingController.getCorrectScentByRound().scentName;
+    scentOptions = await NormalOlfactoryTrainingApi.getScentOptions(
+      correctOption,
+    );
     if (scentOptions != null) {
       setState(() {
         isLoading = false;
       });
-
-      normalOlfactoryTrainingController.correctOption =
-          scentOptions!.correctOption;
     }
   }
 
@@ -137,11 +138,8 @@ class _NormalOlfactoryTrainingQuestionScreenState
   void goScentStrengthScreen(String selectedOption) {
     final endTime = DateTime.now();
     final timeTaken = endTime.difference(startTime).inSeconds;
-    final correctOption = scentOptions!.correctOption;
-    final isCorrect = selectedOption == correctOption;
 
     normalOlfactoryTrainingController.selectedOption = selectedOption;
-    normalOlfactoryTrainingController.isCorrect = isCorrect;
     normalOlfactoryTrainingController.timeTaken = timeTaken;
 
     Get.off(() => NormalOlfactoryTrainingScentStrengthScreen());

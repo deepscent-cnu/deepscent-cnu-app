@@ -1,21 +1,60 @@
+import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/data/model/scent_info.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/controllers/memory_recall_training_controller.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_training_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class MemoryRecallScentSelectScreen extends StatelessWidget {
+class MemoryRecallScentSelectScreen extends StatefulWidget {
   final int sessionIndex;
 
   const MemoryRecallScentSelectScreen({super.key, required this.sessionIndex});
 
   @override
-  Widget build(BuildContext context) {
-    // 향기 이름 및 이모지
-    final scentItems = [
-      ['🫘 된장', '🧼 비누'],
-      ['💨 연기', '🍖 숯불고기'],
-      ['👕 탈취제', '🍊 귤'],
-      ['🌿 페퍼민트', '🍫 초콜릿'],
-    ];
+  State<MemoryRecallScentSelectScreen> createState() =>
+      _MemoryRecallScentSelectScreenState();
+}
 
+class _MemoryRecallScentSelectScreenState
+    extends State<MemoryRecallScentSelectScreen> {
+  final memoryRecallTrainingController =
+      Get.find<MemoryRecallTrainingController>();
+  List<ScentInfo>? scentAll;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getScentAll();
+  }
+
+  void goNextPage(ScentInfo? scentInfo) {
+    if (scentInfo == null) {
+      // 여기에 없음 버튼 눌렀을 때의 로직 추가하기
+    } else {
+      memoryRecallTrainingController.scentName = scentInfo.scentName;
+      memoryRecallTrainingController.deviceNumber = scentInfo.deviceNumber;
+      memoryRecallTrainingController.fanNumber = scentInfo.fanNumber;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const MemoryRecallTrainingScreen()),
+      );
+    }
+  }
+
+  Future<void> getScentAll() async {
+    scentAll = await MemoryRecallTrainingApi.getScentAll();
+
+    if (scentAll != null) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
@@ -36,90 +75,149 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
           SizedBox(width: 12),
         ],
       ),
-      body: Stack(
-        children: [
-          // 흐릿한 배경 이미지
-          Positioned.fill(
-            top: 50,
-            child: Image.asset(
-              'assets/images/blurred_background.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 뒤로 가기 + 타이틀
-                    Row(
-                      children: [
-                        const SizedBox(height: 24),
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                        ),
-                        Text(
-                          '$sessionIndex회차 기억회상 훈련',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      '오늘은 학교와 친구들에 대한 기억을 나누는 시간입니다.',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
+      body:
+          isLoading
+              ? Container(
+                color: Colors.black.withOpacity(0.5), // 화면 어두워짐
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(color: Colors.white),
+                      SizedBox(height: 16),
+                      Text(
+                        '불러오는 중...',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
-                      textAlign: TextAlign.center,
+                    ],
+                  ),
+                ),
+              )
+              : Stack(
+                children: [
+                  // 흐릿한 배경 이미지
+                  Positioned.fill(
+                    top: 50,
+                    child: Image.asset(
+                      'assets/images/blurred_background.png',
+                      fit: BoxFit.cover,
                     ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      '다음 중 떠오르는 향기를 하나 골라주세요.',
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
+                  ),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 20,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 30),
-                    // 향기 버튼 8개 (2x4)
-                    ...scentItems.map(
-                      (pair) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          children:
-                              pair.map((label) {
-                                return Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const SizedBox(height: 24),
+                                IconButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  icon: const Icon(
+                                    Icons.arrow_back_ios_new,
+                                    size: 28,
+                                  ),
+                                ),
+                                Text(
+                                  '${widget.sessionIndex}회차 기억회상 훈련',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            const Text(
+                              '오늘은 학교와 친구들에 대한 기억을 나누는 시간입니다.',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              '다음 중 떠오르는 향기를 하나 골라주세요.',
+                              style: TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black54,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 30),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 12,
+                                      mainAxisSpacing: 12,
+                                      childAspectRatio: 2.5 / 1, // 버튼의 가로/세로 비율
                                     ),
-                                    child: OutlinedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (_) =>
-                                                    const MemoryRecallTrainingScreen(),
-                                          ),
-                                        );
-                                      },
-                                      style: OutlinedButton.styleFrom(
-                                        backgroundColor: Colors.white, // 흰 배경
-                                        foregroundColor: const Color(
-                                          0xFF335928,
+                                itemCount: scentAll!.length,
+                                itemBuilder: (context, index) {
+                                  ScentInfo scentInfo = scentAll![index];
+
+                                  return OutlinedButton.icon(
+                                    onPressed: () => goNextPage(scentInfo),
+                                    label: Text(
+                                      scentInfo.scentName,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 24,
+                                      ),
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      side: const BorderSide(
+                                        color: Colors.black,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            // 없음 버튼
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width *
+                                            0.5 -
+                                        48, // 좌우 padding 고려
+                                    child: OutlinedButton.icon(
+                                      onPressed: () => goNextPage(null),
+                                      icon: const Icon(
+                                        Icons.cancel,
+                                        color: Colors.red,
+                                      ),
+                                      label: const Text(
+                                        '없음',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 24,
                                         ),
+                                      ),
+                                      style: OutlinedButton.styleFrom(
+                                        backgroundColor: Colors.white,
                                         side: const BorderSide(
-                                          color: Color(0xFF335928),
+                                          color: Colors.red,
                                         ),
                                         padding: const EdgeInsets.symmetric(
                                           vertical: 16,
@@ -130,68 +228,18 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      child: Text(
-                                        label,
-                                        style: const TextStyle(fontSize: 24),
-                                      ),
                                     ),
                                   ),
-                                );
-                              }).toList(),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    // 없음 버튼
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width:
-                                MediaQuery.of(context).size.width * 0.5 -
-                                48, // 좌우 padding 고려
-                            child: OutlinedButton.icon(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) =>
-                                            const MemoryRecallTrainingScreen(),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.cancel, color: Colors.red),
-                              label: const Text(
-                                '없음',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 24,
-                                ),
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                side: const BorderSide(color: Colors.red),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

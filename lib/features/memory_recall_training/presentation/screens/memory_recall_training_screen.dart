@@ -1,7 +1,9 @@
 import 'package:deepscent_cnu/common/data/device_api.dart';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/controllers/memory_recall_training_controller.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class MemoryRecallTrainingScreen extends StatefulWidget {
   const MemoryRecallTrainingScreen({super.key});
@@ -13,6 +15,8 @@ class MemoryRecallTrainingScreen extends StatefulWidget {
 
 class MemoryRecallTrainingScreenState
     extends State<MemoryRecallTrainingScreen> {
+  final memoryRecallTrainingController =
+      Get.find<MemoryRecallTrainingController>();
   int remainTime = 10;
   String message = "초 뒤, 발향이 중지됩니다.";
   bool isStopped = false;
@@ -32,7 +36,9 @@ class MemoryRecallTrainingScreenState
 
   Future<void> startTrainingCycle() async {
     isStopped = false;
-    await DeviceApi.controlScentDeviceSlot(1, 3);
+    int deviceNumber = memoryRecallTrainingController.deviceNumber;
+    int fanNumber = memoryRecallTrainingController.fanNumber;
+    await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 3);
     await Future.delayed(const Duration(seconds: 1));
 
     while (remainTime > 1) {
@@ -48,7 +54,7 @@ class MemoryRecallTrainingScreenState
     }
 
     if (!isStopped && context.mounted) {
-      await DeviceApi.controlScentDeviceSlot(1, 0);
+      await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const MemoryRecallChatScreen()),
@@ -58,7 +64,9 @@ class MemoryRecallTrainingScreenState
 
   Future<void> stopTrainingCycle() async {
     isStopped = true;
-    await DeviceApi.controlScentDeviceSlot(1, 0);
+    int deviceNumber = memoryRecallTrainingController.deviceNumber;
+    int fanNumber = memoryRecallTrainingController.fanNumber;
+    await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
 
     if (context.mounted) {
       Navigator.pop(context);
@@ -187,7 +195,8 @@ class MemoryRecallTrainingScreenState
         actions: [
           IconButton(
             icon: Icon(Icons.help_outline, color: Colors.black),
-            onPressed: toggleHelp,
+            // onPressed: toggleHelp,
+            onPressed: () {},
           ),
           SizedBox(width: 12),
         ],
@@ -212,12 +221,12 @@ class MemoryRecallTrainingScreenState
                     children: [
                       IconButton(
                         onPressed: () => {showTrainingCarouselModal(context)},
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 32),
                       ),
                       const Text(
                         '기억 회상 훈련',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 32,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

@@ -58,12 +58,12 @@ class MemoryRecallResultScreen extends StatelessWidget {
                             (route) => false,
                           );
                         },
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 32),
                       ),
                       const Text(
                         '기억 회상 훈련',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 32,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -123,7 +123,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 32),
- 
+
                           // 오늘 느낀 점
                           const Text(
                             '오늘의 느낀 점:',

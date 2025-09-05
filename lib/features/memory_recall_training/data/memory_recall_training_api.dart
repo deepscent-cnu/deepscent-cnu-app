@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:deepscent_cnu/features/memory_recall_training/data/model/scent_info.dart';
 import 'package:deepscent_cnu/secrets.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -109,5 +110,37 @@ class MemoryRecallTrainingApi {
     }
 
     return 0;
+  }
+
+  static Future<List<ScentInfo>?> getScentAll() async {
+    final authController = Get.find<AuthController>();
+    final apiUrl = '$apiBaseUrl/api/device/fragrance/capsule-info';
+    final requestHeaders = {
+      'Content-type': 'application/json',
+      'Authorization': 'Bearer ${authController.accessToken.value}',
+    };
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: requestHeaders,
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('(Debug) 응답 상태 코드: ${response.statusCode}');
+
+        final Map<String, dynamic> jsonData = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
+        final List<dynamic> scentAll = jsonData['capsuleInfoList'];
+        return scentAll.map((item) => ScentInfo.fromJson(item)).toList();
+      } else {
+        debugPrint('(Debug) 일반 후각 훈련 정답 향기 4개 선별 API 호출 중 오류 발생');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('(Debug) 일반 후각 훈련 정답 향기 4개 선별 API 호출 중 오류 발생: $e');
+    }
+    return null;
   }
 }

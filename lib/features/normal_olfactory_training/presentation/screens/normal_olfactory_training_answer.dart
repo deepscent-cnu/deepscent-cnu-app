@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:deepscent_cnu/common/data/device_api.dart';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/round_log.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
@@ -37,10 +36,6 @@ class _NormalOlfactoryTrainingAnswerScreenState
   }
 
   Future<void> startTrainingCycle() async {
-    await DeviceApi.controlScentDeviceSlot(
-      normalOlfactoryTrainingController.currentRound.value,
-      3,
-    );
     await Future.delayed(const Duration(seconds: 1));
 
     while (remainTime > 1) {
@@ -280,7 +275,7 @@ class _NormalOlfactoryTrainingAnswerScreenState
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: Text(
-                              '${normalOlfactoryTrainingController.isCorrect ? "맞았어요!" : "앗, 아쉬워요!"} \n방금 맡은 향은\n${normalOlfactoryTrainingController.correctOption} 향이었습니다.',
+                              '${normalOlfactoryTrainingController.getIsCorrect() ? "맞았어요!" : "앗, 아쉬워요!"} \n방금 맡은 향은\n${normalOlfactoryTrainingController.getCorrectScentByRound().scentName} 향이었습니다.',
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
