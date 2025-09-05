@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_training_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,21 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
       ['👕 탈취제', '🍊 귤'],
       ['🌿 페퍼민트', '🍫 초콜릿'],
     ];
+
+    // 전체 향기 리스트
+    final allScents = scentItems.expand((pair) => pair).toList();
+
+    void navigateWithScent(String scent) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => MemoryRecallTrainingScreen(
+            sessionIndex: sessionIndex,
+            selectedScent: scent, // 선택한 향 전달
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -103,16 +119,7 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
                                       horizontal: 6,
                                     ),
                                     child: OutlinedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (_) =>
-                                                    const MemoryRecallTrainingScreen(),
-                                          ),
-                                        );
-                                      },
+                                      onPressed: () => navigateWithScent(label),
                                       style: OutlinedButton.styleFrom(
                                         backgroundColor: Colors.white, // 흰 배경
                                         foregroundColor: const Color(
@@ -153,14 +160,11 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
                                 48, // 좌우 padding 고려
                             child: OutlinedButton.icon(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) =>
-                                            const MemoryRecallTrainingScreen(),
-                                  ),
-                                );
+                                // 랜덤 선택
+                                final random = Random();
+                                final scent =
+                                    allScents[random.nextInt(allScents.length)];
+                                navigateWithScent(scent);
                               },
                               icon: const Icon(Icons.cancel, color: Colors.red),
                               label: const Text(

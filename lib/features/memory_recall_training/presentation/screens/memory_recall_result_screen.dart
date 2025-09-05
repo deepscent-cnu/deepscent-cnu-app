@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';

@@ -4,7 +4,14 @@ import 'package:deepscent_cnu/features/memory_recall_training/presentation/scree
 import 'package:flutter/material.dart';
 
 class MemoryRecallTrainingScreen extends StatefulWidget {
-  const MemoryRecallTrainingScreen({super.key});
+  final int sessionIndex;  // 회차
+  final String selectedScent;  // 선택된 향
+
+  const MemoryRecallTrainingScreen({
+    super.key,
+    required this.sessionIndex,
+    required this.selectedScent,
+  });
 
   @override
   State<MemoryRecallTrainingScreen> createState() =>
@@ -224,8 +231,8 @@ class MemoryRecallTrainingScreenState
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    '향을 발향하는 중입니다.',
+                  Text(
+                    '${widget.selectedScent}\n향을 발향하는 중입니다.',
                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                   Expanded(
