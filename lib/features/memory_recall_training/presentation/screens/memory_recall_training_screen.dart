@@ -1,12 +1,21 @@
 import 'package:deepscent_cnu/common/data/device_api.dart';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/controllers/memory_recall_training_controller.dart';
+import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_chat_screen.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MemoryRecallTrainingScreen extends StatefulWidget {
-  const MemoryRecallTrainingScreen({super.key});
+  final int sessionIndex;  // 회차
+  final String selectedScent;  // 선택된 향
+
+  const MemoryRecallTrainingScreen({
+    super.key,
+    required this.sessionIndex,
+    required this.selectedScent,
+  });
 
   @override
   State<MemoryRecallTrainingScreen> createState() =>
@@ -57,7 +66,12 @@ class MemoryRecallTrainingScreenState
       await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const MemoryRecallChatScreen()),
+        MaterialPageRoute(
+          builder: (_) => MemoryRecallChatScreen(
+            sessionIndex: widget.sessionIndex,
+            selectedScent: widget.selectedScent,
+          ),
+        ),
       );
     }
   }
@@ -68,11 +82,14 @@ class MemoryRecallTrainingScreenState
     int fanNumber = memoryRecallTrainingController.fanNumber;
     await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
 
-    if (context.mounted) {
-      Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.pop(context);
-    }
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder:
+            (_) =>
+            const OlfactoryTrainingListScreen(),
+      ),
+      (route) => false,
+    );
   }
 
   void extendTime() {
@@ -173,33 +190,12 @@ class MemoryRecallTrainingScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      bottomNavigationBar: Container(
-        height: 56,
-        color: Colors.grey[200],
-        alignment: Alignment.center,
-        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
-      ),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.help_outline, color: Colors.black),
-            // onPressed: toggleHelp,
-            onPressed: () {},
-          ),
-          SizedBox(width: 12),
-        ],
+      appBar: CustomAppBar(
+        mode: CustomAppBarMode.sub,
+        title: "[${widget.sessionIndex}회차] 기억 회상 훈련",
+        onBackPressed: () {
+          showTrainingCarouselModal(context);
+        },
       ),
       body: SafeArea(
         child: Stack(
@@ -217,25 +213,10 @@ class MemoryRecallTrainingScreenState
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => {showTrainingCarouselModal(context)},
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 32),
-                      ),
-                      const Text(
-                        '기억 회상 훈련',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 16),
                   Text(
                     memoryRecallTrainingController.scentName.isNotEmpty
-                    ? '${memoryRecallTrainingController.scentName} 향이 분비됩니다.'
+                    ? '${memoryRecallTrainingController.scentName} 향을 발향하는 중입니다.'
                     : '향을 발향하는 중입니다.',
                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),

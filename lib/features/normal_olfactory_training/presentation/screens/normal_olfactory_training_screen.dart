@@ -3,6 +3,7 @@ import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/correct_scent.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_question.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -176,38 +177,17 @@ class _NormalOlfactoryTrainingScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      bottomNavigationBar: Container(
-        height: 56,
-        color: Colors.grey[200],
-        alignment: Alignment.center,
-        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
-      ),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.help_outline, color: Colors.black),
-            onPressed: () {},
-          ),
-          SizedBox(width: 12),
-        ],
+      appBar: CustomAppBar(
+        mode: CustomAppBarMode.sub,
+        title: "일반 후각 훈련",
+        onBackPressed: () {
+          showTrainingStopModal(context);
+        },
       ),
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
-              top: 80,
+            Positioned.fill(
               child: Image.asset(
                 'assets/images/blurred_background.png',
                 fit: BoxFit.cover,
@@ -219,22 +199,6 @@ class _NormalOlfactoryTrainingScreenState
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => {showTrainingStopModal(context)},
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                      ),
-                      const Text(
-                        '일반 후각 훈련',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
                   Center(
                     child: Text(
                       '${normalOlfactoryTrainingController.currentRound.value} 번째 향을 발향 중입니다.\n향을 집중해서 맡아보세요!',

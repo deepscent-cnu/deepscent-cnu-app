@@ -39,12 +39,12 @@ class MemoryRecallTrainingApi {
     }
   }
 
-//일반 대화
+  //일반 대화
   static Future<String?> sendChatToAI(int roundId, String userMessage) async {
     final authController = Get.find<AuthController>();
     final accessToken = authController.accessToken.value;
 
-    final chatApiUrl = 'http://10.0.2.2:8080/api/chat1/$roundId';
+    final chatApiUrl = 'http://10.0.2.2:8080/api/chat/$roundId';
 
     try {
       final response = await http.post(
@@ -98,6 +98,32 @@ class MemoryRecallTrainingApi {
     return 0;
   }
 
+  /// 3. 사용자가 작성한 "느낀 점" 저장 API
+  /// - roundId: 회차 ID
+  /// - feeling: 사용자가 입력한 느낀 점
+  /// - 성공 시 true 반환, 실패 시 false 반환
+  static Future<bool> saveFeeling(int roundId, String feeling) async {
+    final authController = Get.find<AuthController>();
+    final accessToken = authController.accessToken.value;
+
+    final apiUrl = '$apiBaseUrl/api/memory-recall-training/log/$roundId/feeling';
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({'feeling': feeling}),
+      );
+
+      return response.statusCode == 204;  // 서버에서 noContent 반환 시 성공 처리
+    } catch (e) {
+      debugPrint('(Debug) saveFeeling 예외 발생: $e');
+      return false;
+    }
+  }
 
   static Future<List<ScentInfo>?> getScentAll() async {
     final authController = Get.find<AuthController>();
@@ -140,7 +166,7 @@ class MemoryRecallTrainingApi {
 
     const userId = 1; // 하드코딩
     final url =
-        '$apiBaseUrl/api/chat/$userId/$roundId?scent=${Uri.encodeQueryComponent(scent)}';
+        '$apiBaseUrl/api/chat/start/$roundId?scent=${Uri.encodeQueryComponent(scent)}';
 
     try {
       final response = await http.post(

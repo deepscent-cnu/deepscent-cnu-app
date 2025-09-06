@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:deepscent_cnu/features/device_register/data/device_register_api.dart';
 import 'package:deepscent_cnu/features/device_register/model/device_ids.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -123,19 +124,12 @@ class _DeviceRegisterScreenState extends State<DeviceRegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: [],
+      appBar: CustomAppBar(
+        mode: CustomAppBarMode.sub,
+        title: "기기 등록",
+        onBackPressed: () {
+          Navigator.pop(context);
+        },
       ),
       body: SafeArea(
         child:
@@ -165,29 +159,6 @@ class _DeviceRegisterScreenState extends State<DeviceRegisterScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.arrow_back_ios_new,
-                                    size: 42,
-                                  ),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "기기 등록",
-                                    style: TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
                             SizedBox(height: 24),
                             ...List.generate(3, (index) => buildForm(index)),
                           ],

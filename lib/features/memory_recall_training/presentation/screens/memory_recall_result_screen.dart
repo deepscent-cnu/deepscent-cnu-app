@@ -1,36 +1,63 @@
+import 'dart:async';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallResultScreen extends StatelessWidget {
-  const MemoryRecallResultScreen({super.key});
+  final int sessionIndex;
+  final String selectedScent;
+
+  MemoryRecallResultScreen({
+    super.key,
+    required this.sessionIndex,
+    required this.selectedScent,
+  });
+
+  /// 오늘 느낀 점 입력 필드를 제어하기 위한 컨트롤러
+  final TextEditingController _feelingController = TextEditingController();
+
+  /// 느낀점 저장
+  Future<void> _saveFeelingIfNeeded() async {
+    final feeling = _feelingController.text.trim();
+    if (feeling.isNotEmpty) {
+      final success = await MemoryRecallTrainingApi.saveFeeling(sessionIndex, feeling); // 실제 회차 반영
+      if (success) {
+        debugPrint('느낀점 저장 성공');
+      } else {
+        debugPrint('느낀점 저장 실패');
+      }
+    }
+  }
+
+  /// 훈련 목록 보기
+  Future<void> _goToTrainingList(BuildContext context) async {
+    await _saveFeelingIfNeeded();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const OlfactoryTrainingListScreen()),
+      (route) => false,
+    );
+  }
+
+  /// 훈련 기록 보기
+  Future<void> _goToTrainingLog(BuildContext context) async {
+    await _saveFeelingIfNeeded();
+    // 실제 이동 구현 필요
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('훈련 기록 보기 실행')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      bottomNavigationBar: Container(
-        height: 56,
-        color: Colors.grey[200],
-        alignment: Alignment.center,
-        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
-      ),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: const [
-          Icon(Icons.help_outline, color: Colors.black),
-          SizedBox(width: 12),
-        ],
+      appBar: CustomAppBar(
+        mode: CustomAppBarMode.sub,
+        title: "기억 회상 훈련 결과",
+        onBackPressed: () {
+          _goToTrainingList(context);
+        },
       ),
       body: SafeArea(
         child: Stack(
@@ -46,30 +73,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder:
-                                  (_) => const OlfactoryTrainingListScreen(),
-                            ),
-                            (route) => false,
-                          );
-                        },
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 32),
-                      ),
-                      const Text(
-                        '기억 회상 훈련',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
@@ -77,8 +81,8 @@ class MemoryRecallResultScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           // 큰 타이틀
-                          const Text(
-                            '4회차 훈련이 끝났어요!',
+                          Text(
+                            '$sessionIndex회차 훈련이 끝났어요!',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -87,20 +91,12 @@ class MemoryRecallResultScreen extends StatelessWidget {
                           const SizedBox(height: 28),
 
                           // 오늘의 향기
-                          const Text(
-                            '오늘의 향기:',
+                          Text(
+                            '오늘의 향기: $selectedScent',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF335928),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            '🌬️ 연기 향',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 32),
@@ -150,7 +146,8 @@ class MemoryRecallResultScreen extends StatelessWidget {
                               horizontal: 12,
                               vertical: 4,
                             ),
-                            child: const TextField(
+                            child: TextField(
+                              controller: _feelingController,
                               maxLines: 4,
                               decoration: InputDecoration(
                                 hintText: '오늘 훈련을 통해 느낀 점을 적어주세요. (선택사항)',
@@ -172,7 +169,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                               content: '훈련 기록 보기',
                               fontSize: 32,
                               icon: Icon(Icons.edit_document, size: 32),
-                              function: () {},
+                              function: () => _goToTrainingLog(context),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -185,17 +182,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                               content: '훈련 목록 보기',
                               icon: Icon(Icons.list, size: 36),
                               fontSize: 32,
-                              function: () {
-                                // 스택을 비우고 목록으로 이동 (뒤로가기 눌러도 결과 화면 안 돌아오게)
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) =>
-                                            const OlfactoryTrainingListScreen(),
-                                  ),
-                                  (route) => false,
-                                );
-                              },
+                              function: () => _goToTrainingList(context),
                             ),
                           ),
                           const SizedBox(height: 24),

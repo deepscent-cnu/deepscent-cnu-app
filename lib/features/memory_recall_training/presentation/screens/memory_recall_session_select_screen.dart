@@ -1,5 +1,6 @@
 import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_scent_select_screen.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallSessionSelectScreen extends StatefulWidget {
@@ -49,30 +50,13 @@ class _MemoryRecallSessionSelectScreenState
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      bottomNavigationBar: Container(
-        height: 56,
-        color: Colors.grey[200],
-        alignment: Alignment.center,
-        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
-      ),
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: const [
-          Icon(Icons.help_outline, color: Colors.black),
-          SizedBox(width: 12),
-        ],
+      appBar: CustomAppBar(
+        mode: CustomAppBarMode.sub,
+        title: "기억 회상 훈련 회차 선택",
+        onBackPressed: () {
+          Navigator.pop(context);
+        },
       ),
       body:
           isLoading
@@ -103,37 +87,11 @@ class _MemoryRecallSessionSelectScreenState
                         fit: BoxFit.cover,
                       ),
                     ),
-                    // 상단 뒤로가기 + 타이틀 텍스트
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 24,
-                      ),
-                      child: Row(
-                        children: [
-                          const SizedBox(height: 24),
-                          IconButton(
-                            onPressed: () => Navigator.pop(context),
-                            icon: const Icon(
-                              Icons.arrow_back_ios_new,
-                              size: 32,
-                            ),
-                          ),
-                          const Text(
-                            '기억 회상 훈련 회차 선택',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     // 회차 버튼
                     SafeArea(
                       child: Padding(
                         padding: const EdgeInsets.only(
-                          top: 100,
+                          top: 50,
                           left: 40,
                           right: 40,
                           bottom: 20,
@@ -164,7 +122,7 @@ class _MemoryRecallSessionSelectScreenState
                             }
 
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
                               child: ElevatedButton.icon(
                                 onPressed:
                                     isCurrent

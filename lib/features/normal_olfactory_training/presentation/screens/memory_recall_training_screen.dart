@@ -95,12 +95,6 @@ class _MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: Container(
-        height: 56,
-        color: Colors.grey[200],
-        alignment: Alignment.center,
-        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
-      ),
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(

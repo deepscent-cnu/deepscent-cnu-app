@@ -1,5 +1,6 @@
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,35 +18,17 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      bottomNavigationBar: Container(
-        height: 56,
-        color: Colors.grey[200],
-        alignment: Alignment.center,
-        child: const Text('하단 네비게이션 바', style: TextStyle(fontSize: 16)),
-      ),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: const [
-          Icon(Icons.help_outline, color: Colors.black),
-          SizedBox(width: 12),
-        ],
+      appBar: CustomAppBar(
+        mode: CustomAppBarMode.sub,
+        title: "일반 후각 훈련",
+        onBackPressed: () {
+          returnTrainingList(context);
+        },
       ),
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
-              top: 80,
+            Positioned.fill(
               child: Image.asset(
                 'assets/images/blurred_background_2.png',
                 fit: BoxFit.cover,
@@ -57,21 +40,6 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => returnTrainingList(context),
-                          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                        ),
-                        const Text(
-                          '일반 후각 훈련',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 20),
                     const Text(
                       '훈련이 끝났어요!',

@@ -1,7 +1,9 @@
+import 'dart:math';
 import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/data/model/scent_info.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/controllers/memory_recall_training_controller.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_training_screen.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -33,42 +35,56 @@ class _MemoryRecallScentSelectScreenState
     if (isSubmitting) return;
 
     if (scentInfo == null) {
-      // 여기에 없음 버튼 눌렀을 때의 로직 추가하기
-    } else {
-      // 1) 선택한 향기 정보를 전역 컨트롤러에 저장
-      memoryRecallTrainingController.scentName = scentInfo.scentName;
-      memoryRecallTrainingController.deviceNumber = scentInfo.deviceNumber;
-      memoryRecallTrainingController.fanNumber = scentInfo.fanNumber;
-
-      // 2) API 호출 (userId는 서버에서 1로 하드코딩)
-      setState(() => isSubmitting = true);
-
-      final result = await MemoryRecallTrainingApi.startChatWithScent(
-        roundId: widget.sessionIndex,
-        scent: memoryRecallTrainingController.scentName,
-      );
-
-      setState(() => isSubmitting = false);
-
-      if (result == null) {
+      // 없음 버튼: 랜덤 scent 선택
+      if (scentAll != null && scentAll!.isNotEmpty) {
+        final random = Random();
+        scentInfo = scentAll![random.nextInt(scentAll!.length)];
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('세션 생성에 실패했어요. 다시 시도해 주세요.')),
+          const SnackBar(content: Text('선택할 수 있는 향이 없습니다.')),
         );
         return;
       }
-
-      // 3) 응답값 저장
-      memoryRecallTrainingController.chatId =
-          (result['id'] as num?)?.toInt() ?? 0;
-      memoryRecallTrainingController.round =
-          (result['round'] as num?)?.toInt() ?? widget.sessionIndex;
-
-      // 4) 다음 페이지
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const MemoryRecallTrainingScreen()),
-      );
     }
+
+    // 1) 선택한 향기 정보를 전역 컨트롤러에 저장
+    memoryRecallTrainingController.scentName = scentInfo.scentName;
+    memoryRecallTrainingController.deviceNumber = scentInfo.deviceNumber;
+    memoryRecallTrainingController.fanNumber = scentInfo.fanNumber;
+
+    // 2) API 호출 (userId는 서버에서 1로 하드코딩)
+    setState(() => isSubmitting = true);
+
+    final result = await MemoryRecallTrainingApi.startChatWithScent(
+      roundId: widget.sessionIndex,
+      scent: memoryRecallTrainingController.scentName,
+    );
+
+    setState(() => isSubmitting = false);
+
+    if (result == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('세션 생성에 실패했어요. 다시 시도해 주세요.')),
+      );
+      return;
+    }
+
+    // 3) 응답값 저장
+    memoryRecallTrainingController.chatId =
+        (result['id'] as num?)?.toInt() ?? 0;
+    memoryRecallTrainingController.round =
+        (result['round'] as num?)?.toInt() ?? widget.sessionIndex;
+
+    // 4) 다음 페이지
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MemoryRecallTrainingScreen(
+          sessionIndex: widget.sessionIndex,
+          selectedScent: memoryRecallTrainingController.scentName,
+        ),
+      ),
+    );
   }
 
   Future<void> getScentAll() async {
@@ -86,22 +102,12 @@ class _MemoryRecallScentSelectScreenState
     return Scaffold(
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: const [
-          Icon(Icons.help_outline, color: Colors.black),
-          SizedBox(width: 12),
-        ],
+      appBar: CustomAppBar(
+        mode: CustomAppBarMode.sub,
+        title: "[${widget.sessionIndex}회차] 기억 회상 훈련",
+        onBackPressed: () {
+          Navigator.pop(context);
+        },
       ),
       body: 
       isLoading
@@ -141,26 +147,6 @@ class _MemoryRecallScentSelectScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              const SizedBox(height: 24),
-                              IconButton(
-                                onPressed: () => Navigator.pop(context),
-                                icon: const Icon(
-                                  Icons.arrow_back_ios_new,
-                                  size: 28,
-                                ),
-                              ),
-                              Text(
-                                '${widget.sessionIndex}회차 기억회상 훈련',
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
                           const Text(
                             '오늘은 학교와 친구들에 대한 기억을 나누는 시간입니다.',
                             style: TextStyle(
