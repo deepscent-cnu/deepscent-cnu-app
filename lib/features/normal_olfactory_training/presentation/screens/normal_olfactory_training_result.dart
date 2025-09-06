@@ -294,19 +294,19 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 48),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                      child: ButtonBasic(
-                        content: '훈련 기록 보기',
-                        fontSize: 30,
-                        icon: Icon(Icons.edit_document, size: 32),
-                        function: () {},
-                      ),
-                    ),
-                    const SizedBox(height: 6),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(
+                    //     horizontal: 32,
+                    //     vertical: 16,
+                    //   ),
+                    //   child: ButtonBasic(
+                    //     content: '훈련 기록 보기',
+                    //     fontSize: 30,
+                    //     icon: Icon(Icons.edit_document, size: 32),
+                    //     function: () {},
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 6),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32,

@@ -3,7 +3,7 @@ import 'package:deepscent_cnu/features/training_list/presentation/screens/olfact
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'signup.dart';
-import '../../data/auth_api.dart'; 
+import '../../data/auth_api.dart';
 import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
@@ -18,40 +18,43 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
 
-Future<void> handleLogin() async {
-  final response = await AuthApi.login(
-    username: idController.text,
-    password: pwController.text,
-  );
-
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    authController.accessToken.value = data['data'];
-    print('로그인 성공: $data');
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const OlfactoryTrainingListScreen(),
-      ),
+  Future<void> handleLogin() async {
+    final response = await AuthApi.login(
+      username: idController.text,
+      password: pwController.text,
     );
-  } else {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('로그인 실패'),
-        content: const Text('아이디 또는 비밀번호가 올바르지 않습니다.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('확인'),
-          ),
-        ],
-      ),
-    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      authController.accessToken.value = data['data'];
+      print('로그인 성공: $data');
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const OlfactoryTrainingListScreen(),
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text('로그인 실패', style: TextStyle(fontSize: 28)),
+              content: const Text(
+                '아이디 또는 비밀번호가 올바르지 않습니다.',
+                style: TextStyle(fontSize: 24),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('확인', style: TextStyle(fontSize: 24)),
+                ),
+              ],
+            ),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -65,37 +68,22 @@ Future<void> handleLogin() async {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  color: const Color(0xFFE8F5E9),
-                  child: const Text(
-                    'SCENTRAINING',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF43A047),
-                    ),
-                  ),
+                Image.asset(
+                  'assets/images/logo.png',
+                  width: 260,
+                  height: 120,
+                  fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 40),
                 TextField(
                   controller: idController,
+                  style: TextStyle(fontSize: 24),
                   decoration: InputDecoration(
                     hintText: 'ID를 입력해주세요.',
-                    hintStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    hintStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
                     ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: pwController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: '비밀번호를 입력해주세요.',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -104,6 +92,24 @@ Future<void> handleLogin() async {
                   ),
                 ),
                 const SizedBox(height: 24),
+                TextField(
+                  controller: pwController,
+                  obscureText: true,
+                  style: TextStyle(fontSize: 24),
+                  decoration: InputDecoration(
+                    hintText: '비밀번호를 입력해주세요.',
+                    hintStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 48),
                 SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -117,7 +123,11 @@ Future<void> handleLogin() async {
                     onPressed: handleLogin, // 여기서 API 호출
                     child: const Text(
                       '로그인',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -126,12 +136,18 @@ Future<void> handleLogin() async {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SignUpPage()),
+                      MaterialPageRoute(
+                        builder: (context) => const SignUpPage(),
+                      ),
                     );
                   },
                   child: const Text(
                     '아직 계정이 없으신가요?',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Colors.black87,
+                    ),
                   ),
                 ),
               ],

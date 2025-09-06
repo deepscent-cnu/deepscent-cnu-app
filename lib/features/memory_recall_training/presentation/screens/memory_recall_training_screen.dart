@@ -1,8 +1,11 @@
 import 'package:deepscent_cnu/common/data/device_api.dart';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/controllers/memory_recall_training_controller.dart';
+import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_chat_screen.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class MemoryRecallTrainingScreen extends StatefulWidget {
   final int sessionIndex;  // 회차
@@ -21,6 +24,8 @@ class MemoryRecallTrainingScreen extends StatefulWidget {
 
 class MemoryRecallTrainingScreenState
     extends State<MemoryRecallTrainingScreen> {
+  final memoryRecallTrainingController =
+      Get.find<MemoryRecallTrainingController>();
   int remainTime = 10;
   String message = "초 뒤, 발향이 중지됩니다.";
   bool isStopped = false;
@@ -40,7 +45,9 @@ class MemoryRecallTrainingScreenState
 
   Future<void> startTrainingCycle() async {
     isStopped = false;
-    await DeviceApi.controlScentDeviceSlot(1, 3);
+    int deviceNumber = memoryRecallTrainingController.deviceNumber;
+    int fanNumber = memoryRecallTrainingController.fanNumber;
+    await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 3);
     await Future.delayed(const Duration(seconds: 1));
 
     while (remainTime > 1) {
@@ -56,7 +63,7 @@ class MemoryRecallTrainingScreenState
     }
 
     if (!isStopped && context.mounted) {
-      await DeviceApi.controlScentDeviceSlot(1, 0);
+      await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -71,13 +78,18 @@ class MemoryRecallTrainingScreenState
 
   Future<void> stopTrainingCycle() async {
     isStopped = true;
-    await DeviceApi.controlScentDeviceSlot(1, 0);
+    int deviceNumber = memoryRecallTrainingController.deviceNumber;
+    int fanNumber = memoryRecallTrainingController.fanNumber;
+    await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
 
-    if (context.mounted) {
-      Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.pop(context);
-    }
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder:
+            (_) =>
+            const OlfactoryTrainingListScreen(),
+      ),
+      (route) => false,
+    );
   }
 
   void extendTime() {
@@ -203,7 +215,9 @@ class MemoryRecallTrainingScreenState
                   const SizedBox(height: 24),
                   const SizedBox(height: 16),
                   Text(
-                    '${widget.selectedScent}\n향을 발향하는 중입니다.',
+                    memoryRecallTrainingController.scentName.isNotEmpty
+                    ? '${memoryRecallTrainingController.scentName} 향을 발향하는 중입니다.'
+                    : '향을 발향하는 중입니다.',
                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                   Expanded(

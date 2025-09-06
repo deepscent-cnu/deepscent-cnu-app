@@ -119,7 +119,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 32),
- 
+
                           // 오늘 느낀 점
                           const Text(
                             '오늘의 느낀 점:',
