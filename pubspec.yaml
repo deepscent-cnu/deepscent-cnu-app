@@ -56,6 +56,7 @@ dependencies:
   shared_preferences: ^2.5.3
   
   animations: ^2.0.11
+  flutter_staggered_animations: ^1.1.1
 
 dev_dependencies:
   flutter_test:
