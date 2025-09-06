@@ -1,5 +1,6 @@
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_session_select_screen.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -233,27 +234,7 @@ class OlfactoryTrainingListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: const [
-          Icon(Icons.search, color: Colors.black),
-          SizedBox(width: 12),
-          Icon(Icons.notifications_none, color: Colors.black),
-          SizedBox(width: 12),
-          Icon(Icons.menu, color: Colors.black),
-          SizedBox(width: 12),
-        ],
-      ),
+      appBar: const CustomAppBar(mode: CustomAppBarMode.main),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

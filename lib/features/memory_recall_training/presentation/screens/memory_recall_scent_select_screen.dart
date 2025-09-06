@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_training_screen.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallScentSelectScreen extends StatelessWidget {
@@ -35,22 +36,12 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: const [
-          Icon(Icons.help_outline, color: Colors.black),
-          SizedBox(width: 12),
-        ],
+      appBar: CustomAppBar(
+        mode: CustomAppBarMode.sub,
+        title: "[$sessionIndex회차] 기억 회상 훈련",
+        onBackPressed: () {
+          Navigator.pop(context);
+        },
       ),
       body: Stack(
         children: [
@@ -69,23 +60,6 @@ class MemoryRecallScentSelectScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 뒤로 가기 + 타이틀
-                    Row(
-                      children: [
-                        const SizedBox(height: 24),
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                        ),
-                        Text(
-                          '[$sessionIndex회차] 기억 회상 훈련',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 24),
                     const Text(
                       '오늘은 학교와 친구들에 대한 기억을 나누는 시간입니다.',

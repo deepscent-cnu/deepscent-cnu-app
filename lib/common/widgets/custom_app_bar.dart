@@ -3,32 +3,64 @@ import 'package:get/get.dart';
 import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
 import 'package:deepscent_cnu/features/login/presentation/screens/login.dart';
 
+enum CustomAppBarMode { main, sub }
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
+  final CustomAppBarMode mode;
+  final String? title;
+  final VoidCallback? onBackPressed;
+
+  const CustomAppBar({
+    super.key,
+    this.mode = CustomAppBarMode.main,
+    this.title,
+    this.onBackPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    final logoWidth = screenWidth * 0.20; // 화면 너비의 25%
+    final logoWidth = screenWidth * 0.20; // 화면 너비의 20%
     final iconSize = screenWidth * 0.05;  // 화면 너비의 6%
     final horizontalPadding = screenWidth * 0.05;
-    final topPadding = screenHeight * 0.05; // 화면 높이의 5%
+    final topPadding = screenHeight * 0.025; // 화면 높이의 2.5%
 
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       elevation: 0,
       toolbarHeight: kToolbarHeight + topPadding, // AppBar 자체 높이 늘림
-      leadingWidth: logoWidth + horizontalPadding * 2,
-      leading: Padding(
-        padding: EdgeInsets.only(left: horizontalPadding),
-        child: Image.asset(
-          'assets/images/logo.png',
-          width: logoWidth,
-          fit: BoxFit.contain,
-        ),
-      ),
+      leadingWidth: mode == CustomAppBarMode.main
+          ? logoWidth + horizontalPadding * 2
+          : null,
+      leading: mode == CustomAppBarMode.main
+          ? Padding(
+              padding: EdgeInsets.only(left: horizontalPadding),
+              child: Image.asset(
+                'assets/images/logo.png',
+                width: logoWidth,
+                fit: BoxFit.contain,
+              ),
+            )
+          : Padding(
+              padding: EdgeInsets.only(left: horizontalPadding),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back_ios_new, size: iconSize, color: Colors.black),
+                onPressed: onBackPressed ?? () => Navigator.pop(context),
+              ),
+            ),
+      title: mode == CustomAppBarMode.sub && title != null
+          ? Text(
+              title!,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            )
+          : null,
+      centerTitle: false,
       actions: [
         Padding(
           padding: EdgeInsets.only(right: horizontalPadding),
@@ -74,7 +106,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     // toolbarHeight와 동일하게 맞춤
     final screenHeight = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.height /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-    final topPadding = screenHeight * 0.05;
+    final topPadding = screenHeight * 0.025;
     return Size.fromHeight(kToolbarHeight + topPadding);
   }
 }

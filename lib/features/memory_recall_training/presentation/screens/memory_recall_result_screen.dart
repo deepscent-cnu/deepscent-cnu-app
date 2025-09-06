@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallResultScreen extends StatelessWidget {
@@ -51,22 +52,12 @@ class MemoryRecallResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: const [
-          Icon(Icons.help_outline, color: Colors.black),
-          SizedBox(width: 12),
-        ],
+      appBar: CustomAppBar(
+        mode: CustomAppBarMode.sub,
+        title: "기억 회상 훈련 결과",
+        onBackPressed: () {
+          _goToTrainingList(context);
+        },
       ),
       body: SafeArea(
         child: Stack(
@@ -82,22 +73,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => _goToTrainingList(context),
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                      ),
-                      const Text(
-                        '기억 회상 훈련',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(

@@ -5,10 +5,13 @@ import 'package:deepscent_cnu/common/widgets/question_step_chip.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_result_screen.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
+import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
+
+enum LoadingType { none, generatingQuestion, transcribingAudio }
 
 class MemoryRecallChatScreen extends StatefulWidget {
   final int sessionIndex;
@@ -32,7 +35,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   String? _filePath;
   bool isRecording = false;
   String? transcriptText;
-  bool isLoading = false;
+  LoadingType loadingType = LoadingType.none;
   late final Stopwatch stopwatch;
   Timer? timer;
 
@@ -49,7 +52,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   }
 
   Future<void> fetchInitialQuestion() async {
-    setState(() => isLoading = true);
+    setState(() => loadingType = LoadingType.generatingQuestion);
     try {
       final firstQuestion = await MemoryRecallTrainingApi.sendChatToAI(
         1,
@@ -63,7 +66,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         }
       });
     } finally {
-      if (mounted) setState(() => isLoading = false);
+      if (mounted) setState(() => loadingType = LoadingType.none);
     }
   }
 
@@ -79,27 +82,26 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     if (transcriptText != null && transcriptText!.isNotEmpty && !isRecording) {
       final shouldReRecord = await showDialog<bool>(
         context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text(
-                "재녹음 하시겠습니까?",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-              content: const Text(
-                "이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?",
-                style: TextStyle(fontSize: 24),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text("취소", style: TextStyle(fontSize: 24)),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text("확인", style: TextStyle(fontSize: 24)),
-                ),
-              ],
+        builder: (context) => AlertDialog(
+          title: const Text(
+            "재녹음 하시겠습니까?",
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
+          content: const Text(
+            "이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?",
+            style: TextStyle(fontSize: 24),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text("취소", style: TextStyle(fontSize: 24)),
             ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text("확인", style: TextStyle(fontSize: 24)),
+            ),
+          ],
+        ),
       );
       if (shouldReRecord != true) return;
       setState(() {
@@ -150,7 +152,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
   Future<void> sendRecordingToServer(String filePath) async {
     setState(() {
-      isLoading = true;
+      loadingType = LoadingType.transcribingAudio;
       transcriptText = '로딩 중...';
     });
 
@@ -159,7 +161,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     );
 
     setState(() {
-      isLoading = false;
+      loadingType = LoadingType.none;
       transcriptText = sttResult ?? '음성을 인식하지 못했어요.';
     });
   }
@@ -168,7 +170,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     final bool isLastStep = interactionCount >= 4;
 
     if (!isLastStep && transcriptText != null && transcriptText!.isNotEmpty) {
-      setState(() => isLoading = true);
+      setState(() => loadingType = LoadingType.generatingQuestion);
       try {
         final chatResult = await MemoryRecallTrainingApi.sendChatToAI(
           1,
@@ -190,7 +192,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
           });
         }
       } finally {
-        if (mounted) setState(() => isLoading = false);
+        if (mounted) setState(() => loadingType = LoadingType.none);
       }
     }
 
@@ -312,6 +314,17 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     );
   }
 
+  String _loadingMessage() {
+    switch (loadingType) {
+      case LoadingType.generatingQuestion:
+        return '질문을 생성하는 중입니다...';
+      case LoadingType.transcribingAudio:
+        return '음성을 인식하는 중입니다...';
+      default:
+        return '로딩 중입니다...';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isLastStep = interactionCount >= 4;
@@ -320,25 +333,15 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
             (transcriptText != null &&
                 transcriptText!.isNotEmpty &&
                 transcriptText != '로딩 중...' &&
-                !isLoading));
+                loadingType == LoadingType.none));
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 120,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: const [
-          Icon(Icons.help_outline, color: Colors.black),
-          SizedBox(width: 12),
-        ],
+      appBar: CustomAppBar(
+        mode: CustomAppBarMode.sub,
+        title: "[${widget.sessionIndex}회차] 기억 회상 훈련",
+        onBackPressed: () {
+          showTrainingCarouselModal(context);
+        },
       ),
       body: SafeArea(
         child: Stack(
@@ -357,22 +360,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => {showTrainingCarouselModal(context)},
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                      ),
-                      Text(
-                        '[${widget.sessionIndex}회차] 기억 회상 훈련',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Align(
@@ -392,14 +380,13 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: PageTransitionSwitcher(
                             duration: const Duration(milliseconds: 350),
-                            transitionBuilder:
-                                (child, primary, secondary) =>
-                                    FadeThroughTransition(
-                                      animation: primary,
-                                      secondaryAnimation: secondary,
-                                      fillColor: Colors.transparent,
-                                      child: child,
-                                    ),
+                            transitionBuilder: (child, primary, secondary) =>
+                                FadeThroughTransition(
+                                  animation: primary,
+                                  secondaryAnimation: secondary,
+                                  fillColor: Colors.transparent,
+                                  child: child,
+                                ),
                             child: Text(
                               testQuestionList.isNotEmpty
                                   ? testQuestionList[currentIndex]
@@ -425,7 +412,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                     child: Row(
                       children: [
                         isLastStep
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : Expanded(
                               flex: 3,
                               child: GestureDetector(
@@ -478,24 +465,36 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                 ],
               ),
             ),
-            if (isLoading) ...[
-              const ModalBarrier(dismissible: false, color: Colors.black26),
+            if (loadingType != LoadingType.none) ...[
+              const ModalBarrier(dismissible: false, color: Colors.black38),
               Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 12),
-                    Text(
-                      '질문을 생성중입니다',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
-                        shadows: [Shadow(blurRadius: 4, color: Colors.black87)],
-                      ),
+                child: Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 8,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40), // 여백
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(
+                          color: const Color(0xFF335928),
+                          strokeWidth: 5,
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          _loadingMessage(),
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF335928),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ],
