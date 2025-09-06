@@ -28,8 +28,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
-              top: 80,
+            Positioned.fill(
               child: Image.asset(
                 'assets/images/blurred_background_2.png',
                 fit: BoxFit.cover,

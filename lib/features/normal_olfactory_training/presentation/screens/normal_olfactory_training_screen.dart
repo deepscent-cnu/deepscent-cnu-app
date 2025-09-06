@@ -177,8 +177,7 @@ class _NormalOlfactoryTrainingScreenState
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
-              top: 80,
+            Positioned.fill(
               child: Image.asset(
                 'assets/images/blurred_background.png',
                 fit: BoxFit.cover,
