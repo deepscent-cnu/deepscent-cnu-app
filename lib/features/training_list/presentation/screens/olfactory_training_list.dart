@@ -305,7 +305,10 @@ class _OlfactoryTrainingListScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(mode: CustomAppBarMode.main),
+      appBar: const CustomAppBar(
+        mode: CustomAppBarMode.main,
+        logoutEnabled: true
+      ),
       body: SafeArea(
         child: Stack(
           children: [
