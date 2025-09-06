@@ -30,7 +30,8 @@ class MemoryRecallChatScreen extends StatefulWidget {
 }
 
 class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
-  final memoryRecallTrainingController = Get.find<MemoryRecallTrainingController>();
+  final memoryRecallTrainingController =
+      Get.find<MemoryRecallTrainingController>();
   final _scrollCtrl = ScrollController();
   int currentIndex = 0;
   int interactionCount = 0;
@@ -94,25 +95,25 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         context: context,
         builder:
             (context) => AlertDialog(
-          title: const Text(
-            "재녹음 하시겠습니까?",
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
-          content: const Text(
-            "이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?",
-            style: TextStyle(fontSize: 24),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text("취소", style: TextStyle(fontSize: 24)),
+              title: const Text(
+                "재녹음 하시겠습니까?",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              content: const Text(
+                "이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?",
+                style: TextStyle(fontSize: 24),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("취소", style: TextStyle(fontSize: 24)),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text("확인", style: TextStyle(fontSize: 24)),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text("확인", style: TextStyle(fontSize: 24)),
-            ),
-          ],
-        ),
       );
       if (shouldReRecord != true) return;
       setState(() {
@@ -219,10 +220,11 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => MemoryRecallResultScreen(
-            sessionIndex: widget.sessionIndex,
-            selectedScent: widget.selectedScent,
-          ),
+          builder:
+              (_) => MemoryRecallResultScreen(
+                sessionIndex: widget.sessionIndex,
+                selectedScent: widget.selectedScent,
+              ),
         ),
       );
     }
@@ -305,12 +307,15 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                               child: ButtonBasic(
                                 content: '훈련 끝내기',
                                 icon: Icon(Icons.exit_to_app, size: 20),
-                                function: () {
+                                function: () async {
+                                  await MemoryRecallTrainingApi.deleteMemoryRecallRoundLog(
+                                    memoryRecallTrainingController.chatId,
+                                  );
                                   Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
                                       builder:
                                           (_) =>
-                                          const OlfactoryTrainingListScreen(),
+                                              const OlfactoryTrainingListScreen(),
                                     ),
                                     (route) => false,
                                   );
@@ -400,12 +405,12 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                             duration: const Duration(milliseconds: 350),
                             transitionBuilder:
                                 (child, primary, secondary) =>
-                                FadeThroughTransition(
-                              animation: primary,
-                              secondaryAnimation: secondary,
-                              fillColor: Colors.transparent,
-                              child: child,
-                            ),
+                                    FadeThroughTransition(
+                                      animation: primary,
+                                      secondaryAnimation: secondary,
+                                      fillColor: Colors.transparent,
+                                      child: child,
+                                    ),
                             child: Text(
                               testQuestionList.isNotEmpty
                                   ? testQuestionList[currentIndex]
@@ -433,34 +438,34 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                         isLastStep
                             ? const SizedBox.shrink()
                             : Expanded(
-                                flex: 3,
-                                child: GestureDetector(
-                                  onTap: toggleRecording,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 36,
+                              flex: 3,
+                              child: GestureDetector(
+                                onTap: toggleRecording,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 36,
                                       backgroundColor:
                                           isRecording
-                                            ? Colors.red
-                                            : const Color(0xFF2E7D32),
-                                        child: Icon(
-                                          isRecording ? Icons.stop : Icons.mic,
-                                          color: Colors.white,
-                                          size: 36,
-                                        ),
+                                              ? Colors.red
+                                              : const Color(0xFF2E7D32),
+                                      child: Icon(
+                                        isRecording ? Icons.stop : Icons.mic,
+                                        color: Colors.white,
+                                        size: 36,
                                       ),
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        formattedTime(),
-                                        style: const TextStyle(fontSize: 18),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      formattedTime(),
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                  ],
                                 ),
                               ),
+                            ),
                         Expanded(
                           flex: isLastStep ? 9 : 6,
                           child: Padding(
@@ -489,47 +494,51 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
               transitionBuilder: (child, animation) {
                 return FadeTransition(opacity: animation, child: child);
               },
-              child: loadingType != LoadingType.none
-                  ? Stack(
-                      key: const ValueKey("loading"),
-                      children: [
-                        const ModalBarrier(dismissible: false, color: Colors.black38),
-                        Center(
-                          child: Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 8,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 40,
+              child:
+                  loadingType != LoadingType.none
+                      ? Stack(
+                        key: const ValueKey("loading"),
+                        children: [
+                          const ModalBarrier(
+                            dismissible: false,
+                            color: Colors.black38,
+                          ),
+                          Center(
+                            child: Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const CircularProgressIndicator(
-                                    color: Color(0xFF335928),
-                                    strokeWidth: 5,
-                                  ),
-                                  const SizedBox(height: 24),
-                                  Text(
-                                    _loadingMessage(),
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
+                              elevation: 8,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 40,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const CircularProgressIndicator(
                                       color: Color(0xFF335928),
+                                      strokeWidth: 5,
                                     ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
+                                    const SizedBox(height: 24),
+                                    Text(
+                                      _loadingMessage(),
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF335928),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  : const SizedBox.shrink(), // 로딩 없을 땐 빈 위젯
+                        ],
+                      )
+                      : const SizedBox.shrink(), // 로딩 없을 땐 빈 위젯
             ),
           ],
         ),
