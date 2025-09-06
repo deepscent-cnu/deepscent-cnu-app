@@ -31,8 +31,17 @@ class _LoginPageState extends State<LoginPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const OlfactoryTrainingListScreen(),
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => const OlfactoryTrainingListScreen(),
+          transitionsBuilder: (_, animation, __, child) {
+            final slide = Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero)
+                .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
+            return SlideTransition(
+              position: slide,
+              child: FadeTransition(opacity: animation, child: child),
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
         ),
       );
     } else {
