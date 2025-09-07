@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 
-enum LoadingType { none, generatingQuestion, transcribingAudio }
+enum LoadingType { none, generatingQuestion, transcribingAudio, savingSummary }
 
 class MemoryRecallChatScreen extends StatefulWidget {
   final int sessionIndex;
@@ -31,7 +31,8 @@ class MemoryRecallChatScreen extends StatefulWidget {
 }
 
 class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
-  final memoryRecallTrainingController = Get.find<MemoryRecallTrainingController>();
+  final memoryRecallTrainingController =
+      Get.find<MemoryRecallTrainingController>();
   final _scrollCtrl = ScrollController();
   int currentIndex = 0;
   int interactionCount = 0;
@@ -95,25 +96,25 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         context: context,
         builder:
             (context) => AlertDialog(
-          title: const Text(
-            "재녹음 하시겠습니까?",
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
-          content: const Text(
-            "이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?",
-            style: TextStyle(fontSize: 24),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text("취소", style: TextStyle(fontSize: 24)),
+              title: const Text(
+                "재녹음 하시겠습니까?",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              content: const Text(
+                "이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?",
+                style: TextStyle(fontSize: 24),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("취소", style: TextStyle(fontSize: 24)),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text("확인", style: TextStyle(fontSize: 24)),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text("확인", style: TextStyle(fontSize: 24)),
-            ),
-          ],
-        ),
       );
       if (shouldReRecord != true) return;
       setState(() {
@@ -217,15 +218,45 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     }
 
     if (isLastStep) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => MemoryRecallResultScreen(
-            sessionIndex: widget.sessionIndex,
-            selectedScent: widget.selectedScent,
+      final roundId = widget.sessionIndex;
+      final roundId2 = memoryRecallTrainingController.round;// ✅ read/summarize에 들어갈 roundId
+
+      setState(() => loadingType = LoadingType.savingSummary);
+      try {
+        // 1) 요약 저장
+        final saved = await MemoryRecallTrainingApi.summarizeRound(roundId2);
+        if (!saved) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('요약 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.')),
+          );
+          return;
+        }
+
+        // 2) 요약 저장 후, 읽기 호출
+        final roundData = await MemoryRecallTrainingApi.readRound(roundId);
+        if (roundData == null) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('결과 데이터를 불러오지 못했습니다.')));
+          return;
+        }
+
+        // 3) 결과 화면으로 이동 (읽은 데이터 전달)
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder:
+                (_) => MemoryRecallResultScreen(
+                  sessionIndex: widget.sessionIndex,
+                  selectedScent: widget.selectedScent,
+                  roundData: roundData,
+                ),
           ),
-        ),
-      );
+        );
+      } finally {
+        if (mounted) setState(() => loadingType = LoadingType.none);
+      }
+      return;
     }
   }
 
@@ -306,12 +337,15 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                               child: ButtonBasic(
                                 content: '훈련 끝내기',
                                 icon: Icon(Icons.exit_to_app, size: 20),
-                                function: () {
+                                function: () async {
+                                  await MemoryRecallTrainingApi.deleteMemoryRecallRoundLog(
+                                    memoryRecallTrainingController.chatId,
+                                  );
                                   Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
                                       builder:
                                           (_) =>
-                                          const OlfactoryTrainingListScreen(),
+                                              const OlfactoryTrainingListScreen(),
                                     ),
                                     (route) => false,
                                   );
@@ -339,6 +373,8 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         return '질문을 생성하는 중입니다...';
       case LoadingType.transcribingAudio:
         return '음성을 인식하는 중입니다...';
+      case LoadingType.savingSummary:
+        return '요약을 저장하는 중입니다...';
       default:
         return '로딩 중입니다...';
     }
@@ -401,12 +437,12 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                             duration: const Duration(milliseconds: 350),
                             transitionBuilder:
                                 (child, primary, secondary) =>
-                                FadeThroughTransition(
-                              animation: primary,
-                              secondaryAnimation: secondary,
-                              fillColor: Colors.transparent,
-                              child: child,
-                            ),
+                                    FadeThroughTransition(
+                                      animation: primary,
+                                      secondaryAnimation: secondary,
+                                      fillColor: Colors.transparent,
+                                      child: child,
+                                    ),
                             child: Text(
                               testQuestionList.isNotEmpty
                                   ? testQuestionList[currentIndex]
@@ -434,34 +470,34 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                         isLastStep
                             ? const SizedBox.shrink()
                             : Expanded(
-                                flex: 3,
-                                child: GestureDetector(
-                                  onTap: toggleRecording,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 36,
+                              flex: 3,
+                              child: GestureDetector(
+                                onTap: toggleRecording,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 36,
                                       backgroundColor:
                                           isRecording
-                                            ? Colors.red
-                                            : const Color(0xFF2E7D32),
-                                        child: Icon(
-                                          isRecording ? Icons.stop : Icons.mic,
-                                          color: Colors.white,
-                                          size: 36,
-                                        ),
+                                              ? Colors.red
+                                              : const Color(0xFF2E7D32),
+                                      child: Icon(
+                                        isRecording ? Icons.stop : Icons.mic,
+                                        color: Colors.white,
+                                        size: 36,
                                       ),
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        formattedTime(),
-                                        style: const TextStyle(fontSize: 18),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      formattedTime(),
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                  ],
                                 ),
                               ),
+                            ),
                         Expanded(
                           flex: isLastStep ? 9 : 6,
                           child: Padding(

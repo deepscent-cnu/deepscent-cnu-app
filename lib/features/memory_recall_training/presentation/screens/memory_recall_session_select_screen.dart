@@ -1,6 +1,7 @@
 import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_scent_select_screen.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_result_screen.dart';
 import 'package:flutter/material.dart';
 
 class MemoryRecallSessionSelectScreen extends StatefulWidget {
@@ -29,6 +30,49 @@ class _MemoryRecallSessionSelectScreenState
   void initState() {
     super.initState();
     initCompletedSessions();
+  }
+
+  Future<void> _openFinishedSession(int roundId) async {
+    // 로딩 표시 (간단 다이얼로그)
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final data = await MemoryRecallTrainingApi.readRound(roundId);
+      if (data == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('회차 데이터를 불러오지 못했습니다.')));
+        return;
+      }
+
+      // API의 scent가 있으면 selectedScent로 전달(없으면 빈 문자열)
+      final selectedScent = (data['scent'] ?? '') as String? ?? '';
+
+      if (!mounted) return;
+      Navigator.pop(context); // 로딩 닫기
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (_) => MemoryRecallResultScreen(
+                sessionIndex: roundId, // UI에 보일 회차
+                selectedScent: selectedScent, // 결과 화면 상단 "오늘의 향기"
+                roundData: data, // 서버 응답 전체 전달
+              ),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // 로딩 닫기
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('오류: $e')));
+      }
+    }
   }
 
   Future<void> initCompletedSessions() async {
@@ -125,21 +169,33 @@ class _MemoryRecallSessionSelectScreenState
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               child: ElevatedButton.icon(
-                                onPressed:
-                                    isCurrent
-                                        ? () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (_) =>
-                                                      MemoryRecallScentSelectScreen(
-                                                        sessionIndex: index + 1,
-                                                      ),
-                                            ),
-                                          );
-                                        }
-                                        : () {}, // 나머지는 눌러도 아무 일 없음
+                                onPressed: () {
+                                  if (isDone) {
+                                    //완료된 회차: 히스토리 보기
+                                    _openFinishedSession(
+                                      index + 1,
+                                    ); // roundId == sessionIndex
+                                  } else if (isCurrent) {
+                                    // 진행해야 할 현재 회차: 훈련 시작
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (_) =>
+                                                MemoryRecallScentSelectScreen(
+                                                  sessionIndex: index + 1,
+                                                ),
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('이 회차는 아직 진행할 수 없습니다.'),
+                                      ),
+                                    );
+                                  }
+                                },
+
                                 icon: const Icon(Icons.flag, size: 32),
                                 label: Text(
                                   '${index + 1}회차${isDone ? " (완료)" : ""}',
