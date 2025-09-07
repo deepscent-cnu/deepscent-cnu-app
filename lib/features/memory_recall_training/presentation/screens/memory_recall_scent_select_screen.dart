@@ -69,11 +69,8 @@ class _MemoryRecallScentSelectScreenState
       return;
     }
 
-    // 3) 응답값 저장
-    memoryRecallTrainingController.chatId =
-        (result['id'] as num?)?.toInt() ?? 0;
     memoryRecallTrainingController.round =
-        (result['round'] as num?)?.toInt() ?? widget.sessionIndex;
+        (result['id'] as num?)?.toInt() ?? widget.sessionIndex;
 
     // 4) 다음 페이지
     Navigator.push(

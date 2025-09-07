@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 
-enum LoadingType { none, generatingQuestion, transcribingAudio }
+enum LoadingType { none, generatingQuestion, transcribingAudio, savingSummary }
 
 class MemoryRecallChatScreen extends StatefulWidget {
   final int sessionIndex;
@@ -217,16 +217,45 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     }
 
     if (isLastStep) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder:
-              (_) => MemoryRecallResultScreen(
-                sessionIndex: widget.sessionIndex,
-                selectedScent: widget.selectedScent,
-              ),
-        ),
-      );
+      final roundId = widget.sessionIndex;
+      final roundId2 = memoryRecallTrainingController.round;// ✅ read/summarize에 들어갈 roundId
+
+      setState(() => loadingType = LoadingType.savingSummary);
+      try {
+        // 1) 요약 저장
+        final saved = await MemoryRecallTrainingApi.summarizeRound(roundId2);
+        if (!saved) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('요약 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.')),
+          );
+          return;
+        }
+
+        // 2) 요약 저장 후, 읽기 호출
+        final roundData = await MemoryRecallTrainingApi.readRound(roundId);
+        if (roundData == null) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('결과 데이터를 불러오지 못했습니다.')));
+          return;
+        }
+
+        // 3) 결과 화면으로 이동 (읽은 데이터 전달)
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder:
+                (_) => MemoryRecallResultScreen(
+                  sessionIndex: widget.sessionIndex,
+                  selectedScent: widget.selectedScent,
+                  roundData: roundData,
+                ),
+          ),
+        );
+      } finally {
+        if (mounted) setState(() => loadingType = LoadingType.none);
+      }
+      return;
     }
   }
 
@@ -343,6 +372,8 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         return '질문을 생성하는 중입니다...';
       case LoadingType.transcribingAudio:
         return '음성을 인식하는 중입니다...';
+      case LoadingType.savingSummary:
+        return '요약을 저장하는 중입니다...';
       default:
         return '로딩 중입니다...';
     }

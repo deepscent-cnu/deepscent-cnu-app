@@ -228,4 +228,52 @@ class MemoryRecallTrainingApi {
       debugPrint('(Debug) 기억 회상 훈련 로그 삭제 API 호출 중 오류 발생: $e');
     }
   }
+
+  static Future<bool> summarizeRound(int roundId) async {
+  final authController = Get.find<AuthController>();
+  final accessToken = authController.accessToken.value;
+  final url = '$apiBaseUrl/api/chat/summary/$roundId';
+
+  try {
+    final resp = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: jsonEncode({}), 
+    );
+   
+    return resp.statusCode == 200 || resp.statusCode == 201 || resp.statusCode == 204;
+  } catch (e) {
+    debugPrint('(Debug) summarizeRound 예외: $e');
+    return false;
+  }
+}
+
+static Future<Map<String, dynamic>?> readRound(int roundId) async {
+  final authController = Get.find<AuthController>();
+  final accessToken = authController.accessToken.value;
+  final url = '$apiBaseUrl/api/chat/read/$roundId';
+
+  try {
+    final resp = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (resp.statusCode == 200) {
+      return jsonDecode(utf8.decode(resp.bodyBytes)) as Map<String, dynamic>;
+    } else {
+      debugPrint('(Debug) readRound 실패: ${resp.statusCode} - ${utf8.decode(resp.bodyBytes)}');
+      return null;
+    }
+  } catch (e) {
+    debugPrint('(Debug) readRound 예외: $e');
+    return null;
+  }
+}
+
 }
