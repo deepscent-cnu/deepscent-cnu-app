@@ -7,6 +7,7 @@ import 'package:deepscent_cnu/features/memory_recall_training/presentation/contr
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_result_screen.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
+import 'package:deepscent_cnu/common/widgets/loading_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'package:get/get.dart';
@@ -521,55 +522,13 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
               ),
             ),
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 150), // 애니메이션 시간
+              duration: const Duration(milliseconds: 150),
               transitionBuilder: (child, animation) {
                 return FadeTransition(opacity: animation, child: child);
               },
-              child:
-                  loadingType != LoadingType.none
-                      ? Stack(
-                        key: const ValueKey("loading"),
-                        children: [
-                          const ModalBarrier(
-                            dismissible: false,
-                            color: Colors.black38,
-                          ),
-                          Center(
-                            child: Dialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              elevation: 8,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 40,
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const CircularProgressIndicator(
-                                      color: Color(0xFF335928),
-                                      strokeWidth: 5,
-                                    ),
-                                    const SizedBox(height: 24),
-                                    Text(
-                                      _loadingMessage(),
-                                      style: const TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF335928),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                      : const SizedBox.shrink(), // 로딩 없을 땐 빈 위젯
+              child: loadingType != LoadingType.none
+                  ? LoadingOverlay(message: _loadingMessage())
+                  : const SizedBox.shrink(),
             ),
           ],
         ),

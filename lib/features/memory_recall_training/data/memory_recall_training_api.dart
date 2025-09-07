@@ -164,7 +164,6 @@ class MemoryRecallTrainingApi {
     final authController = Get.find<AuthController>();
     final accessToken = authController.accessToken.value;
 
-    const userId = 1; // 하드코딩
     final url =
         '$apiBaseUrl/api/chat/start/$roundId?scent=${Uri.encodeQueryComponent(scent)}';
 

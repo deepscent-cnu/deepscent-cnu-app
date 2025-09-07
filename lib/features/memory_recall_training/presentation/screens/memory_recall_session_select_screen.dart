@@ -101,6 +101,7 @@ class _MemoryRecallSessionSelectScreenState
         onBackPressed: () {
           Navigator.pop(context);
         },
+        logoutEnabled: true
       ),
       body:
           isLoading

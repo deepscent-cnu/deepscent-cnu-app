@@ -9,12 +9,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final CustomAppBarMode mode;
   final String? title;
   final VoidCallback? onBackPressed;
+  final bool logoutEnabled;
 
   const CustomAppBar({
     super.key,
     this.mode = CustomAppBarMode.main,
     this.title,
     this.onBackPressed,
+    this.logoutEnabled = false,
   });
 
   @override
@@ -61,43 +63,50 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       centerTitle: false,
-      actions: [
-        Padding(
-          padding: EdgeInsets.only(right: horizontalPadding),
-          child: IconButton(
-            icon: Icon(Icons.logout, color: Colors.black, size: iconSize),
-            onPressed: () async {
-              final shouldLogout = await showDialog<bool>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('로그아웃'),
-                  content: const Text('정말 로그아웃 하시겠습니까?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text('취소'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text('확인'),
-                    ),
-                  ],
-                ),
-              );
-
-              if (shouldLogout == true) {
-                final authController = Get.find<AuthController>();
-                authController.accessToken.value = '';
-
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginPage()),
-                  (route) => false,
+      // 로그아웃 버튼 조건부 추가
+      actions: logoutEnabled
+        ? [
+          Padding(
+            padding: EdgeInsets.only(right: horizontalPadding),
+            child: IconButton(
+              icon: Icon(Icons.logout,
+                  color: Colors.black, size: iconSize),
+              onPressed: () async {
+                final shouldLogout = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('로그아웃'),
+                    content: const Text('정말 로그아웃 하시겠습니까?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () =>
+                            Navigator.pop(context, false),
+                        child: const Text('취소'),
+                      ),
+                      TextButton(
+                        onPressed: () =>
+                            Navigator.pop(context, true),
+                        child: const Text('확인'),
+                      ),
+                    ],
+                  ),
                 );
-              }
-            },
+
+                if (shouldLogout == true) {
+                  final authController = Get.find<AuthController>();
+                  authController.accessToken.value = '';
+
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (_) => const LoginPage()),
+                    (route) => false,
+                  );
+                }
+              },
+            ),
           ),
-        ),
-      ],
+        ]
+      : [], // false면 버튼 자체를 숨김
     );
   }
 
