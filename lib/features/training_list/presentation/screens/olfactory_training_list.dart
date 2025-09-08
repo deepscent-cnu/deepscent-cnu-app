@@ -112,6 +112,25 @@ class _OlfactoryTrainingListScreenState
     // await prefs.remove(MEMORY_RECALL_MODE);
     final hasSeenModal = prefs.getBool(mode) ?? false;
 
+    // 다음 화면으로 이동하는 로직을 함수로 분리
+    Future<void> navigateToTrainingScreen() async {
+      // Navigator.push가 Future를 반환하므로 await으로 기다릴 수 있음
+      await Navigator.push(
+        context, // 이 context는 OlfactoryTrainingListScreen의 것이므로 안전함
+        MaterialPageRoute(
+          builder: (context) {
+            if (mode == NORMAL_MODE) {
+              return const NormalOlfactoryTrainingScreen();
+            } else if (mode == MEMORY_RECALL_MODE) {
+              return MemoryRecallSessionSelectScreen();
+            } else {
+              throw Exception('Invalid training mode');
+            }
+          },
+        ),
+      );
+    }
+
     if (!hasSeenModal) {
       if (mounted) {
         setState(() {
@@ -122,12 +141,12 @@ class _OlfactoryTrainingListScreenState
       final confirmed = await showDialog<bool>(
         context: context,
         barrierDismissible: false, // 바깥 클릭으로 모달이 닫히지 않도록
-        builder: (BuildContext context) {
+        builder: (BuildContext dialogContext) {
           int currentPage = 0; // 현재 보고 있는 페이지의 인덱스
 
           return WillPopScope(
             onWillPop: () async {
-              Navigator.of(context).pop(false); // 취소로 간주
+              Navigator.of(dialogContext).pop(false); // 취소로 간주
               return false; // 우리가 pop했으니 기본 pop은 막기
             },
             child: Dialog(
@@ -149,9 +168,11 @@ class _OlfactoryTrainingListScreenState
                             itemCount: totalPages,
                             onPageChanged: (index) {
                               // 페이지가 바뀔 때 currentPage 상태 업데이트
-                              setState(() {
-                                currentPage = index;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  currentPage = index;
+                                });
+                              }
                             },
                             itemBuilder: (context, index) {
                               return Padding(
@@ -180,7 +201,8 @@ class _OlfactoryTrainingListScreenState
                                     const SizedBox(height: 16),
 
                                     if (index <
-                                        totalPages - 1) // 마지막 페이지가 아닌 경우에만 이미지 표시
+                                        totalPages -
+                                            1) // 마지막 페이지가 아닌 경우에만 이미지 표시
                                       AnimatedSwitcher(
                                         duration: const Duration(
                                           milliseconds: 500,
@@ -219,30 +241,6 @@ class _OlfactoryTrainingListScreenState
                                         onPressed: () {
                                           // 모달 닫고 훈련 시작 함수 실행
                                           Navigator.of(context).pop(true);
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) {
-                                                if (mode == NORMAL_MODE) {
-                                                  return const NormalOlfactoryTrainingScreen();
-                                                } else if (mode ==
-                                                    MEMORY_RECALL_MODE) {
-                                                  return MemoryRecallSessionSelectScreen();
-                                                } else {
-                                                  throw Exception(
-                                                    'Invalid training mode',
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                          ).then((_) {
-                                            if (mounted) {
-                                              setState(() {
-                                                tapLocked = false;
-                                                isLoading = false;
-                                              });
-                                            }
-                                          });
                                         },
                                         style: ElevatedButton.styleFrom(
                                           padding: const EdgeInsets.symmetric(
@@ -291,7 +289,9 @@ class _OlfactoryTrainingListScreenState
                                     isActive
                                         ? Colors.green
                                         : Colors.grey[400], // 색상 차이
-                                borderRadius: BorderRadius.circular(5), // 둥근 테두리
+                                borderRadius: BorderRadius.circular(
+                                  5,
+                                ), // 둥근 테두리
                               ),
                             );
                           }),
@@ -306,42 +306,25 @@ class _OlfactoryTrainingListScreenState
           );
         },
       );
-      await prefs.setBool(mode, true);
-      if (confirmed != true) {
-        // 모달만 닫힌 경우
-        if (mounted) {
-          setState(() {
-            tapLocked = false;
-            isLoading = false;
-          });
-        }
-        return;
-      }
-    } else {
-      if (mode == NORMAL_MODE) {
-        await getCorrectScentList();
+
+      if (!mounted) return;
+
+      if (confirmed == true) {
+        await prefs.setBool(mode, true);
+        await navigateToTrainingScreen();
       }
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            if (mode == NORMAL_MODE) {
-              return const NormalOlfactoryTrainingScreen();
-            } else if (mode == MEMORY_RECALL_MODE) {
-              return MemoryRecallSessionSelectScreen();
-            } else {
-              throw Exception('Invalid training mode');
-            }
-          },
-        ),
-      ).then((_) {
-        if (mounted) {
-          setState(() {
-            tapLocked = false;
-            isLoading = false;
-          });
-        }
+      setState(() {
+        tapLocked = false;
+        isLoading = false;
+      });
+    } else {
+      await navigateToTrainingScreen();
+      if (!mounted) return;
+
+      setState(() {
+        tapLocked = false;
+        isLoading = false;
       });
     }
   }
@@ -351,12 +334,12 @@ class _OlfactoryTrainingListScreenState
     // 반응형 처리
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final double titleFontSize = screenWidth * 0.06;  // 대제목
-    final double subtitleFontSize = screenWidth * 0.07;  // 소제목
-    final double elementMargin = screenHeight * 0.05;  // 마진
-    final double bodyFontSize = screenWidth * 0.04;  // 본문
-    final double cardPadding = screenWidth * 0.05;  // 카드 내부 패딩
-    
+    final double titleFontSize = screenWidth * 0.06; // 대제목
+    final double subtitleFontSize = screenWidth * 0.07; // 소제목
+    final double elementMargin = screenHeight * 0.05; // 마진
+    final double bodyFontSize = screenWidth * 0.04; // 본문
+    final double cardPadding = screenWidth * 0.05; // 카드 내부 패딩
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(
@@ -374,10 +357,11 @@ class _OlfactoryTrainingListScreenState
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: AnimationConfiguration.toStaggeredList(
                       duration: const Duration(milliseconds: 600),
-                      childAnimationBuilder: (widget) => SlideAnimation(
-                        verticalOffset: elementMargin,
-                        child: FadeInAnimation(child: widget),
-                      ),
+                      childAnimationBuilder:
+                          (widget) => SlideAnimation(
+                            verticalOffset: elementMargin,
+                            child: FadeInAnimation(child: widget),
+                          ),
                       children: [
                         SizedBox(height: elementMargin),
 
@@ -441,17 +425,22 @@ class _OlfactoryTrainingListScreenState
                             children: [
                               // 3. 첫 번째 카드
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: cardPadding),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: cardPadding,
+                                ),
                                 child: _buildTrainingCard(
                                   context,
                                   icon: Icons.local_florist,
                                   title: '일반 후각 훈련',
                                   subtitle: '의료기관에서\n진행하는 훈련',
-                                  onPressed: () =>
-                                      showTrainingCarouselModal(context, NORMAL_MODE),
+                                  onPressed:
+                                      () => showTrainingCarouselModal(
+                                        context,
+                                        NORMAL_MODE,
+                                      ),
                                   titleFontSize: screenWidth * 0.07,
                                   subtitleFontSize: screenWidth * 0.05,
-                                  elementMargin: elementMargin
+                                  elementMargin: elementMargin,
                                 ),
                               ),
 
@@ -459,17 +448,22 @@ class _OlfactoryTrainingListScreenState
 
                               // 4. 두 번째 카드
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: cardPadding),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: cardPadding,
+                                ),
                                 child: _buildTrainingCard(
                                   context,
                                   icon: Icons.lightbulb,
                                   title: '기억 회상 훈련',
                                   subtitle: '향을 맡고 기억을\n회상하는 훈련',
-                                  onPressed: () =>
-                                      showTrainingCarouselModal(context, MEMORY_RECALL_MODE),
+                                  onPressed:
+                                      () => showTrainingCarouselModal(
+                                        context,
+                                        MEMORY_RECALL_MODE,
+                                      ),
                                   titleFontSize: screenWidth * 0.07,
                                   subtitleFontSize: screenWidth * 0.05,
-                                  elementMargin: elementMargin
+                                  elementMargin: elementMargin,
                                 ),
                               ),
                             ],
@@ -530,7 +524,11 @@ class _OlfactoryTrainingListScreenState
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(icon, color: const Color(0xFF335928), size: titleFontSize),
+                        Icon(
+                          icon,
+                          color: const Color(0xFF335928),
+                          size: titleFontSize,
+                        ),
                         const SizedBox(width: 12),
                         Text(
                           title,
@@ -568,16 +566,20 @@ class _OlfactoryTrainingListScreenState
               Positioned.fill(
                 child: Material(
                   type: MaterialType.transparency,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
                     onTap: () {
                       if (tapLocked) return;
 
-                      setState(() {
-                        tapLocked = true;
-                        isLoading = true;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          tapLocked = true;
+                          isLoading = true;
+                        });
+                      }
 
                       onPressed();
                     },
