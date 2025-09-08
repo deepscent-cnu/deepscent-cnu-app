@@ -1,6 +1,7 @@
 import 'package:deepscent_cnu/common/data/device_api.dart';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/correct_scent.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_question.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
@@ -29,7 +30,15 @@ class _NormalOlfactoryTrainingScreenState
     startTrainingCycle();
   }
 
+  Future<void> getCorrectScentList() async {
+    List<CorrectScent>? correctScentList =
+        await NormalOlfactoryTrainingApi.getCorrectScentList();
+    normalOlfactoryTrainingController.addCorrectScentList(correctScentList!);
+  }
+
   Future<void> startTrainingCycle() async {
+    await getCorrectScentList();
+
     isStopped = false;
     CorrectScent correctScent =
         normalOlfactoryTrainingController.getCorrectScentByRound();
