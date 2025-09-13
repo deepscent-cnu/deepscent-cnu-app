@@ -1,6 +1,8 @@
 import 'package:deepscent_cnu/features/device_register/data/device_register_api.dart';
 import 'package:deepscent_cnu/features/device_register/model/device_ids.dart';
 import 'package:deepscent_cnu/features/device_register/presentation/device_register_screen.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/data/model/scent_info.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_session_select_screen.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/correct_scent.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
@@ -31,6 +33,7 @@ class _OlfactoryTrainingListScreenState
   bool isLoading = false;
   bool tapLocked = false;
   DeviceIds? deviceIds;
+  List<ScentInfo>? scentInfo;
 
   Future<bool> checkDeviceRegistration() async {
     deviceIds = await DeviceRegisterApi.getDeviceIds();
@@ -48,6 +51,34 @@ class _OlfactoryTrainingListScreenState
                 title: const Text("기기 등록 필요", style: TextStyle(fontSize: 28)),
                 content: const Text(
                   "훈련을 진행하기 전, 기기 등록 페이지에서 모든 기기의 ID를 등록해주세요.",
+                  style: TextStyle(fontSize: 24),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("확인", style: TextStyle(fontSize: 24)),
+                  ),
+                ],
+              ),
+        );
+      }
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> checkScentMapping() async {
+    scentInfo = await MemoryRecallTrainingApi.getScentAll();
+
+    if (scentInfo == null) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder:
+              (_) => AlertDialog(
+                title: const Text("향기 매핑 필요", style: TextStyle(fontSize: 28)),
+                content: const Text(
+                  "향기 매핑 정보가 부족하여 훈련을 진행할 수 없습니다. 관리자에게 문의해주세요.",
                   style: TextStyle(fontSize: 24),
                 ),
                 actions: [
@@ -96,6 +127,18 @@ class _OlfactoryTrainingListScreenState
     final bool isDevicesRegistered = await checkDeviceRegistration();
 
     if (!isDevicesRegistered) {
+      if (mounted) {
+        setState(() {
+          tapLocked = false;
+          isLoading = false;
+        });
+      }
+      return;
+    }
+
+    final bool isScentMapped = await checkScentMapping();
+
+    if (!isScentMapped) {
       if (mounted) {
         setState(() {
           tapLocked = false;

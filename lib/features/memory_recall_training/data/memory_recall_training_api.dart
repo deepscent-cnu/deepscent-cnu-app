@@ -13,10 +13,12 @@ class MemoryRecallTrainingApi {
     final authController = Get.find<AuthController>();
     final accessToken = authController.accessToken.value;
 
-    final sttApiUrl = 'http://10.0.2.2:8080/api/stt/upload';
+    final sttApiUrl = '$apiBaseUrl/api/stt/upload';
 
     final request = http.MultipartRequest("POST", Uri.parse(sttApiUrl));
-    request.files.add(await http.MultipartFile.fromPath("audio", audioFile.path));
+    request.files.add(
+      await http.MultipartFile.fromPath("audio", audioFile.path),
+    );
     request.headers.addAll({
       'Content-type': 'multipart/form-data',
       'Authorization': 'Bearer $accessToken',
@@ -27,7 +29,9 @@ class MemoryRecallTrainingApi {
       final responseBody = await response.stream.bytesToString();
 
       if (response.statusCode == 200) {
-        final match = RegExp(r'"transcript"\s*:\s*"([^"]+)"').firstMatch(responseBody);
+        final match = RegExp(
+          r'"transcript"\s*:\s*"([^"]+)"',
+        ).firstMatch(responseBody);
         return match?.group(1);
       } else {
         debugPrint('(Debug) STT 요청 실패: $responseBody');
@@ -44,7 +48,7 @@ class MemoryRecallTrainingApi {
     final authController = Get.find<AuthController>();
     final accessToken = authController.accessToken.value;
 
-    final chatApiUrl = 'http://10.0.2.2:8080/api/chat/$roundId';
+    final chatApiUrl = '$apiBaseUrl/api/chat/$roundId';
 
     try {
       final response = await http.post(
@@ -59,7 +63,9 @@ class MemoryRecallTrainingApi {
       if (response.statusCode == 200) {
         return response.body;
       } else {
-        debugPrint('Chat 실패: ${response.statusCode} - ${utf8.decode(response.bodyBytes)}');
+        debugPrint(
+          'Chat 실패: ${response.statusCode} - ${utf8.decode(response.bodyBytes)}',
+        );
         return null;
       }
     } catch (e) {
@@ -106,7 +112,8 @@ class MemoryRecallTrainingApi {
     final authController = Get.find<AuthController>();
     final accessToken = authController.accessToken.value;
 
-    final apiUrl = '$apiBaseUrl/api/memory-recall-training/log/$roundId/feeling';
+    final apiUrl =
+        '$apiBaseUrl/api/memory-recall-training/log/$roundId/feeling';
 
     try {
       final response = await http.post(
@@ -118,7 +125,7 @@ class MemoryRecallTrainingApi {
         body: jsonEncode({'feeling': feeling}),
       );
 
-      return response.statusCode == 204;  // 서버에서 noContent 반환 시 성공 처리
+      return response.statusCode == 204; // 서버에서 noContent 반환 시 성공 처리
     } catch (e) {
       debugPrint('(Debug) saveFeeling 예외 발생: $e');
       return false;
@@ -175,7 +182,7 @@ class MemoryRecallTrainingApi {
           'Accept': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
-        body: jsonEncode({}), 
+        body: jsonEncode({}),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -187,8 +194,10 @@ class MemoryRecallTrainingApi {
           return null;
         }
       } else {
-        debugPrint('(Debug) startChatWithScent 실패: '
-            '${response.statusCode} - ${utf8.decode(response.bodyBytes)}');
+        debugPrint(
+          '(Debug) startChatWithScent 실패: '
+          '${response.statusCode} - ${utf8.decode(response.bodyBytes)}',
+        );
         return null;
       }
     } catch (e) {
@@ -198,10 +207,11 @@ class MemoryRecallTrainingApi {
   }
 
   static Future<void> deleteMemoryRecallRoundLog(
-    int memoryRecallRoundId
+    int memoryRecallRoundId,
   ) async {
     final authController = Get.find<AuthController>();
-    final apiUrl = '$apiBaseUrl/api/memory-recall-training/log/$memoryRecallRoundId';
+    final apiUrl =
+        '$apiBaseUrl/api/memory-recall-training/log/$memoryRecallRoundId';
     final requestHeaders = {
       'Content-type': 'application/json',
       'Authorization': 'Bearer ${authController.accessToken.value}',
@@ -229,50 +239,53 @@ class MemoryRecallTrainingApi {
   }
 
   static Future<bool> summarizeRound(int roundId) async {
-  final authController = Get.find<AuthController>();
-  final accessToken = authController.accessToken.value;
-  final url = '$apiBaseUrl/api/chat/summary/$roundId';
+    final authController = Get.find<AuthController>();
+    final accessToken = authController.accessToken.value;
+    final url = '$apiBaseUrl/api/chat/summary/$roundId';
 
-  try {
-    final resp = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      },
-      body: jsonEncode({}), 
-    );
-   
-    return resp.statusCode == 200 || resp.statusCode == 201 || resp.statusCode == 204;
-  } catch (e) {
-    debugPrint('(Debug) summarizeRound 예외: $e');
-    return false;
+    try {
+      final resp = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({}),
+      );
+
+      return resp.statusCode == 200 ||
+          resp.statusCode == 201 ||
+          resp.statusCode == 204;
+    } catch (e) {
+      debugPrint('(Debug) summarizeRound 예외: $e');
+      return false;
+    }
   }
-}
 
-static Future<Map<String, dynamic>?> readRound(int roundId) async {
-  final authController = Get.find<AuthController>();
-  final accessToken = authController.accessToken.value;
-  final url = '$apiBaseUrl/api/chat/read/$roundId';
+  static Future<Map<String, dynamic>?> readRound(int roundId) async {
+    final authController = Get.find<AuthController>();
+    final accessToken = authController.accessToken.value;
+    final url = '$apiBaseUrl/api/chat/read/$roundId';
 
-  try {
-    final resp = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      },
-    );
-    if (resp.statusCode == 200) {
-      return jsonDecode(utf8.decode(resp.bodyBytes)) as Map<String, dynamic>;
-    } else {
-      debugPrint('(Debug) readRound 실패: ${resp.statusCode} - ${utf8.decode(resp.bodyBytes)}');
+    try {
+      final resp = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+      if (resp.statusCode == 200) {
+        return jsonDecode(utf8.decode(resp.bodyBytes)) as Map<String, dynamic>;
+      } else {
+        debugPrint(
+          '(Debug) readRound 실패: ${resp.statusCode} - ${utf8.decode(resp.bodyBytes)}',
+        );
+        return null;
+      }
+    } catch (e) {
+      debugPrint('(Debug) readRound 예외: $e');
       return null;
     }
-  } catch (e) {
-    debugPrint('(Debug) readRound 예외: $e');
-    return null;
   }
-}
-
 }
