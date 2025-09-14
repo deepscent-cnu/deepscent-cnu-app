@@ -123,78 +123,86 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        mode: CustomAppBarMode.sub,
-        title: "일반 후각 훈련",
-        onBackPressed: () {
-          showTrainingStopModal(context);
-        },
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/blurred_background.png',
-                fit: BoxFit.cover,
-                opacity: AlwaysStoppedAnimation(0.5),
+    return PopScope(
+      canPop: false, // 기본 pop 동작 차단
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          showTrainingStopModal(context); // 시스템 뒤로가기 누르면 모달 띄움
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          mode: CustomAppBarMode.sub,
+          title: "일반 후각 훈련",
+          onBackPressed: () {
+            showTrainingStopModal(context);
+          },
+        ),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/blurred_background.png',
+                  fit: BoxFit.cover,
+                  opacity: AlwaysStoppedAnimation(0.5),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Text(
-                      "향을 맡으셨을 때 느끼신\n강도를 선택해주세요.",
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(
+                        "향을 맡으셨을 때 느끼신\n강도를 선택해주세요.",
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                  Expanded(
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: GridView.count(
-                          shrinkWrap: true,
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 30,
-                          mainAxisSpacing: 30,
-                          childAspectRatio: 1,
-                          children: [
-                            ButtonBasic(
-                              content: "약함",
-                              fontSize: 32,
-                              function: () => goAnswerScreen(1),
-                            ),
-                            ButtonBasic(
-                              content: "보통",
-                              fontSize: 32,
-                              function: () => goAnswerScreen(2),
-                            ),
-                            ButtonBasic(
-                              content: "강함",
-                              fontSize: 32,
-                              function: () => goAnswerScreen(3),
-                            ),
-                          ],
+                    const SizedBox(height: 40),
+                    Expanded(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: GridView.count(
+                            shrinkWrap: true,
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 30,
+                            mainAxisSpacing: 30,
+                            childAspectRatio: 1,
+                            children: [
+                              ButtonBasic(
+                                content: "약함",
+                                fontSize: 32,
+                                function: () => goAnswerScreen(1),
+                              ),
+                              ButtonBasic(
+                                content: "보통",
+                                fontSize: 32,
+                                function: () => goAnswerScreen(2),
+                              ),
+                              ButtonBasic(
+                                content: "강함",
+                                fontSize: 32,
+                                function: () => goAnswerScreen(3),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 100),
-                ],
+                    const SizedBox(height: 100),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

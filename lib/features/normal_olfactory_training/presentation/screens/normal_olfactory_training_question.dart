@@ -148,122 +148,130 @@ class _NormalOlfactoryTrainingQuestionScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        mode: CustomAppBarMode.sub,
-        title: "일반 후각 훈련",
-        onBackPressed: () {
-          showTrainingStopModal(context);
-        },
-      ),
-      body: SafeArea(
-        child:
-            isLoading
-                ? Container(
-                  color: Colors.black.withOpacity(0.5), // 화면 어두워짐
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(color: Colors.white),
-                        SizedBox(height: 16),
-                        Text(
-                          '불러오는 중...',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                : Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Image.asset(
-                        'assets/images/blurred_background.png',
-                        fit: BoxFit.cover,
-                        opacity: AlwaysStoppedAnimation(0.5),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return PopScope(
+      canPop: false, // 기본 pop 동작 차단
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          showTrainingStopModal(context); // 시스템 뒤로가기 누르면 모달 띄움
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          mode: CustomAppBarMode.sub,
+          title: "일반 후각 훈련",
+          onBackPressed: () {
+            showTrainingStopModal(context);
+          },
+        ),
+        body: SafeArea(
+          child:
+              isLoading
+                  ? Container(
+                    color: Colors.black.withOpacity(0.5), // 화면 어두워짐
+                    child: Center(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const SizedBox(height: 24),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: Text(
-                              "방금 맡은 향은 어떤 향인지\n다음 보기 중에서 골라보세요!",
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
+                          CircularProgressIndicator(color: Colors.white),
+                          SizedBox(height: 16),
+                          Text(
+                            '불러오는 중...',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
-                          const SizedBox(height: 40),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: GridView.count(
-                              shrinkWrap: true,
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 40,
-                              mainAxisSpacing: 40,
-                              childAspectRatio: 1,
-                              children: [
-                                ButtonBasic(
-                                  content: scentOptions!.scentOption1,
-                                  fontSize: 32,
-                                  function:
-                                      () => goScentStrengthScreen(
-                                        scentOptions!.scentOption1,
-                                      ),
-                                ),
-                                ButtonBasic(
-                                  content: scentOptions!.scentOption2,
-                                  fontSize: 32,
-                                  function:
-                                      () => goScentStrengthScreen(
-                                        scentOptions!.scentOption2,
-                                      ),
-                                ),
-                                ButtonBasic(
-                                  content: scentOptions!.scentOption3,
-                                  fontSize: 32,
-                                  function:
-                                      () => goScentStrengthScreen(
-                                        scentOptions!.scentOption3,
-                                      ),
-                                ),
-                                ButtonBasic(
-                                  content: scentOptions!.scentOption4,
-                                  fontSize: 32,
-                                  function:
-                                      () => goScentStrengthScreen(
-                                        scentOptions!.scentOption4,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 16,
-                            ),
-                            child: ButtonBasic(
-                              content: "잘 모르겠어요",
-                              fontSize: 32,
-                              function: () => goScentStrengthScreen(""),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  )
+                  : Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Image.asset(
+                          'assets/images/blurred_background.png',
+                          fit: BoxFit.cover,
+                          opacity: AlwaysStoppedAnimation(0.5),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: 24),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 5),
+                              child: Text(
+                                "방금 맡은 향은 어떤 향인지\n다음 보기 중에서 골라보세요!",
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            const SizedBox(height: 40),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              child: GridView.count(
+                                shrinkWrap: true,
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 40,
+                                mainAxisSpacing: 40,
+                                childAspectRatio: 1,
+                                children: [
+                                  ButtonBasic(
+                                    content: scentOptions!.scentOption1,
+                                    fontSize: 32,
+                                    function:
+                                        () => goScentStrengthScreen(
+                                          scentOptions!.scentOption1,
+                                        ),
+                                  ),
+                                  ButtonBasic(
+                                    content: scentOptions!.scentOption2,
+                                    fontSize: 32,
+                                    function:
+                                        () => goScentStrengthScreen(
+                                          scentOptions!.scentOption2,
+                                        ),
+                                  ),
+                                  ButtonBasic(
+                                    content: scentOptions!.scentOption3,
+                                    fontSize: 32,
+                                    function:
+                                        () => goScentStrengthScreen(
+                                          scentOptions!.scentOption3,
+                                        ),
+                                  ),
+                                  ButtonBasic(
+                                    content: scentOptions!.scentOption4,
+                                    fontSize: 32,
+                                    function:
+                                        () => goScentStrengthScreen(
+                                          scentOptions!.scentOption4,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 16,
+                              ),
+                              child: ButtonBasic(
+                                content: "잘 모르겠어요",
+                                fontSize: 32,
+                                function: () => goScentStrengthScreen(""),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+        ),
       ),
     );
   }

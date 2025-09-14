@@ -59,167 +59,175 @@ class MemoryRecallResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ roundData에서 안전하게 꺼내 쓰기
+    // roundData에서 안전하게 꺼내 쓰기
     final String scentFromApi = (roundData['scent'] ?? '') as String;
     final String summaryFromApi = (roundData['summary'] ?? '') as String;
     final String feelingFromApi = (roundData['feeling'] ?? '') as String;
     final String createdAt = (roundData['createdAt'] ?? '') as String;
 
-    // ✅ 서버에 이미 feeling이 있으면 입력창에 미리 채워주기(한 번만)
+    // 서버에 이미 feeling이 있으면 입력창에 미리 채워주기(한 번만)
     if (feelingFromApi.isNotEmpty && _feelingController.text.isEmpty) {
       _feelingController.text = feelingFromApi;
     }
 
-    return Scaffold(
-      appBar: CustomAppBar(
-        mode: CustomAppBarMode.sub,
-        title: "기억 회상 훈련 결과",
-        onBackPressed: () => _goToTrainingList(context),
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/blurred_background_2.png',
-                fit: BoxFit.cover,
+    return PopScope(
+      canPop: false, // 기본 pop 동작 차단
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _goToTrainingList(context);
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          mode: CustomAppBarMode.sub,
+          title: "기억 회상 훈련 결과",
+          onBackPressed: () => _goToTrainingList(context),
+        ),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/blurred_background_2.png',
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 24),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 타이틀
-                          Text(
-                            '$sessionIndex회차 훈련이 끝났어요!',
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          if (createdAt.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 24),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 타이틀
                             Text(
-                              '진행 시각: $createdAt',
+                              '$sessionIndex회차 훈련이 끝났어요!',
                               style: const TextStyle(
-                                fontSize: 18,
-                                color: Colors.black54,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          const SizedBox(height: 28),
-
-                          //오늘의 향기 (서버값 우선, 없으면 선택값)
-                          Text(
-                            '$sessionIndex회차의 향기: ${scentFromApi.isNotEmpty ? scentFromApi : selectedScent}',
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF335928),
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-
-                          Text(
-                            '$sessionIndex회차의 회상:',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF335928),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            summaryFromApi.isNotEmpty
-                                ? summaryFromApi
-                                : '요약이 아직 없습니다.',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-
-                          // 오늘의 느낀 점 (입력/수정 가능)
-                          Text(
-                            '$sessionIndex회차 훈련 후 느낀 점:',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF335928),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color(0x33000000),
-                                  blurRadius: 12,
-                                  offset: Offset(0, 6),
+                            const SizedBox(height: 8),
+                            if (createdAt.isNotEmpty)
+                              Text(
+                                '진행 시각: $createdAt',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black54,
                                 ),
-                              ],
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            child: TextField(
-                              controller: _feelingController,
-                              maxLines: 4,
-                              decoration: InputDecoration(
-                                hintText: '오늘 훈련을 통해 느낀 점을 적어주세요. (선택사항)',
-                                border: InputBorder.none,
                               ),
+                            const SizedBox(height: 28),
+
+                            //오늘의 향기 (서버값 우선, 없으면 선택값)
+                            Text(
+                              '$sessionIndex회차의 향기: ${scentFromApi.isNotEmpty ? scentFromApi : selectedScent}',
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF335928),
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+
+                            Text(
+                              '$sessionIndex회차의 회상:',
                               style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF335928),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 48),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+                            const SizedBox(height: 6),
+                            Text(
+                              summaryFromApi.isNotEmpty
+                                  ? summaryFromApi
+                                  : '요약이 아직 없습니다.',
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            child: ButtonBasic(
-                              content: '훈련 기록 보기',
-                              fontSize: 32,
-                              icon: Icon(Icons.edit_document, size: 32),
-                              function: () => _goToTrainingLog(context),
+                            const SizedBox(height: 32),
+
+                            // 오늘의 느낀 점 (입력/수정 가능)
+                            Text(
+                              '$sessionIndex회차 훈련 후 느낀 점:',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF335928),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+                            const SizedBox(height: 8),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0x33000000),
+                                    blurRadius: 12,
+                                    offset: Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 4,
+                              ),
+                              child: TextField(
+                                controller: _feelingController,
+                                maxLines: 4,
+                                decoration: InputDecoration(
+                                  hintText: '오늘 훈련을 통해 느낀 점을 적어주세요. (선택사항)',
+                                  border: InputBorder.none,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
-                            child: ButtonBasic(
-                              content: '훈련 목록 보기',
-                              icon: Icon(Icons.list, size: 36),
-                              fontSize: 32,
-                              function: () => _goToTrainingList(context),
+                            const SizedBox(height: 48),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 16,
+                              ),
+                              child: ButtonBasic(
+                                content: '훈련 기록 보기',
+                                fontSize: 32,
+                                icon: Icon(Icons.edit_document, size: 32),
+                                function: () => _goToTrainingLog(context),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-                        ],
+                            const SizedBox(height: 6),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 16,
+                              ),
+                              child: ButtonBasic(
+                                content: '훈련 목록 보기',
+                                icon: Icon(Icons.list, size: 36),
+                                fontSize: 32,
+                                function: () => _goToTrainingList(context),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

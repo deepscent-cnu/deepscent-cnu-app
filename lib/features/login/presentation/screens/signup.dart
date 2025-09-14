@@ -16,7 +16,6 @@ class _SignUpPageState extends State<SignUpPage> {
   final nameController = TextEditingController();
   final birthController = TextEditingController();
   final phoneController = TextEditingController();
-  final idController = TextEditingController();
   final pwController = TextEditingController();
 
   @override
@@ -24,7 +23,6 @@ class _SignUpPageState extends State<SignUpPage> {
     nameController.dispose();
     birthController.dispose();
     phoneController.dispose();
-    idController.dispose();
     pwController.dispose();
     super.dispose();
   }
@@ -34,7 +32,6 @@ class _SignUpPageState extends State<SignUpPage> {
       name: nameController.text,
       birthDate: birthController.text,
       phoneNumber: phoneController.text,
-      username: idController.text,
       password: pwController.text,
     );
 
@@ -169,16 +166,6 @@ class _SignUpPageState extends State<SignUpPage> {
                           final regex = RegExp(r'^010\d{8}$');
                           if (!regex.hasMatch(value)) {
                             return '올바른 전화번호 형식이 아닙니다.\n(올바른 형식 : 010-1234-5678)';
-                          }
-                          return null;
-                        },
-                      ),
-                      _buildTextFormField(
-                        hintText: '아이디',
-                        controller: idController,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return '아이디를 입력해주세요.';
                           }
                           return null;
                         },

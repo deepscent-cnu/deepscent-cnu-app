@@ -1,20 +1,44 @@
 //import 'package:deepscent_cnu/presentation/screens/%08signup.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
+import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
+import 'package:deepscent_cnu/features/memory_recall_training/presentation/controllers/memory_recall_training_controller.dart';
 import 'features/login/presentation/screens/login.dart';
+import 'features/training_list/presentation/screens/olfactory_training_list.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // AuthController 등록
+  final authController = Get.put(AuthController());
+  Get.put(NormalOlfactoryTrainingController());
+  Get.put(MemoryRecallTrainingController());
+
+  // 토큰이 로컬에 존재할 경우, 자동 로그인
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('jwtToken');
+
+  // AuthController 반영
+  if (token != null) {
+    authController.accessToken.value = token;
+  }
+
+  runApp(MyApp(initialToken: token));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String? initialToken;
+  const MyApp({super.key, this.initialToken});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      //home: MemoryRecallTrainingScreen(),
-      home: LoginPage(),
+      home: initialToken != null
+          ? const OlfactoryTrainingListScreen()
+          : const LoginPage(),
     );
   }
 }

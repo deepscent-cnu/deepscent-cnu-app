@@ -1,5 +1,6 @@
 import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'signup.dart';
@@ -15,18 +16,25 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final authController = Get.find<AuthController>();
-  final TextEditingController idController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
 
   Future<void> handleLogin() async {
     final response = await AuthApi.login(
-      username: idController.text,
+      username: phoneController.text,
       password: pwController.text,
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      authController.accessToken.value = data['data'];
+      final token = data['data'];
+
+      // 액세스 토큰 로컬 저장
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwtToken', token);
+
+      // 로그인 성공 처리
+      authController.accessToken.value = token;
       print('로그인 성공: $data');
 
       Navigator.pushReplacement(
@@ -85,10 +93,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40),
                 TextField(
-                  controller: idController,
+                  controller: phoneController,
                   style: TextStyle(fontSize: 24),
                   decoration: InputDecoration(
-                    hintText: 'ID를 입력해주세요.',
+                    hintText: '전화번호를 입력해주세요.',
                     hintStyle: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,

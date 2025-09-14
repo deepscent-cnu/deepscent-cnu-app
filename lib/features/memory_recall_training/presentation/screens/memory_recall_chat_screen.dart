@@ -33,7 +33,6 @@ class MemoryRecallChatScreen extends StatefulWidget {
 class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   final memoryRecallTrainingController =
       Get.find<MemoryRecallTrainingController>();
-  final _scrollCtrl = ScrollController();
   int currentIndex = 0;
   int interactionCount = 0;
   final AudioRecorder _recorder = AudioRecorder();
@@ -84,7 +83,10 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
   @override
   void dispose() {
-    _scrollCtrl.dispose();
+    if (isRecording) {
+      _recorder.stop();
+    }
+    _recorder.dispose();
     stopwatch.stop();
     timer?.cancel();
     super.dispose();
@@ -160,6 +162,13 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       if (_filePath != null && File(_filePath!).existsSync()) {
         await sendRecordingToServer(_filePath!);
       }
+    }
+  }
+
+  Future<void> _stopRecordingIfNeeded() async {
+    if (isRecording) {
+      await _recorder.stop();
+      setState(() => isRecording = false);
     }
   }
 
@@ -338,6 +347,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                                 content: '훈련 끝내기',
                                 icon: Icon(Icons.exit_to_app, size: 20),
                                 function: () async {
+                                  await _stopRecordingIfNeeded();
                                   await MemoryRecallTrainingApi.deleteMemoryRecallRoundLog(
                                     memoryRecallTrainingController.chatId,
                                   );
@@ -390,147 +400,156 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                 transcriptText != '로딩 중...' &&
                 loadingType == LoadingType.none));
 
-    return Scaffold(
-      appBar: CustomAppBar(
-        mode: CustomAppBarMode.sub,
-        title: "[${widget.sessionIndex}회차] 기억 회상 훈련",
-        onBackPressed: () {
-          showTrainingCarouselModal(context);
-        },
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/blurred_background_2.png',
-                fit: BoxFit.cover,
-                opacity: const AlwaysStoppedAnimation(0.5),
+    return PopScope(
+      canPop: false, // 기본 pop 동작 차단
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          showTrainingCarouselModal(context); // 시스템 뒤로가기 누르면 모달 띄움
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          mode: CustomAppBarMode.sub,
+          title: "[${widget.sessionIndex}회차] 기억 회상 훈련",
+          onBackPressed: () {
+            showTrainingCarouselModal(context);
+          },
+        ),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/blurred_background_2.png',
+                  fit: BoxFit.cover,
+                  opacity: const AlwaysStoppedAnimation(0.5),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: QuestionStepChip(
-                        currentStep: (currentIndex + 1).clamp(1, 10),
-                        totalSteps: 10,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 6,
-                    child: Scrollbar(
-                      thumbVisibility: true,
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: PageTransitionSwitcher(
-                            duration: const Duration(milliseconds: 350),
-                            transitionBuilder:
-                                (child, primary, secondary) =>
-                                    FadeThroughTransition(
-                                      animation: primary,
-                                      secondaryAnimation: secondary,
-                                      fillColor: Colors.transparent,
-                                      child: child,
-                                    ),
-                            child: Text(
-                              testQuestionList.isNotEmpty
-                                  ? testQuestionList[currentIndex]
-                                  : '',
-                              key: ValueKey(currentIndex),
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: QuestionStepChip(
+                          currentStep: (currentIndex + 1).clamp(1, 10),
+                          totalSteps: 10,
                         ),
                       ),
                     ),
-                  ),
-                  const Divider(
-                    color: Color.fromARGB(255, 205, 205, 205),
-                    thickness: 5,
-                    height: 32,
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Row(
-                      children: [
-                        isLastStep
-                            ? const SizedBox.shrink()
-                            : Expanded(
-                              flex: 3,
-                              child: GestureDetector(
-                                onTap: toggleRecording,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 36,
-                                      backgroundColor:
-                                          isRecording
-                                              ? Colors.red
-                                              : const Color(0xFF2E7D32),
-                                      child: Icon(
-                                        isRecording ? Icons.stop : Icons.mic,
-                                        color: Colors.white,
-                                        size: 36,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      formattedTime(),
-                                      style: const TextStyle(fontSize: 18),
-                                    ),
-                                  ],
+                    Expanded(
+                      flex: 6,
+                      child: Scrollbar(
+                        thumbVisibility: true,
+                        child: SingleChildScrollView(
+                          // 질문 바뀔 때 스크롤뷰 재생성
+                          key: ValueKey('q-$currentIndex'),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: PageTransitionSwitcher(
+                              duration: const Duration(milliseconds: 350),
+                              transitionBuilder: (child, primary, secondary) =>
+                                  FadeThroughTransition(
+                                    animation: primary,
+                                    secondaryAnimation: secondary,
+                                    fillColor: Colors.transparent,
+                                    child: child,
+                                  ),
+                              child: Text(
+                                testQuestionList.isNotEmpty
+                                    ? testQuestionList[currentIndex]
+                                    : '',
+                                key: ValueKey(currentIndex),
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
-                        Expanded(
-                          flex: isLastStep ? 9 : 6,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            child: ButtonBasic(
-                              content:
-                                  interactionCount >= 9 ? '훈련 저장하기' : '다음 질문으로',
-                              icon: const Icon(Icons.double_arrow, size: 24),
-                              fontSize: 24,
-                              function: isNextEnabled ? _onNextPressed : null,
-                            ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                ],
+                    const Divider(
+                      color: Color.fromARGB(255, 205, 205, 205),
+                      thickness: 5,
+                      height: 32,
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Row(
+                        children: [
+                          isLastStep
+                              ? const SizedBox.shrink()
+                              : Expanded(
+                                flex: 3,
+                                child: GestureDetector(
+                                  onTap: toggleRecording,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 36,
+                                        backgroundColor:
+                                            isRecording
+                                                ? Colors.red
+                                                : const Color(0xFF2E7D32),
+                                        child: Icon(
+                                          isRecording ? Icons.stop : Icons.mic,
+                                          color: Colors.white,
+                                          size: 36,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        formattedTime(),
+                                        style: const TextStyle(fontSize: 18),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          Expanded(
+                            flex: isLastStep ? 9 : 6,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              child: ButtonBasic(
+                                content:
+                                    interactionCount >= 9 ? '훈련 저장하기' : '다음 질문으로',
+                                icon: const Icon(Icons.double_arrow, size: 24),
+                                fontSize: 24,
+                                function: isNextEnabled ? _onNextPressed : null,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                  ],
+                ),
               ),
-            ),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 150),
-              transitionBuilder: (child, animation) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              child: loadingType != LoadingType.none
-                  ? LoadingOverlay(message: _loadingMessage())
-                  : const SizedBox.shrink(),
-            ),
-          ],
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 150),
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                child: loadingType != LoadingType.none
+                    ? LoadingOverlay(message: _loadingMessage())
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
       ),
     );
