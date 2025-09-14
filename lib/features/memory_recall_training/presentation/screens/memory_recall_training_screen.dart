@@ -190,195 +190,203 @@ class MemoryRecallTrainingScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        mode: CustomAppBarMode.sub,
-        title: "[${widget.sessionIndex}회차] 기억 회상 훈련",
-        onBackPressed: () {
-          showTrainingCarouselModal(context);
-        },
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              top: 80,
-              child: Image.asset(
-                'assets/images/blurred_background.png',
-                fit: BoxFit.cover,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 24),
-                  const SizedBox(height: 16),
-                  Text(
-                    memoryRecallTrainingController.scentName.isNotEmpty
-                        ? '${memoryRecallTrainingController.scentName} 향을 발향하는 중입니다.'
-                        : '향을 발향하는 중입니다.',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            remainTime.toString(),
-                            style: const TextStyle(
-                              fontSize: 92,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            "초 뒤, 발향이 중지됩니다.",
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
-                    ),
-                    child: ButtonBasic(
-                      content: '시간 연장하기',
-                      fontSize: 32,
-                      icon: Icon(Icons.timer, size: 32),
-                      function: () => extendTime(),
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                ],
-              ),
-            ),
-            if (showHelp)
+    return PopScope(
+      canPop: false, // 기본 pop 동작 차단
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          showTrainingCarouselModal(context); // 시스템 뒤로가기 누르면 모달 띄움
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          mode: CustomAppBarMode.sub,
+          title: "[${widget.sessionIndex}회차] 기억 회상 훈련",
+          onBackPressed: () {
+            showTrainingCarouselModal(context); // 상단 뒤로가기 버튼도 동일 동작
+          },
+        ),
+        body: SafeArea(
+          child: Stack(
+            children: [
               Positioned.fill(
-                child: GestureDetector(
-                  onTap: toggleHelp,
-                  child: Container(
-                    color: Colors.black.withOpacity(0.8),
-                    alignment: Alignment.center,
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 24),
-                        padding: EdgeInsets.only(
-                          top: 130,
-                          left: 20,
-                          right: 20,
-                          bottom: 20,
-                        ),
+                top: 80,
+                child: Image.asset(
+                  'assets/images/blurred_background.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+                    Text(
+                      memoryRecallTrainingController.scentName.isNotEmpty
+                          ? '${memoryRecallTrainingController.scentName} 향을 발향하는 중입니다.'
+                          : '향을 발향하는 중입니다.',
+                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    ),
+                    Expanded(
+                      child: Center(
                         child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '남은 시간을 보여줍니다.',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
+                              remainTime.toString(),
+                              style: const TextStyle(
+                                fontSize: 92,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 12),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 30,
-                                horizontal: 20,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Color(0xFFF5F2DC),
-                                    Color(0xFFE7D6AC),
-                                  ],
-                                ),
-                                border: Border.all(
-                                  color: Color(0xFFD99A25),
-                                  width: 3,
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '10',
-                                    style: TextStyle(
-                                      fontSize: 90,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(height: 12),
-                                  Text(
-                                    '초 뒤, 발향이 중지됩니다.',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 40),
-                            Text(
-                              '버튼을 클릭해 발향 시간을\n연장할 수 있습니다.',
+                            const SizedBox(height: 8),
+                            const Text(
+                              "초 뒤, 발향이 중지됩니다.",
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 12),
-                            SizedBox(
-                              width: 250,
-                              height: 50,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 12,
-                                  horizontal: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.timer, color: Color(0xFF335928)),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      '시간 연장하기',
-                                      style: TextStyle(
-                                        color: Color(0xFF335928),
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 16,
+                      ),
+                      child: ButtonBasic(
+                        content: '시간 연장하기',
+                        fontSize: 32,
+                        icon: Icon(Icons.timer, size: 32),
+                        function: () => extendTime(),
+                      ),
+                    ),
+                    const SizedBox(height: 60),
+                  ],
                 ),
               ),
-          ],
+              if (showHelp)
+                Positioned.fill(
+                  child: GestureDetector(
+                    onTap: toggleHelp,
+                    child: Container(
+                      color: Colors.black.withOpacity(0.8),
+                      alignment: Alignment.center,
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 24),
+                          padding: EdgeInsets.only(
+                            top: 130,
+                            left: 20,
+                            right: 20,
+                            bottom: 20,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                '남은 시간을 보여줍니다.',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 12),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 30,
+                                  horizontal: 20,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(0xFFF5F2DC),
+                                      Color(0xFFE7D6AC),
+                                    ],
+                                  ),
+                                  border: Border.all(
+                                    color: Color(0xFFD99A25),
+                                    width: 3,
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '10',
+                                      style: TextStyle(
+                                        fontSize: 90,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      '초 뒤, 발향이 중지됩니다.',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 40),
+                              Text(
+                                '버튼을 클릭해 발향 시간을\n연장할 수 있습니다.',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 12),
+                              SizedBox(
+                                width: 250,
+                                height: 50,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 16,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.timer, color: Color(0xFF335928)),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        '시간 연장하기',
+                                        style: TextStyle(
+                                          color: Color(0xFF335928),
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
