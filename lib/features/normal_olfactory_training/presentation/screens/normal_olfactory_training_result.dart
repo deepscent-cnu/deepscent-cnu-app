@@ -15,6 +15,10 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
     Navigator.pop(context);
   }
 
+  String displaySelectedOption(String selectedOption) {
+    return selectedOption.isEmpty ? "모름" : selectedOption;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,7 +121,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Text(
-                              '선택: ${normalOlfactoryTrainingController.logs[0].selectedOption}',
+                              '선택: ${displaySelectedOption(normalOlfactoryTrainingController.logs[0].selectedOption)}',
                               style: TextStyle(fontSize: 28),
                             ),
                           ],
@@ -168,7 +172,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Text(
-                              '선택: ${normalOlfactoryTrainingController.logs[1].selectedOption}',
+                              '선택: ${displaySelectedOption(normalOlfactoryTrainingController.logs[1].selectedOption)}',
                               style: TextStyle(fontSize: 28),
                             ),
                           ],
@@ -219,7 +223,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Text(
-                              '선택: ${normalOlfactoryTrainingController.logs[2].selectedOption}',
+                              '선택: ${displaySelectedOption(normalOlfactoryTrainingController.logs[2].selectedOption)}',
                               style: TextStyle(fontSize: 28),
                             ),
                           ],
@@ -269,7 +273,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Text(
-                              '선택: ${normalOlfactoryTrainingController.logs[3].selectedOption}',
+                              '선택: ${displaySelectedOption(normalOlfactoryTrainingController.logs[3].selectedOption)}',
                               style: TextStyle(fontSize: 28),
                             ),
                           ],
