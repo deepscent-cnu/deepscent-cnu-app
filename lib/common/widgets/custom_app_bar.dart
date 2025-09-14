@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
@@ -93,12 +94,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 );
 
                 if (shouldLogout == true) {
-                  final authController = Get.find<AuthController>();
-                  authController.accessToken.value = '';
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.remove('jwtToken');
 
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (_) => const LoginPage()),
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
                     (route) => false,
                   );
                 }

@@ -1,5 +1,6 @@
 import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'signup.dart';
@@ -26,7 +27,14 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      authController.accessToken.value = data['data'];
+      final token = data['data'];
+
+      // 액세스 토큰 로컬 저장
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwtToken', token);
+
+      // 로그인 성공 처리
+      authController.accessToken.value = token;
       print('로그인 성공: $data');
 
       Navigator.pushReplacement(
