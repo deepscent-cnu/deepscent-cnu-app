@@ -33,7 +33,6 @@ class MemoryRecallChatScreen extends StatefulWidget {
 class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   final memoryRecallTrainingController =
       Get.find<MemoryRecallTrainingController>();
-  final _scrollCtrl = ScrollController();
   int currentIndex = 0;
   int interactionCount = 0;
   final AudioRecorder _recorder = AudioRecorder();
@@ -88,7 +87,6 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       _recorder.stop();
     }
     _recorder.dispose();
-    _scrollCtrl.dispose();
     stopwatch.stop();
     timer?.cancel();
     super.dispose();
@@ -450,18 +448,19 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                       child: Scrollbar(
                         thumbVisibility: true,
                         child: SingleChildScrollView(
+                          // 질문 바뀔 때 스크롤뷰 재생성
+                          key: ValueKey('q-$currentIndex'),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: PageTransitionSwitcher(
                               duration: const Duration(milliseconds: 350),
-                              transitionBuilder:
-                                  (child, primary, secondary) =>
-                                      FadeThroughTransition(
-                                        animation: primary,
-                                        secondaryAnimation: secondary,
-                                        fillColor: Colors.transparent,
-                                        child: child,
-                                      ),
+                              transitionBuilder: (child, primary, secondary) =>
+                                  FadeThroughTransition(
+                                    animation: primary,
+                                    secondaryAnimation: secondary,
+                                    fillColor: Colors.transparent,
+                                    child: child,
+                                  ),
                               child: Text(
                                 testQuestionList.isNotEmpty
                                     ? testQuestionList[currentIndex]
