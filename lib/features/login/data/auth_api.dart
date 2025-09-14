@@ -13,7 +13,7 @@ class AuthApi {
       url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'username': username,
+        'phoneNumber': username,
         'password': password,
       }),
     );
@@ -23,7 +23,6 @@ class AuthApi {
     required String name,
     required String birthDate,
     required String phoneNumber,
-    required String username,
     required String password,
   }) async {
     final url = Uri.parse('$apiBaseUrl/api/auth/signup');
@@ -34,7 +33,6 @@ class AuthApi {
         'name': name,
         'birthDate': birthDate,
         'phoneNumber': phoneNumber,
-        'username': username,
         'password': password,
       }),
     );

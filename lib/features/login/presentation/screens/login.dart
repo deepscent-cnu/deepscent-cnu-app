@@ -16,12 +16,12 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final authController = Get.find<AuthController>();
-  final TextEditingController idController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
 
   Future<void> handleLogin() async {
     final response = await AuthApi.login(
-      username: idController.text,
+      username: phoneController.text,
       password: pwController.text,
     );
 
@@ -93,10 +93,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40),
                 TextField(
-                  controller: idController,
+                  controller: phoneController,
                   style: TextStyle(fontSize: 24),
                   decoration: InputDecoration(
-                    hintText: 'ID를 입력해주세요.',
+                    hintText: '전화번호를 입력해주세요.',
                     hintStyle: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
