@@ -176,68 +176,76 @@ class _NormalOlfactoryTrainingScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        mode: CustomAppBarMode.sub,
-        title: "일반 후각 훈련",
-        onBackPressed: () {
-          showTrainingStopModal(context);
-        },
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/blurred_background.png',
-                fit: BoxFit.cover,
+    return PopScope(
+      canPop: false, // 기본 pop 동작 차단
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          showTrainingStopModal(context); // 시스템 뒤로가기 누르면 모달 띄움
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          mode: CustomAppBarMode.sub,
+          title: "일반 후각 훈련",
+          onBackPressed: () {
+            showTrainingStopModal(context);
+          },
+        ),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/blurred_background.png',
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 24),
-                  Center(
-                    child: Text(
-                      '${normalOlfactoryTrainingController.currentRound.value} 번째 향을 발향 중입니다.\n향을 집중해서 맡아보세요!',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 24),
+                    Center(
+                      child: Text(
+                        '${normalOlfactoryTrainingController.currentRound.value} 번째 향을 발향 중입니다.\n향을 집중해서 맡아보세요!',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            remainTime.toString(),
-                            style: const TextStyle(
-                              fontSize: 92,
-                              fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              remainTime.toString(),
+                              style: const TextStyle(
+                                fontSize: 92,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            "초 뒤, 발향이 중지됩니다.",
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
+                            const SizedBox(height: 8),
+                            const Text(
+                              "초 뒤, 발향이 중지됩니다.",
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 60),
-                ],
+                    const SizedBox(height: 60),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

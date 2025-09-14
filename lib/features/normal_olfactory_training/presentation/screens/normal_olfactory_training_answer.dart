@@ -193,128 +193,136 @@ class _NormalOlfactoryTrainingAnswerScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        mode: CustomAppBarMode.sub,
-        title: "일반 후각 훈련",
-        onBackPressed: () {
-          showTrainingStopModal(context);
-        },
-      ),
-      body: SafeArea(
-        child:
-            isLoading
-                ? Container(
-                  color: Colors.black.withOpacity(0.5), // 화면 어두워짐
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(color: Colors.white),
-                        SizedBox(height: 16),
-                        Text(
-                          '로딩 중...',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                : Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Image.asset(
-                        'assets/images/blurred_background.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return PopScope(
+      canPop: false, // 기본 pop 동작 차단
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          showTrainingStopModal(context); // 시스템 뒤로가기 누르면 모달 띄움
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: CustomAppBar(
+          mode: CustomAppBarMode.sub,
+          title: "일반 후각 훈련",
+          onBackPressed: () {
+            showTrainingStopModal(context);
+          },
+        ),
+        body: SafeArea(
+          child:
+              isLoading
+                  ? Container(
+                    color: Colors.black.withOpacity(0.5), // 화면 어두워짐
+                    child: Center(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const SizedBox(height: 24),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: Text(
-                              '${normalOlfactoryTrainingController.getIsCorrect() ? "맞았어요!" : "앗, 아쉬워요!"} \n방금 맡은 향은\n${normalOlfactoryTrainingController.getCorrectScentByRound().scentName} 향이었습니다.',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
+                          CircularProgressIndicator(color: Colors.white),
+                          SizedBox(height: 16),
+                          Text(
+                            '로딩 중...',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
-                          normalOlfactoryTrainingController
-                                      .currentRound
-                                      .value !=
-                                  4
-                              ? Expanded(
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        remainTime.toString(),
-                                        style: const TextStyle(
-                                          fontSize: 92,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        message,
-                                        style: TextStyle(
-                                          fontSize: 32,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              : Expanded(
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 16,
-                                    ),
-                                    child: ButtonBasic(
-                                      content: "훈련 결과 보기",
-                                      icon: Icon(Icons.double_arrow),
-                                      function: nextRound,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          normalOlfactoryTrainingController
-                                      .currentRound
-                                      .value !=
-                                  4
-                              ? Column(
-                                children: [
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    "다음 단계를 위해, 표시된 시간 동안 편안하게 휴식해주세요!",
-                                    style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF335928),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 100),
-                                ],
-                              )
-                              : SizedBox.shrink(),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  )
+                  : Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Image.asset(
+                          'assets/images/blurred_background.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: 24),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 5),
+                              child: Text(
+                                '${normalOlfactoryTrainingController.getIsCorrect() ? "맞았어요!" : "앗, 아쉬워요!"} \n방금 맡은 향은\n${normalOlfactoryTrainingController.getCorrectScentByRound().scentName} 향이었습니다.',
+                                style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            normalOlfactoryTrainingController
+                                        .currentRound
+                                        .value !=
+                                    4
+                                ? Expanded(
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          remainTime.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 92,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          message,
+                                          style: TextStyle(
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                                : Expanded(
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 16,
+                                      ),
+                                      child: ButtonBasic(
+                                        content: "훈련 결과 보기",
+                                        icon: Icon(Icons.double_arrow),
+                                        function: nextRound,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            normalOlfactoryTrainingController
+                                        .currentRound
+                                        .value !=
+                                    4
+                                ? Column(
+                                  children: [
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      "다음 단계를 위해, 표시된 시간 동안 편안하게 휴식해주세요!",
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF335928),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 100),
+                                  ],
+                                )
+                                : SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+        ),
       ),
     );
   }
