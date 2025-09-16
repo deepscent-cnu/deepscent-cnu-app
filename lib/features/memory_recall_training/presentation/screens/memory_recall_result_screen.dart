@@ -26,7 +26,7 @@ class MemoryRecallResultScreen extends StatelessWidget {
     final feeling = _feelingController.text.trim();
     if (feeling.isNotEmpty) {
       final success = await MemoryRecallTrainingApi.saveFeeling(
-        sessionIndex,
+        roundData['id'] ?? -1,
         feeling,
       ); // 실제 회차 반영
       if (success) {

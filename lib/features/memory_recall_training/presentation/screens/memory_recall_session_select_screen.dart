@@ -32,7 +32,7 @@ class _MemoryRecallSessionSelectScreenState
     initCompletedSessions();
   }
 
-  Future<void> _openFinishedSession(int roundId) async {
+  Future<void> _openFinishedSession(int round) async {
     // 로딩 표시 (간단 다이얼로그)
     showDialog(
       context: context,
@@ -41,7 +41,7 @@ class _MemoryRecallSessionSelectScreenState
     );
 
     try {
-      final data = await MemoryRecallTrainingApi.readRound(roundId);
+      final data = await MemoryRecallTrainingApi.readRound(round);
       if (data == null) {
         ScaffoldMessenger.of(
           context,
@@ -59,7 +59,7 @@ class _MemoryRecallSessionSelectScreenState
         MaterialPageRoute(
           builder:
               (_) => MemoryRecallResultScreen(
-                sessionIndex: roundId, // UI에 보일 회차
+                sessionIndex: round, // UI에 보일 회차
                 selectedScent: selectedScent, // 결과 화면 상단 "오늘의 향기"
                 roundData: data, // 서버 응답 전체 전달
               ),
@@ -101,7 +101,7 @@ class _MemoryRecallSessionSelectScreenState
         onBackPressed: () {
           Navigator.pop(context);
         },
-        logoutEnabled: true
+        logoutEnabled: true,
       ),
       body:
           isLoading
@@ -174,7 +174,7 @@ class _MemoryRecallSessionSelectScreenState
                                     //완료된 회차: 히스토리 보기
                                     _openFinishedSession(
                                       index + 1,
-                                    ); // roundId == sessionIndex
+                                    ); // round == sessionIndex + 1
                                   } else if (isCurrent) {
                                     // 진행해야 할 현재 회차: 훈련 시작
                                     Navigator.push(

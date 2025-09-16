@@ -84,7 +84,7 @@ class MemoryRecallTrainingScreenState
     int fanNumber = memoryRecallTrainingController.fanNumber;
     await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
     await MemoryRecallTrainingApi.deleteMemoryRecallRoundLog(
-      memoryRecallTrainingController.chatId,
+      memoryRecallTrainingController.roundId,
     );
 
     Navigator.of(context).pushAndRemoveUntil(
@@ -226,7 +226,10 @@ class MemoryRecallTrainingScreenState
                       memoryRecallTrainingController.scentName.isNotEmpty
                           ? '${memoryRecallTrainingController.scentName} 향을 발향하는 중입니다.'
                           : '향을 발향하는 중입니다.',
-                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Expanded(
                       child: Center(
@@ -364,7 +367,10 @@ class MemoryRecallTrainingScreenState
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.timer, color: Color(0xFF335928)),
+                                      Icon(
+                                        Icons.timer,
+                                        color: Color(0xFF335928),
+                                      ),
                                       SizedBox(width: 8),
                                       Text(
                                         '시간 연장하기',

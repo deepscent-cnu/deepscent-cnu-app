@@ -58,7 +58,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
   Future<void> fetchInitialQuestion() async {
     setState(() => loadingType = LoadingType.generatingQuestion);
     try {
-      final roundId = memoryRecallTrainingController.round;
+      final roundId = memoryRecallTrainingController.roundId;
       if (roundId <= 0) {
         setState(() {
           testQuestionList.add("세션 정보가 없습니다. 이전 화면에서 회차를 시작해 주세요.");
@@ -194,7 +194,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     if (!isLastStep && transcriptText != null && transcriptText!.isNotEmpty) {
       setState(() => loadingType = LoadingType.generatingQuestion);
       try {
-        final roundId = memoryRecallTrainingController.round;
+        final roundId = memoryRecallTrainingController.roundId;
         if (roundId <= 0) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('세션 정보가 없습니다. 다시 시도해 주세요.')),
@@ -227,13 +227,13 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     }
 
     if (isLastStep) {
-      final roundId = widget.sessionIndex;
-      final roundId2 = memoryRecallTrainingController.round;// ✅ read/summarize에 들어갈 roundId
+      final round = widget.sessionIndex;
+      final roundId = memoryRecallTrainingController.roundId;
 
       setState(() => loadingType = LoadingType.savingSummary);
       try {
         // 1) 요약 저장
-        final saved = await MemoryRecallTrainingApi.summarizeRound(roundId2);
+        final saved = await MemoryRecallTrainingApi.summarizeRound(roundId);
         if (!saved) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('요약 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.')),
@@ -242,7 +242,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         }
 
         // 2) 요약 저장 후, 읽기 호출
-        final roundData = await MemoryRecallTrainingApi.readRound(roundId);
+        final roundData = await MemoryRecallTrainingApi.readRound(round);
         if (roundData == null) {
           ScaffoldMessenger.of(
             context,
@@ -349,7 +349,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                                 function: () async {
                                   await _stopRecordingIfNeeded();
                                   await MemoryRecallTrainingApi.deleteMemoryRecallRoundLog(
-                                    memoryRecallTrainingController.chatId,
+                                    memoryRecallTrainingController.roundId,
                                   );
                                   Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
@@ -426,7 +426,10 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 24,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -454,13 +457,14 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: PageTransitionSwitcher(
                               duration: const Duration(milliseconds: 350),
-                              transitionBuilder: (child, primary, secondary) =>
-                                  FadeThroughTransition(
-                                    animation: primary,
-                                    secondaryAnimation: secondary,
-                                    fillColor: Colors.transparent,
-                                    child: child,
-                                  ),
+                              transitionBuilder:
+                                  (child, primary, secondary) =>
+                                      FadeThroughTransition(
+                                        animation: primary,
+                                        secondaryAnimation: secondary,
+                                        fillColor: Colors.transparent,
+                                        child: child,
+                                      ),
                               child: Text(
                                 testQuestionList.isNotEmpty
                                     ? testQuestionList[currentIndex]
@@ -525,7 +529,9 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                               ),
                               child: ButtonBasic(
                                 content:
-                                    interactionCount >= 9 ? '훈련 저장하기' : '다음 질문으로',
+                                    interactionCount >= 9
+                                        ? '훈련 저장하기'
+                                        : '다음 질문으로',
                                 icon: const Icon(Icons.double_arrow, size: 24),
                                 fontSize: 24,
                                 function: isNextEnabled ? _onNextPressed : null,
@@ -544,9 +550,10 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                 transitionBuilder: (child, animation) {
                   return FadeTransition(opacity: animation, child: child);
                 },
-                child: loadingType != LoadingType.none
-                    ? LoadingOverlay(message: _loadingMessage())
-                    : const SizedBox.shrink(),
+                child:
+                    loadingType != LoadingType.none
+                        ? LoadingOverlay(message: _loadingMessage())
+                        : const SizedBox.shrink(),
               ),
             ],
           ),

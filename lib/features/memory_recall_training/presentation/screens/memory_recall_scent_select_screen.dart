@@ -56,7 +56,7 @@ class _MemoryRecallScentSelectScreenState
     setState(() => isSubmitting = true);
 
     final result = await MemoryRecallTrainingApi.startChatWithScent(
-      roundId: widget.sessionIndex,
+      round: widget.sessionIndex,
       scent: memoryRecallTrainingController.scentName,
     );
 
@@ -69,8 +69,9 @@ class _MemoryRecallScentSelectScreenState
       return;
     }
 
+    memoryRecallTrainingController.roundId = result['id'];
     memoryRecallTrainingController.round =
-        (result['id'] as num?)?.toInt() ?? widget.sessionIndex;
+        (result['round'] as num?)?.toInt() ?? widget.sessionIndex;
 
     // 4) 다음 페이지
     Navigator.push(

@@ -17,7 +17,7 @@ class AuthController extends GetxController {
         Uri.parse(apiUrl),
         headers: requestHeaders,
         body: jsonEncode({
-          'username': adminUsername,
+          'phoneNumber': adminPhoneNumber,
           'password': adminPassword,
         }),
       );
