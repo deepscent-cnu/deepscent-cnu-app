@@ -165,14 +165,14 @@ class MemoryRecallTrainingApi {
   }
 
   static Future<Map<String, dynamic>?> startChatWithScent({
-    required int roundId,
+    required int round,
     required String scent,
   }) async {
     final authController = Get.find<AuthController>();
     final accessToken = authController.accessToken.value;
 
     final url =
-        '$apiBaseUrl/api/chat/start/$roundId?scent=${Uri.encodeQueryComponent(scent)}';
+        '$apiBaseUrl/api/chat/start/$round?scent=${Uri.encodeQueryComponent(scent)}';
 
     try {
       final response = await http.post(
@@ -262,10 +262,10 @@ class MemoryRecallTrainingApi {
     }
   }
 
-  static Future<Map<String, dynamic>?> readRound(int roundId) async {
+  static Future<Map<String, dynamic>?> readRound(int round) async {
     final authController = Get.find<AuthController>();
     final accessToken = authController.accessToken.value;
-    final url = '$apiBaseUrl/api/chat/read/$roundId';
+    final url = '$apiBaseUrl/api/chat/read/$round';
 
     try {
       final resp = await http.get(
