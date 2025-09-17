@@ -240,8 +240,8 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                       ),
                       child: ButtonBasic(
                         content: '홈으로 돌아가기',
-                        fontSize: 30,
-                        icon: Icon(Icons.list, size: 36),
+                        fontSize: 28,
+                        icon: Icon(Icons.list, size: 32),
                         function: () => returnTrainingList(context),
                       ),
                     ),
