@@ -132,7 +132,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       _buildTextFormField(
                         hintText: '생년월일 (YYYY-MM-DD)',
                         controller: birthController,
-                        keyboardType: TextInputType.datetime,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return '생년월일을 입력해주세요.';
