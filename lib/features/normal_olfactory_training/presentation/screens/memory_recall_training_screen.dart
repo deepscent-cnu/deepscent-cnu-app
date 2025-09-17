@@ -93,6 +93,7 @@ class _MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
 
   @override
   Widget build(BuildContext context) {
+    final safeBottom = MediaQuery.of(context).padding.bottom;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -119,75 +120,83 @@ class _MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
               alignment: Alignment.center,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 24),
-                const Text(
-                  '방금 맡은 냄새는\n어떤 향기인 것 같나요?',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  constraints: const BoxConstraints(minHeight: 120),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    transcriptText ?? '',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF43A047),
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  ),
-                  onPressed: () {},
-                  icon: const Icon(Icons.arrow_forward, color: Colors.white),
-                  label: const Text('다음 질문으로', style: TextStyle(fontSize: 18, color: Colors.white)),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: toggleRecording,
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 36,
-                        backgroundColor: const Color(0xFF2E7D32),
-                        child: Icon(
-                          isRecording ? Icons.stop : Icons.mic,
-                          color: Colors.white,
-                          size: 36,
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false, // 화면보다 작아도 하단까지 채워짐(오버플로우 방지)
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 24),
+                        const Text(
+                          '방금 맡은 냄새는\n어떤 향기인 것 같나요?',
+                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        formattedTime(),
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          constraints: const BoxConstraints(minHeight: 120),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            transcriptText ?? '',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF43A047),
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          ),
+                          onPressed: () {},
+                          icon: const Icon(Icons.arrow_forward, color: Colors.white),
+                          label: const Text('다음 질문으로', style: TextStyle(fontSize: 18, color: Colors.white)),
+                        ),
+                        const SizedBox(height: 16),
+                        GestureDetector(
+                          onTap: toggleRecording,
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 36,
+                                backgroundColor: const Color(0xFF2E7D32),
+                                child: Icon(
+                                  isRecording ? Icons.stop : Icons.mic,
+                                  color: Colors.white,
+                                  size: 36,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                formattedTime(),
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 24 + safeBottom),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-              ],
+                ],
+              ),
             ),
           ),
         ],
