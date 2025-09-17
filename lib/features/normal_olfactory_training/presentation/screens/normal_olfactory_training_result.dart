@@ -82,25 +82,6 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 3),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            '1',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
                         resultLabel(
                           context,
                           isCorrect:
@@ -132,25 +113,6 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 3),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            '2',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
                         resultLabel(
                           context,
                           isCorrect:
@@ -158,7 +120,6 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                                   .logs[1]
                                   .isCorrect,
                         ),
-
                         const SizedBox(width: 32),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,25 +144,6 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 3),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            '3',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
                         resultLabel(
                           context,
                           isCorrect:
@@ -209,7 +151,6 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                                   .logs[2]
                                   .isCorrect,
                         ),
-
                         const SizedBox(width: 32),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,25 +175,6 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 3),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            '4',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
                         resultLabel(
                           context,
                           isCorrect:
@@ -334,36 +256,23 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
   }
 
   Widget resultLabel(BuildContext context, {required bool isCorrect}) {
-    return isCorrect
-        ? Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: Color(0xFF335928),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: const Text(
-            '정답',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        )
-        : Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: Color(0xFFFF5353),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: const Text(
-            '오답',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        );
+    return Container(
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(
+        color:
+            isCorrect ? Color.fromARGB(255, 101, 176, 80) : Color(0xFFFF5353),
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        isCorrect ? 'O' : 'X',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 }

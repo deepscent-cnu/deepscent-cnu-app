@@ -269,6 +269,48 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
     }
   }
 
+  void _onSkipPressed() async {
+    final round = widget.sessionIndex;
+    final roundId = memoryRecallTrainingController.roundId;
+
+    setState(() => loadingType = LoadingType.savingSummary);
+    try {
+      // 1) 요약 저장
+      final saved = await MemoryRecallTrainingApi.summarizeRound(roundId);
+      if (!saved) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('요약 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.')),
+        );
+        return;
+      }
+
+      // 2) 요약 저장 후, 읽기 호출
+      final roundData = await MemoryRecallTrainingApi.readRound(round);
+      if (roundData == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('결과 데이터를 불러오지 못했습니다.')));
+        return;
+      }
+
+      // 3) 결과 화면으로 이동 (읽은 데이터 전달)
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder:
+              (_) => MemoryRecallResultScreen(
+                sessionIndex: widget.sessionIndex,
+                selectedScent: widget.selectedScent,
+                roundData: roundData,
+              ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => loadingType = LoadingType.none);
+    }
+    return;
+  }
+
   String formattedTime() {
     final seconds = stopwatch.elapsed.inSeconds;
     final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
@@ -436,15 +478,34 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 24),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: QuestionStepChip(
-                          currentStep: (currentIndex + 1).clamp(1, 10),
-                          totalSteps: 10,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 6,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: QuestionStepChip(
+                                currentStep: (currentIndex + 1).clamp(1, 10),
+                                totalSteps: 10,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        Expanded(
+                          flex: 4,
+                          child: Opacity(
+                            opacity: 0.5,
+                            child: ButtonBasic(
+                              content: '훈련 스킵 (디버깅)',
+                              fontSize: 12,
+                              function: _onSkipPressed,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     Expanded(
                       flex: 6,
