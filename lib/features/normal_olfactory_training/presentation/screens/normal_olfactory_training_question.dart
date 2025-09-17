@@ -148,6 +148,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
 
   @override
   Widget build(BuildContext context) {
+    final bottomPad = MediaQuery.of(context).padding.bottom + 24;
     return PopScope(
       canPop: false, // 기본 pop 동작 차단
       onPopInvokedWithResult: (didPop, result) {
@@ -166,33 +167,35 @@ class _NormalOlfactoryTrainingQuestionScreenState
         body: SafeArea(
           child:
               isLoading
-                  ? Container(
+              ? Container(
                     color: Colors.black.withOpacity(0.5), // 화면 어두워짐
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(color: Colors.white),
-                          SizedBox(height: 16),
-                          Text(
-                            '불러오는 중...',
-                            style: TextStyle(color: Colors.white, fontSize: 16),
-                          ),
-                        ],
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(color: Colors.white),
+                        SizedBox(height: 16),
+                        Text(
+                          '불러오는 중...',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image.asset(
+                        'assets/images/blurred_background.png',
+                        fit: BoxFit.cover,
+                        opacity: AlwaysStoppedAnimation(0.5),
                       ),
                     ),
-                  )
-                  : Stack(
-                    children: [
-                      Positioned.fill(
-                        child: Image.asset(
-                          'assets/images/blurred_background.png',
-                          fit: BoxFit.cover,
-                          opacity: AlwaysStoppedAnimation(0.5),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.only(bottom: bottomPad),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -213,6 +216,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
                               padding: const EdgeInsets.symmetric(horizontal: 24),
                               child: GridView.count(
                                 shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 40,
                                 mainAxisSpacing: 40,
@@ -269,8 +273,9 @@ class _NormalOlfactoryTrainingQuestionScreenState
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );
