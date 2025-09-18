@@ -1,5 +1,6 @@
 //import 'package:deepscent_cnu/presentation/screens/%08signup.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
@@ -24,6 +25,12 @@ void main() async {
   if (token != null) {
     authController.accessToken.value = token;
   }
+
+  // 세로 화면 고정
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   runApp(MyApp(initialToken: token));
 }
