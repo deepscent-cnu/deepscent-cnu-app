@@ -16,11 +16,14 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
   }
 
   String displaySelectedOption(String selectedOption) {
-    return selectedOption.isEmpty ? "모름" : selectedOption;
+    return selectedOption.isEmpty || selectedOption == "잘 모르겠어요"
+        ? "모름"
+        : selectedOption;
   }
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: CustomAppBar(
         mode: CustomAppBarMode.sub,
@@ -44,41 +47,41 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
-                    const Text(
+                    SizedBox(height: screenWidth * 0.05),
+                    Text(
                       '훈련이 끝났어요!',
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 32),
-                    const Text(
+                    SizedBox(height: screenWidth * 0.07),
+                    Text(
                       '총 점수',
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF335928),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: screenWidth * 0.01),
                     Text(
                       '4개의 향기 중, ${normalOlfactoryTrainingController.totalScore}개의 향기를 맞추었어요!',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: screenWidth * 0.06,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 48),
-                    const Text(
+                    SizedBox(height: screenWidth * 0.08),
+                    Text(
                       '답안지',
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF335928),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: screenWidth * 0.05),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -89,27 +92,27 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                                   .logs[0]
                                   .isCorrect,
                         ),
-                        const SizedBox(width: 32),
+                        SizedBox(width: screenWidth * 0.07),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               '정답: ${normalOlfactoryTrainingController.logs[0].correctOption}',
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: screenWidth * 0.06,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: screenWidth * 0.03),
                             Text(
                               '선택: ${displaySelectedOption(normalOlfactoryTrainingController.logs[0].selectedOption)}',
-                              style: TextStyle(fontSize: 28),
+                              style: TextStyle(fontSize: screenWidth * 0.06),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 18),
+                    SizedBox(height: screenWidth * 0.05),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -120,27 +123,27 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                                   .logs[1]
                                   .isCorrect,
                         ),
-                        const SizedBox(width: 32),
+                        SizedBox(width: screenWidth * 0.07),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               '정답: ${normalOlfactoryTrainingController.logs[1].correctOption}',
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: screenWidth * 0.06,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: screenWidth * 0.03),
                             Text(
                               '선택: ${displaySelectedOption(normalOlfactoryTrainingController.logs[1].selectedOption)}',
-                              style: TextStyle(fontSize: 28),
+                              style: TextStyle(fontSize: screenWidth * 0.06),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 18),
+                    SizedBox(height: screenWidth * 0.05),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -151,27 +154,27 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                                   .logs[2]
                                   .isCorrect,
                         ),
-                        const SizedBox(width: 32),
+                        SizedBox(width: screenWidth * 0.07),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               '정답: ${normalOlfactoryTrainingController.logs[2].correctOption}',
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: screenWidth * 0.06,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: screenWidth * 0.03),
                             Text(
                               '선택: ${displaySelectedOption(normalOlfactoryTrainingController.logs[2].selectedOption)}',
-                              style: TextStyle(fontSize: 28),
+                              style: TextStyle(fontSize: screenWidth * 0.06),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 18),
+                    SizedBox(height: screenWidth * 0.05),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -182,44 +185,44 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                                   .logs[3]
                                   .isCorrect,
                         ),
-                        const SizedBox(width: 32),
+                        SizedBox(width: screenWidth * 0.07),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               '정답: ${normalOlfactoryTrainingController.logs[3].correctOption}',
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: screenWidth * 0.06,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: screenWidth * 0.03),
                             Text(
                               '선택: ${displaySelectedOption(normalOlfactoryTrainingController.logs[3].selectedOption)}',
-                              style: TextStyle(fontSize: 28),
+                              style: TextStyle(fontSize: screenWidth * 0.06),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 48),
-                    const Text(
+                    SizedBox(height: screenWidth * 0.09),
+                    Text(
                       '문제 풀이에 소요된 총 시간',
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF335928),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: screenWidth * 0.008),
                     Text(
                       '${normalOlfactoryTrainingController.totalTimeTaken ~/ 60}분 ${normalOlfactoryTrainingController.totalTimeTaken % 60}초',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: screenWidth * 0.06,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 48),
+                    SizedBox(height: screenWidth * 0.09),
                     // Padding(
                     //   padding: const EdgeInsets.symmetric(
                     //     horizontal: 32,
@@ -234,14 +237,14 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
                     // ),
                     // const SizedBox(height: 6),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.07,
+                        vertical: screenWidth * 0.035,
                       ),
                       child: ButtonBasic(
                         content: '홈으로 돌아가기',
-                        fontSize: 28,
-                        icon: Icon(Icons.list, size: 32),
+                        fontSize: screenWidth * 0.06,
+                        icon: Icon(Icons.list, size: screenWidth * 0.07),
                         function: () => returnTrainingList(context),
                       ),
                     ),
@@ -256,9 +259,10 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
   }
 
   Widget resultLabel(BuildContext context, {required bool isCorrect}) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: 64,
-      height: 64,
+      width: screenWidth * 0.14,
+      height: screenWidth * 0.14,
       decoration: BoxDecoration(
         color:
             isCorrect ? Color.fromARGB(255, 101, 176, 80) : Color(0xFFFF5353),
@@ -269,7 +273,7 @@ class NormalOlfactoryTrainingResultScreen extends StatelessWidget {
         isCorrect ? 'O' : 'X',
         style: TextStyle(
           color: Colors.white,
-          fontSize: 32,
+          fontSize: screenWidth * 0.07,
           fontWeight: FontWeight.bold,
         ),
       ),

@@ -17,10 +17,76 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
     extends State<NormalOlfactoryTrainingScentStrengthScreen> {
   final normalOlfactoryTrainingController =
       Get.find<NormalOlfactoryTrainingController>();
+  final SCENT_STRENGTH_STRONG = "강함";
+  final SCENT_STRENGTH_NORMAL = "보통";
+  final SCENT_STRENGTH_WEAK = "약함";
 
   @override
   void initState() {
     super.initState();
+  }
+
+  String _getJosa(String text) {
+    if (text.isEmpty) {
+      return '';
+    }
+
+    // 마지막 글자의 유니코드(UTF-16) 코드를 가져옵니다.
+    int lastCharCode = text.codeUnitAt(text.length - 1);
+
+    // 한글 유니코드 범위 (가-힣) 안에 있는지 확인합니다.
+    if (lastCharCode < 0xAC00 || lastCharCode > 0xD7A3) {
+      // 한글이 아니면 기본값 '을'을 반환
+      return '를';
+    }
+
+    // 받침(종성)이 있는지 확인합니다.
+    // 한글 유니코드 계산식: (글자 코드 - 0xAC00) % 28
+    // 이 결과가 0이면 받침이 없고, 0이 아니면 받침이 있습니다.
+    final bool hasJongseong = (lastCharCode - 0xAC00) % 28 != 0;
+
+    return hasJongseong ? '을' : '를';
+  }
+
+  void scentStrengthSelectionModal(BuildContext context, String scentStrength) {
+    int scentStrengthNumber = 0;
+
+    if (scentStrength == SCENT_STRENGTH_WEAK) {
+      scentStrengthNumber = 1;
+    } else if (scentStrength == SCENT_STRENGTH_NORMAL) {
+      scentStrengthNumber = 2;
+    } else if (scentStrength == SCENT_STRENGTH_STRONG) {
+      scentStrengthNumber = 3;
+    } else {
+      scentStrengthNumber = -1;
+    }
+
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text("강도 선택", style: TextStyle(fontSize: 28)),
+            content: Text(
+              "정말 [$scentStrength] ${_getJosa(scentStrength)} 선택하시겠습니까?",
+              style: TextStyle(fontSize: 24),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _goAnswerScreen(scentStrengthNumber);
+                },
+                child: const Text("확인", style: TextStyle(fontSize: 24)),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("취소", style: TextStyle(fontSize: 24)),
+              ),
+            ],
+          ),
+    );
   }
 
   void showTrainingStopModal(BuildContext context) {
@@ -116,13 +182,14 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
     );
   }
 
-  void goAnswerScreen(int scentStrength) {
+  void _goAnswerScreen(int scentStrength) {
     normalOlfactoryTrainingController.addLog(scentStrength);
     Get.off(() => NormalOlfactoryTrainingAnswerScreen());
   }
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return PopScope(
       canPop: false, // 기본 pop 동작 차단
       onPopInvokedWithResult: (didPop, result) {
@@ -159,7 +226,7 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
                       child: Text(
                         "향을 맡으셨을 때 느끼신\n강도를 선택해주세요.",
                         style: TextStyle(
-                          fontSize: 32,
+                          fontSize: screenWidth * 0.07,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
@@ -178,19 +245,31 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
                             childAspectRatio: 1,
                             children: [
                               ButtonBasic(
-                                content: "약함",
-                                fontSize: 32,
-                                function: () => goAnswerScreen(1),
+                                content: SCENT_STRENGTH_WEAK,
+                                fontSize: screenWidth * 0.08,
+                                function:
+                                    () => scentStrengthSelectionModal(
+                                      context,
+                                      SCENT_STRENGTH_WEAK,
+                                    ),
                               ),
                               ButtonBasic(
-                                content: "보통",
-                                fontSize: 32,
-                                function: () => goAnswerScreen(2),
+                                content: SCENT_STRENGTH_NORMAL,
+                                fontSize: screenWidth * 0.08,
+                                function:
+                                    () => scentStrengthSelectionModal(
+                                      context,
+                                      SCENT_STRENGTH_NORMAL,
+                                    ),
                               ),
                               ButtonBasic(
-                                content: "강함",
-                                fontSize: 32,
-                                function: () => goAnswerScreen(3),
+                                content: SCENT_STRENGTH_STRONG,
+                                fontSize: screenWidth * 0.08,
+                                function:
+                                    () => scentStrengthSelectionModal(
+                                      context,
+                                      SCENT_STRENGTH_STRONG,
+                                    ),
                               ),
                             ],
                           ),

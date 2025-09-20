@@ -31,7 +31,7 @@ class _MemoryRecallScentSelectScreenState
     getScentAll();
   }
 
-  Future<void> goNextPage(ScentInfo? scentInfo) async {
+  Future<void> _goNextPage(ScentInfo? scentInfo) async {
     if (isSubmitting) return;
 
     if (scentInfo == null) {
@@ -94,6 +94,57 @@ class _MemoryRecallScentSelectScreenState
         isLoading = false;
       });
     }
+  }
+
+  String _getJosa(String text) {
+    if (text.isEmpty) {
+      return '';
+    }
+
+    // 마지막 글자의 유니코드(UTF-16) 코드를 가져옵니다.
+    int lastCharCode = text.codeUnitAt(text.length - 1);
+
+    // 한글 유니코드 범위 (가-힣) 안에 있는지 확인합니다.
+    if (lastCharCode < 0xAC00 || lastCharCode > 0xD7A3) {
+      // 한글이 아니면 기본값 '을'을 반환
+      return '를';
+    }
+
+    // 받침(종성)이 있는지 확인합니다.
+    // 한글 유니코드 계산식: (글자 코드 - 0xAC00) % 28
+    // 이 결과가 0이면 받침이 없고, 0이 아니면 받침이 있습니다.
+    final bool hasJongseong = (lastCharCode - 0xAC00) % 28 != 0;
+
+    return hasJongseong ? '을' : '를';
+  }
+
+  void scentSelectionModal(BuildContext context, ScentInfo? scentInfo) {
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text("향기 선택", style: TextStyle(fontSize: 28)),
+            content: Text(
+              "정말 [${scentInfo != null ? scentInfo.scentName : "없음"}] ${_getJosa(scentInfo != null ? scentInfo.scentName : "없음")} 선택하시겠습니까?",
+              style: TextStyle(fontSize: 24),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _goNextPage(scentInfo);
+                },
+                child: const Text("확인", style: TextStyle(fontSize: 24)),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("취소", style: TextStyle(fontSize: 24)),
+              ),
+            ],
+          ),
+    );
   }
 
   @override
@@ -183,7 +234,11 @@ class _MemoryRecallScentSelectScreenState
                                   ScentInfo scentInfo = scentAll![index];
 
                                   return OutlinedButton.icon(
-                                    onPressed: () => goNextPage(scentInfo),
+                                    onPressed:
+                                        () => scentSelectionModal(
+                                          context,
+                                          scentInfo,
+                                        ),
                                     label: Text(
                                       scentInfo.scentName,
                                       style: TextStyle(
@@ -216,7 +271,11 @@ class _MemoryRecallScentSelectScreenState
                                             0.5 -
                                         48, // 좌우 padding 고려
                                     child: OutlinedButton.icon(
-                                      onPressed: () => goNextPage(null),
+                                      onPressed:
+                                          () => scentSelectionModal(
+                                            context,
+                                            null,
+                                          ),
                                       icon: const Icon(
                                         Icons.cancel,
                                         color: Colors.red,
