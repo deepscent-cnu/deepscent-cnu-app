@@ -185,6 +185,7 @@ class _NormalOlfactoryTrainingScreenState
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return PopScope(
       canPop: false, // 기본 pop 동작 차단
       onPopInvokedWithResult: (didPop, result) {
@@ -202,6 +203,7 @@ class _NormalOlfactoryTrainingScreenState
         ),
         body: SafeArea(
           child: Stack(
+            fit: StackFit.expand,
             children: [
               Positioned.fill(
                 child: Image.asset(
@@ -219,7 +221,7 @@ class _NormalOlfactoryTrainingScreenState
                       child: Text(
                         '${normalOlfactoryTrainingController.currentRound.value} 번째 향을 발향 중입니다.\n향을 집중해서 맡아보세요!',
                         style: TextStyle(
-                          fontSize: 30,
+                          fontSize: screenWidth * 0.07,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -231,16 +233,16 @@ class _NormalOlfactoryTrainingScreenState
                           children: [
                             Text(
                               remainTime.toString(),
-                              style: const TextStyle(
-                                fontSize: 92,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.3,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            const Text(
+                            Text(
                               "초 뒤, 발향이 중지됩니다.",
                               style: TextStyle(
-                                fontSize: 30,
+                                fontSize: screenWidth * 0.07,
                                 fontWeight: FontWeight.bold,
                               ),
                               textAlign: TextAlign.center,
@@ -249,7 +251,6 @@ class _NormalOlfactoryTrainingScreenState
                         ),
                       ),
                     ),
-                    const SizedBox(height: 60),
                   ],
                 ),
               ),

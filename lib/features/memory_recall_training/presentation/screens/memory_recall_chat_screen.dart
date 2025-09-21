@@ -98,25 +98,25 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         context: context,
         builder:
             (context) => AlertDialog(
-          title: const Text(
-            "재녹음 하시겠습니까?",
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
-          content: const Text(
-            "이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?",
-            style: TextStyle(fontSize: 24),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text("취소", style: TextStyle(fontSize: 24)),
+              title: const Text(
+                "재녹음 하시겠습니까?",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              content: const Text(
+                "이미 음성 인식된 내용이 있습니다. 이전 내용을 삭제하고 다시 녹음하시겠습니까?",
+                style: TextStyle(fontSize: 24),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("취소", style: TextStyle(fontSize: 24)),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text("확인", style: TextStyle(fontSize: 24)),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text("확인", style: TextStyle(fontSize: 24)),
-            ),
-          ],
-        ),
       );
       if (shouldReRecord != true) return;
       setState(() {
@@ -256,10 +256,10 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
           MaterialPageRoute(
             builder:
                 (_) => MemoryRecallResultScreen(
-              sessionIndex: widget.sessionIndex,
-              selectedScent: widget.selectedScent,
-              roundData: roundData,
-            ),
+                  sessionIndex: widget.sessionIndex,
+                  selectedScent: widget.selectedScent,
+                  roundData: roundData,
+                ),
           ),
         );
       } finally {
@@ -395,8 +395,9 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                                   );
                                   Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
-                                      builder: (_) =>
-                                          const OlfactoryTrainingListScreen(),
+                                      builder:
+                                          (_) =>
+                                              const OlfactoryTrainingListScreen(),
                                     ),
                                     (route) => false,
                                   );
@@ -433,6 +434,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     final bool isLastStep = interactionCount >= 9;
     final bool isNextEnabled =
         (isLastStep ||
@@ -458,6 +460,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
         ),
         body: SafeArea(
           child: Stack(
+            fit: StackFit.expand,
             children: [
               Positioned.fill(
                 child: Image.asset(
@@ -481,7 +484,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          flex: 6,
+                          flex: 5,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 8),
                             child: Align(
@@ -499,7 +502,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                             opacity: 0.5,
                             child: ButtonBasic(
                               content: '훈련 스킵 (디버깅)',
-                              fontSize: 12,
+                              fontSize: screenWidth * 0.05,
                               function: _onSkipPressed,
                             ),
                           ),
@@ -514,24 +517,27 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                           // 질문 바뀔 때 스크롤뷰 재생성
                           key: ValueKey('q-$currentIndex'),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
                             child: PageTransitionSwitcher(
                               duration: const Duration(milliseconds: 350),
                               transitionBuilder:
                                   (child, primary, secondary) =>
                                       FadeThroughTransition(
-                                animation: primary,
-                                secondaryAnimation: secondary,
-                                fillColor: Colors.transparent,
-                                child: child,
-                              ),
+                                        animation: primary,
+                                        secondaryAnimation: secondary,
+                                        fillColor: Colors.transparent,
+                                        child: child,
+                                      ),
                               child: Text(
                                 testQuestionList.isNotEmpty
                                     ? testQuestionList[currentIndex]
                                     : '',
                                 key: ValueKey(currentIndex),
-                                style: const TextStyle(
-                                  fontSize: 28,
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.08,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -540,10 +546,10 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                         ),
                       ),
                     ),
-                    const Divider(
+                    Divider(
                       color: Color.fromARGB(255, 205, 205, 205),
                       thickness: 5,
-                      height: 32,
+                      height: screenWidth * 0.07,
                     ),
                     Expanded(
                       flex: 2,
@@ -556,47 +562,56 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                             isLastStep
                                 ? const SizedBox.shrink()
                                 : Expanded(
-                                    flex: 3,
-                                    child: GestureDetector(
-                                      onTap: toggleRecording,
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 36,
-                                        backgroundColor:
+                                  flex: 3,
+                                  child: GestureDetector(
+                                    onTap: toggleRecording,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        CircleAvatar(
+                                          radius: screenWidth * 0.07,
+                                          backgroundColor:
+                                              isRecording
+                                                  ? Colors.red
+                                                  : const Color(0xFF2E7D32),
+                                          child: Icon(
                                             isRecording
-                                                ? Colors.red
-                                                : const Color(0xFF2E7D32),
-                                            child: Icon(
-                                          isRecording ? Icons.stop : Icons.mic,
-                                              color: Colors.white,
-                                              size: 36,
-                                            ),
+                                                ? Icons.stop
+                                                : Icons.mic,
+                                            color: Colors.white,
+                                            size: screenWidth * 0.07,
                                           ),
-                                          const SizedBox(height: 12),
-                                          Text(
-                                            formattedTime(),
-                                        style: const TextStyle(fontSize: 18),
+                                        ),
+                                        SizedBox(height: screenWidth * 0.03),
+                                        Text(
+                                          formattedTime(),
+                                          style: TextStyle(
+                                            fontSize: screenWidth * 0.04,
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
+                                ),
                             Expanded(
                               flex: isLastStep ? 9 : 6,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: screenWidth * 0.02,
+                                  vertical: screenWidth * 0.02,
                                 ),
                                 child: ButtonBasic(
-                                  content: interactionCount >= 9
-                                      ? '훈련 저장하기'
-                                      : '다음 질문으로',
-                                  icon: const Icon(Icons.double_arrow, size: 24),
-                                  fontSize: 24,
+                                  content:
+                                      interactionCount >= 9
+                                          ? '훈련 저장하기'
+                                          : '다음 질문으로',
+                                  icon: Icon(
+                                    Icons.double_arrow,
+                                    size: screenWidth * 0.05,
+                                  ),
+                                  fontSize: screenWidth * 0.05,
                                   function:
                                       isNextEnabled ? _onNextPressed : null,
                                 ),

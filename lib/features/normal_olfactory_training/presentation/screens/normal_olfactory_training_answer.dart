@@ -193,7 +193,7 @@ class _NormalOlfactoryTrainingAnswerScreenState
 
   @override
   Widget build(BuildContext context) {
-    final bottomPad = MediaQuery.of(context).padding.bottom + 24;
+    double screenWidth = MediaQuery.of(context).size.width;
     return PopScope(
       canPop: false, // 기본 pop 동작 차단
       onPopInvokedWithResult: (didPop, result) {
@@ -240,38 +240,36 @@ class _NormalOlfactoryTrainingAnswerScreenState
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: SingleChildScrollView(
-                          padding: EdgeInsets.only(bottom: bottomPad),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              const SizedBox(height: 24),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                ),
-                                child: Text(
-                                  '${normalOlfactoryTrainingController.getIsCorrect() ? "맞았어요!" : "앗, 아쉬워요!"} \n방금 맡은 향은\n${normalOlfactoryTrainingController.getCorrectScentByRound().scentName} 향이었습니다.',
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
                               ),
-                              normalOlfactoryTrainingController
-                                          .currentRound
-                                          .value !=
-                                      4
-                                  ? Center(
+                              child: Text(
+                                '${normalOlfactoryTrainingController.getIsCorrect() ? "맞았어요!" : "앗, 아쉬워요!"} \n방금 맡은 향은\n${normalOlfactoryTrainingController.getCorrectScentByRound().scentName} 향이었습니다.',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.07,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            normalOlfactoryTrainingController
+                                        .currentRound
+                                        .value !=
+                                    4
+                                ? Expanded(
+                                  child: Center(
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           remainTime.toString(),
-                                          style: const TextStyle(
-                                            fontSize: 92,
+                                          style: TextStyle(
+                                            fontSize: screenWidth * 0.2,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -279,54 +277,53 @@ class _NormalOlfactoryTrainingAnswerScreenState
                                         Text(
                                           message,
                                           style: TextStyle(
-                                            fontSize: 30,
+                                            fontSize: screenWidth * 0.07,
                                             fontWeight: FontWeight.bold,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
                                       ],
                                     ),
-                                  )
-                                  : Column(
+                                  ),
+                                )
+                                : Expanded(
+                                  child: Column(
                                     children: [
-                                      SizedBox(height: 48),
-                                      Center(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 24,
-                                            vertical: 16,
-                                          ),
-                                          child: ButtonBasic(
-                                            content: "훈련 결과 보기",
-                                            icon: Icon(Icons.double_arrow),
-                                            function: nextRound,
-                                          ),
+                                      SizedBox(height: screenWidth * 0.3),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 16,
+                                        ),
+                                        child: ButtonBasic(
+                                          content: "훈련 결과 보기",
+                                          icon: Icon(Icons.double_arrow),
+                                          function: nextRound,
                                         ),
                                       ),
                                     ],
                                   ),
-                              normalOlfactoryTrainingController
-                                          .currentRound
-                                          .value !=
-                                      4
-                                  ? Column(
-                                    children: [
-                                      const SizedBox(height: 24),
-                                      Text(
-                                        "다음 단계를 위해, 표시된 시간 동안 편안하게 휴식해주세요!",
-                                        style: TextStyle(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF335928),
-                                        ),
-                                        textAlign: TextAlign.center,
+                                ),
+                            normalOlfactoryTrainingController
+                                        .currentRound
+                                        .value !=
+                                    4
+                                ? Column(
+                                  children: [
+                                    Text(
+                                      "다음 단계를 위해, 표시된 시간 동안 편안하게 휴식해주세요!",
+                                      style: TextStyle(
+                                        fontSize: screenWidth * 0.07,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF335928),
                                       ),
-                                      const SizedBox(height: 100),
-                                    ],
-                                  )
-                                  : SizedBox.shrink(),
-                            ],
-                          ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 50),
+                                  ],
+                                )
+                                : SizedBox.shrink(),
+                          ],
                         ),
                       ),
                     ],

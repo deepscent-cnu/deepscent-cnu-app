@@ -27,7 +27,7 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  Future<void> handleSignUp() async {
+  Future<void> handleSignUp(double screenWidth) async {
     final response = await AuthApi.signup(
       name: nameController.text,
       birthDate: birthController.text,
@@ -42,10 +42,13 @@ class _SignUpPageState extends State<SignUpPage> {
         context: context,
         builder:
             (_) => AlertDialog(
-              title: const Text("회원가입 완료", style: TextStyle(fontSize: 28)),
-              content: const Text(
+              title: Text(
+                "회원가입 완료",
+                style: TextStyle(fontSize: screenWidth * 0.06),
+              ),
+              content: Text(
                 "로그인 화면으로 이동합니다.",
-                style: TextStyle(fontSize: 24),
+                style: TextStyle(fontSize: screenWidth * 0.07),
               ),
               actions: [
                 TextButton(
@@ -53,7 +56,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     Navigator.pop(context);
                     Navigator.pop(context);
                   },
-                  child: const Text("확인", style: TextStyle(fontSize: 24)),
+                  child: Text(
+                    "확인",
+                    style: TextStyle(fontSize: screenWidth * 0.05),
+                  ),
                 ),
               ],
             ),
@@ -64,15 +70,21 @@ class _SignUpPageState extends State<SignUpPage> {
         context: context,
         builder:
             (_) => AlertDialog(
-              title: const Text("회원가입 실패", style: TextStyle(fontSize: 28)),
+              title: Text(
+                "회원가입 실패",
+                style: TextStyle(fontSize: screenWidth * 0.06),
+              ),
               content: Text(
                 jsonDecode(utf8.decode(response.bodyBytes))['message'],
-                style: TextStyle(fontSize: 24),
+                style: TextStyle(fontSize: screenWidth * 0.07),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("확인", style: TextStyle(fontSize: 24)),
+                  child: Text(
+                    "확인",
+                    style: TextStyle(fontSize: screenWidth * 0.05),
+                  ),
                 ),
               ],
             ),
@@ -82,12 +94,13 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(screenWidth * 0.07),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -96,16 +109,21 @@ class _SignUpPageState extends State<SignUpPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, size: 42),
+                      icon: Icon(
+                        Icons.arrow_back_rounded,
+                        size: screenWidth * 0.09,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text("로그인 화면으로", style: TextStyle(fontSize: 24)),
+                      padding: EdgeInsets.all(screenWidth * 0.015),
+                      child: Text(
+                        "로그인 화면으로",
+                        style: TextStyle(fontSize: screenWidth * 0.05),
+                      ),
                     ),
                   ],
                 ),
-
                 Center(
                   child: Image.asset(
                     'assets/images/logo.png',
@@ -120,6 +138,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _buildTextFormField(
+                        screenWidth: screenWidth,
                         hintText: '이름',
                         controller: nameController,
                         validator: (value) {
@@ -130,6 +149,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         },
                       ),
                       _buildTextFormField(
+                        screenWidth: screenWidth,
                         hintText: '생년월일 (YYYY-MM-DD)',
                         controller: birthController,
                         validator: (value) {
@@ -152,6 +172,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         },
                       ),
                       _buildTextFormField(
+                        screenWidth: screenWidth,
                         hintText: '전화번호 (\'-\' 제외)',
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
@@ -170,6 +191,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         },
                       ),
                       _buildTextFormField(
+                        screenWidth: screenWidth,
                         hintText: '비밀번호',
                         controller: pwController,
                         isObscure: true, // 비밀번호 숨김 처리
@@ -201,15 +223,15 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                             );
                             // 실제 회원가입 API 호출
-                            handleSignUp();
+                            handleSignUp(screenWidth);
                           }
                         },
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: const Text(
+                          padding: EdgeInsets.all(screenWidth * 0.035),
+                          child: Text(
                             '가입하기',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: screenWidth * 0.05,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -232,22 +254,23 @@ Widget _buildTextFormField({
   required String hintText,
   required TextEditingController controller,
   required String? Function(String?) validator,
+  required double screenWidth,
   bool isObscure = false,
   TextInputType? keyboardType,
   List<TextInputFormatter>? inputFormatters,
 }) {
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    padding: EdgeInsets.symmetric(vertical: screenWidth * 0.015),
     child: TextFormField(
       controller: controller,
       obscureText: isObscure,
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
       validator: validator,
-      style: TextStyle(fontSize: 24),
+      style: TextStyle(fontSize: screenWidth * 0.05),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(fontSize: 24),
+        hintStyle: TextStyle(fontSize: screenWidth * 0.05),
         // 기본 테두리
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -263,12 +286,15 @@ Widget _buildTextFormField({
         ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.035,
+          vertical: screenWidth * 0.03,
         ),
         errorMaxLines: 3,
-        errorStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        errorStyle: TextStyle(
+          fontSize: screenWidth * 0.048,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     ),
   );

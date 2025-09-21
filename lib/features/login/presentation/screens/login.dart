@@ -42,8 +42,12 @@ class _LoginPageState extends State<LoginPage> {
         PageRouteBuilder(
           pageBuilder: (_, __, ___) => const OlfactoryTrainingListScreen(),
           transitionsBuilder: (_, animation, __, child) {
-            final slide = Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero)
-                .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
+            final slide = Tween<Offset>(
+              begin: const Offset(0, 0.06),
+              end: Offset.zero,
+            ).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+            );
             return SlideTransition(
               position: slide,
               child: FadeTransition(opacity: animation, child: child),
@@ -75,31 +79,32 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 50),
+                SizedBox(height: screenWidth * 0.105),
                 Image.asset(
                   'assets/images/logo.png',
                   width: 260,
                   height: 120,
                   fit: BoxFit.contain,
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: screenWidth * 0.085),
                 TextField(
                   controller: phoneController,
-                  style: TextStyle(fontSize: 24),
+                  style: TextStyle(fontSize: screenWidth * 0.05),
                   decoration: InputDecoration(
                     hintText: '전화번호를 입력해주세요.',
-                    hintStyle: const TextStyle(
+                    hintStyle: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 24,
+                      fontSize: screenWidth * 0.05,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -108,16 +113,16 @@ class _LoginPageState extends State<LoginPage> {
                     fillColor: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: screenWidth * 0.05),
                 TextField(
                   controller: pwController,
                   obscureText: true,
-                  style: TextStyle(fontSize: 24),
+                  style: TextStyle(fontSize: screenWidth * 0.05),
                   decoration: InputDecoration(
                     hintText: '비밀번호를 입력해주세요.',
-                    hintStyle: const TextStyle(
+                    hintStyle: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 24,
+                      fontSize: screenWidth * 0.05,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -126,10 +131,10 @@ class _LoginPageState extends State<LoginPage> {
                     fillColor: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 48),
+                SizedBox(height: screenWidth * 0.105),
                 SizedBox(
                   width: double.infinity,
-                  height: 48,
+                  height: screenWidth * 0.105,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF43A047),
@@ -138,17 +143,17 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     onPressed: handleLogin, // 여기서 API 호출
-                    child: const Text(
+                    child: Text(
                       '로그인',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: screenWidth * 0.05,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: screenWidth * 0.035),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -158,11 +163,11 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     );
                   },
-                  child: const Text(
+                  child: Text(
                     '아직 계정이 없으신가요?',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 24,
+                      fontSize: screenWidth * 0.05,
                       color: Colors.black87,
                     ),
                   ),
