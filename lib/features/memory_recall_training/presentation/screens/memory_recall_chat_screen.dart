@@ -509,6 +509,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                         ),
                       ],
                     ),
+
                     Expanded(
                       flex: 6,
                       child: Scrollbar(
@@ -532,9 +533,11 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                                         child: child,
                                       ),
                               child: Text(
-                                testQuestionList.isNotEmpty
-                                    ? testQuestionList[currentIndex]
-                                    : '',
+                                isLastStep
+                                    ? '이제 훈련이 종료되었습니다. 수고하셨습니다.\n훈련을 저장하고 결과를 확인하려면 훈련 저장하기 버튼을 눌러주세요.'
+                                    : (testQuestionList.isNotEmpty
+                                        ? testQuestionList[currentIndex]
+                                        : ''),
                                 key: ValueKey(currentIndex),
                                 style: TextStyle(
                                   fontSize: screenWidth * 0.08,
