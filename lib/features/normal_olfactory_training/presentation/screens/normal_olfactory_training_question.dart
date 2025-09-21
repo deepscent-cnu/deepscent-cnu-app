@@ -159,14 +159,18 @@ class _NormalOlfactoryTrainingQuestionScreenState
   }
 
   void scentSelectionModal(BuildContext context, String selectedOption) {
+    final screenWidth = MediaQuery.of(context).size.width;
     showDialog(
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text("답안 선택", style: TextStyle(fontSize: 28)),
+            title: Text(
+              "답안 선택",
+              style: TextStyle(fontSize: screenWidth * 0.06),
+            ),
             content: Text(
               "정말 [$selectedOption] ${_getJosa(selectedOption)} 선택하시겠습니까?",
-              style: TextStyle(fontSize: 24),
+              style: TextStyle(fontSize: screenWidth * 0.07),
             ),
             actions: [
               TextButton(
@@ -174,13 +178,19 @@ class _NormalOlfactoryTrainingQuestionScreenState
                   Navigator.pop(context);
                   _goScentStrengthScreen(selectedOption);
                 },
-                child: const Text("확인", style: TextStyle(fontSize: 24)),
+                child: Text(
+                  "확인",
+                  style: TextStyle(fontSize: screenWidth * 0.05),
+                ),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text("취소", style: TextStyle(fontSize: 24)),
+                child: Text(
+                  "취소",
+                  style: TextStyle(fontSize: screenWidth * 0.05),
+                ),
               ),
             ],
           ),

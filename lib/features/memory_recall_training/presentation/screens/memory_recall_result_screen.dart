@@ -59,6 +59,8 @@ class MemoryRecallResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     // roundData에서 안전하게 꺼내 쓰기
     final String scentFromApi = (roundData['scent'] ?? '') as String;
     final String summaryFromApi = (roundData['summary'] ?? '') as String;
@@ -93,11 +95,11 @@ class MemoryRecallResultScreen extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.035),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 24),
+                    SizedBox(height: screenWidth * 0.05),
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(
@@ -106,48 +108,47 @@ class MemoryRecallResultScreen extends StatelessWidget {
                             // 타이틀
                             Text(
                               '$sessionIndex회차 훈련이 끝났어요!',
-                              style: const TextStyle(
-                                fontSize: 32,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.07,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: screenWidth * 0.015),
                             if (createdAt.isNotEmpty)
                               Text(
                                 '진행 시각: $createdAt',
-                                style: const TextStyle(
-                                  fontSize: 18,
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.04,
                                   color: Colors.black54,
                                 ),
                               ),
-                            const SizedBox(height: 28),
+                            SizedBox(height: screenWidth * 0.06),
 
                             //오늘의 향기 (서버값 우선, 없으면 선택값)
                             Text(
                               '$sessionIndex회차의 향기: ${scentFromApi.isNotEmpty ? scentFromApi : selectedScent}',
-                              style: const TextStyle(
-                                fontSize: 32,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.07,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF335928),
                               ),
                             ),
-                            const SizedBox(height: 32),
-
+                            SizedBox(height: screenWidth * 0.07),
                             Text(
                               '$sessionIndex회차의 회상:',
                               style: TextStyle(
-                                fontSize: 32,
+                                fontSize: screenWidth * 0.07,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF335928),
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            SizedBox(height: screenWidth * 0.01),
                             Text(
                               summaryFromApi.isNotEmpty
                                   ? summaryFromApi
                                   : '요약이 아직 없습니다.',
-                              style: const TextStyle(
-                                fontSize: 24,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.05,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -157,12 +158,12 @@ class MemoryRecallResultScreen extends StatelessWidget {
                             Text(
                               '$sessionIndex회차 훈련 후 느낀 점:',
                               style: TextStyle(
-                                fontSize: 32,
+                                fontSize: screenWidth * 0.07,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF335928),
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: screenWidth * 0.015),
                             Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -175,9 +176,9 @@ class MemoryRecallResultScreen extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.025,
+                                vertical: screenWidth * 0.01,
                               ),
                               child: TextField(
                                 controller: _feelingController,
@@ -187,38 +188,44 @@ class MemoryRecallResultScreen extends StatelessWidget {
                                   border: InputBorder.none,
                                 ),
                                 style: TextStyle(
-                                  fontSize: 24,
+                                  fontSize: screenWidth * 0.05,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 48),
+                            SizedBox(height: screenWidth * 0.1),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.07,
+                                vertical: screenWidth * 0.035,
                               ),
                               child: ButtonBasic(
                                 content: '훈련 기록 보기',
-                                fontSize: 32,
-                                icon: Icon(Icons.edit_document, size: 32),
+                                fontSize: screenWidth * 0.07,
+                                icon: Icon(
+                                  Icons.edit_document,
+                                  size: screenWidth * 0.07,
+                                ),
                                 function: () => _goToTrainingLog(context),
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            SizedBox(height: screenWidth * 0.01),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.07,
+                                vertical: screenWidth * 0.035,
                               ),
                               child: ButtonBasic(
                                 content: '훈련 목록 보기',
-                                icon: Icon(Icons.list, size: 36),
-                                fontSize: 32,
+                                icon: Icon(
+                                  Icons.list,
+                                  size: screenWidth * 0.075,
+                                ),
+                                fontSize: screenWidth * 0.07,
                                 function: () => _goToTrainingList(context),
                               ),
                             ),
-                            const SizedBox(height: 24),
+                            SizedBox(height: screenWidth * 0.05),
                           ],
                         ),
                       ),

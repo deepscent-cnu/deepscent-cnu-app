@@ -190,6 +190,7 @@ class MemoryRecallTrainingScreenState
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return PopScope(
       canPop: false, // 기본 pop 동작 차단
       onPopInvokedWithResult: (didPop, result) {
@@ -207,9 +208,9 @@ class MemoryRecallTrainingScreenState
         ),
         body: SafeArea(
           child: Stack(
+            fit: StackFit.expand,
             children: [
               Positioned.fill(
-                top: 80,
                 child: Image.asset(
                   'assets/images/blurred_background.png',
                   fit: BoxFit.cover,
@@ -227,7 +228,7 @@ class MemoryRecallTrainingScreenState
                           ? '${memoryRecallTrainingController.scentName} 향을 발향하는 중입니다.'
                           : '향을 발향하는 중입니다.',
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -238,16 +239,16 @@ class MemoryRecallTrainingScreenState
                           children: [
                             Text(
                               remainTime.toString(),
-                              style: const TextStyle(
-                                fontSize: 92,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.3,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            const Text(
+                            SizedBox(height: screenWidth * 0.02),
+                            Text(
                               "초 뒤, 발향이 중지됩니다.",
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: screenWidth * 0.06,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -256,18 +257,18 @@ class MemoryRecallTrainingScreenState
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.07,
+                        vertical: screenWidth * 0.035,
                       ),
                       child: ButtonBasic(
                         content: '시간 연장하기',
-                        fontSize: 32,
-                        icon: Icon(Icons.timer, size: 32),
+                        fontSize: screenWidth * 0.07,
+                        icon: Icon(Icons.timer, size: screenWidth * 0.07),
                         function: () => extendTime(),
                       ),
                     ),
-                    const SizedBox(height: 60),
+                    SizedBox(height: screenWidth * 0.13),
                   ],
                 ),
               ),

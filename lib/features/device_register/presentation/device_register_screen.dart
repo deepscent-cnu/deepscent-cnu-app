@@ -53,6 +53,8 @@ class _DeviceRegisterScreenState extends State<DeviceRegisterScreen> {
   }
 
   Future<void> handleRegisterDeviceId(int deviceNumber, String deviceId) async {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     setState(() {
       isLoadingRegister = true;
     });
@@ -67,17 +69,23 @@ class _DeviceRegisterScreenState extends State<DeviceRegisterScreen> {
         context: context,
         builder:
             (_) => AlertDialog(
-              title: const Text("기기 등록", style: TextStyle(fontSize: 28)),
+              title: Text(
+                "기기 등록",
+                style: TextStyle(fontSize: screenWidth * 0.06),
+              ),
               content: Text(
                 "$deviceNumber번 기기 등록이 완료되었습니다.",
-                style: TextStyle(fontSize: 24),
+                style: TextStyle(fontSize: screenWidth * 0.07),
               ),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text("확인", style: TextStyle(fontSize: 24)),
+                  child: Text(
+                    "확인",
+                    style: TextStyle(fontSize: screenWidth * 0.05),
+                  ),
                 ),
               ],
             ),
@@ -87,15 +95,21 @@ class _DeviceRegisterScreenState extends State<DeviceRegisterScreen> {
         context: context,
         builder:
             (_) => AlertDialog(
-              title: const Text("기기 등록 실패", style: TextStyle(fontSize: 28)),
+              title: Text(
+                "기기 등록 실패",
+                style: TextStyle(fontSize: screenWidth * 0.06),
+              ),
               content: Text(
                 jsonDecode(utf8.decode(response.bodyBytes))['message'],
-                style: TextStyle(fontSize: 24),
+                style: TextStyle(fontSize: screenWidth * 0.07),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("확인", style: TextStyle(fontSize: 24)),
+                  child: Text(
+                    "확인",
+                    style: TextStyle(fontSize: screenWidth * 0.05),
+                  ),
                 ),
               ],
             ),

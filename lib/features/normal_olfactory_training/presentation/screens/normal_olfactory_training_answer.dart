@@ -22,7 +22,7 @@ class _NormalOlfactoryTrainingAnswerScreenState
     extends State<NormalOlfactoryTrainingAnswerScreen> {
   final normalOlfactoryTrainingController =
       Get.find<NormalOlfactoryTrainingController>();
-  int remainTime = 2;
+  int remainTime = 20;
   String message = "초 뒤, 다른 향기가 분출됩니다.";
   bool isLoading = false;
   bool isStopped = false;

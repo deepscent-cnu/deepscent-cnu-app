@@ -119,14 +119,18 @@ class _MemoryRecallScentSelectScreenState
   }
 
   void scentSelectionModal(BuildContext context, ScentInfo? scentInfo) {
+    double screenWidth = MediaQuery.of(context).size.width;
     showDialog(
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text("향기 선택", style: TextStyle(fontSize: 28)),
+            title: Text(
+              "향기 선택",
+              style: TextStyle(fontSize: screenWidth * 0.06),
+            ),
             content: Text(
               "정말 [${scentInfo != null ? scentInfo.scentName : "없음"}] ${_getJosa(scentInfo != null ? scentInfo.scentName : "없음")} 선택하시겠습니까?",
-              style: TextStyle(fontSize: 24),
+              style: TextStyle(fontSize: screenWidth * 0.07),
             ),
             actions: [
               TextButton(
@@ -134,13 +138,19 @@ class _MemoryRecallScentSelectScreenState
                   Navigator.pop(context);
                   _goNextPage(scentInfo);
                 },
-                child: const Text("확인", style: TextStyle(fontSize: 24)),
+                child: Text(
+                  "확인",
+                  style: TextStyle(fontSize: screenWidth * 0.05),
+                ),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text("취소", style: TextStyle(fontSize: 24)),
+                child: Text(
+                  "취소",
+                  style: TextStyle(fontSize: screenWidth * 0.05),
+                ),
               ),
             ],
           ),

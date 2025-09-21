@@ -49,6 +49,7 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
   }
 
   void scentStrengthSelectionModal(BuildContext context, String scentStrength) {
+    double screenWidth = MediaQuery.of(context).size.width;
     int scentStrengthNumber = 0;
 
     if (scentStrength == SCENT_STRENGTH_WEAK) {
@@ -65,10 +66,13 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text("강도 선택", style: TextStyle(fontSize: 28)),
+            title: Text(
+              "강도 선택",
+              style: TextStyle(fontSize: screenWidth * 0.06),
+            ),
             content: Text(
               "정말 [$scentStrength] ${_getJosa(scentStrength)} 선택하시겠습니까?",
-              style: TextStyle(fontSize: 24),
+              style: TextStyle(fontSize: screenWidth * 0.07),
             ),
             actions: [
               TextButton(
@@ -76,13 +80,19 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
                   Navigator.pop(context);
                   _goAnswerScreen(scentStrengthNumber);
                 },
-                child: const Text("확인", style: TextStyle(fontSize: 24)),
+                child: Text(
+                  "확인",
+                  style: TextStyle(fontSize: screenWidth * 0.05),
+                ),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text("취소", style: TextStyle(fontSize: 24)),
+                child: Text(
+                  "취소",
+                  style: TextStyle(fontSize: screenWidth * 0.05),
+                ),
               ),
             ],
           ),

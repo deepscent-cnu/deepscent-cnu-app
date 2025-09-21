@@ -86,17 +86,33 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         context: context,
                         builder:
                             (context) => AlertDialog(
-                              title: const Text('로그아웃'),
-                              content: const Text('정말 로그아웃 하시겠습니까?'),
+                              title: Text(
+                                '로그아웃',
+                                style: TextStyle(fontSize: screenWidth * 0.06),
+                              ),
+                              content: Text(
+                                '정말 로그아웃 하시겠습니까?',
+                                style: TextStyle(fontSize: screenWidth * 0.07),
+                              ),
                               actions: [
                                 TextButton(
                                   onPressed:
                                       () => Navigator.pop(context, false),
-                                  child: const Text('취소'),
+                                  child: Text(
+                                    '취소',
+                                    style: TextStyle(
+                                      fontSize: screenWidth * 0.05,
+                                    ),
+                                  ),
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.pop(context, true),
-                                  child: const Text('확인'),
+                                  child: Text(
+                                    '확인',
+                                    style: TextStyle(
+                                      fontSize: screenWidth * 0.05,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),

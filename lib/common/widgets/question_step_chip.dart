@@ -12,29 +12,33 @@ class QuestionStepChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return RawChip(
       backgroundColor: const Color(0xFF2E7D32),
       shape: const StadiumBorder(),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.02,
+        vertical: screenWidth * 0.02,
+      ),
       elevation: 4,
       shadowColor: Colors.black45,
       label: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             'Q.',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: screenWidth * 0.05,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               height: 1.1,
             ),
           ),
-          const SizedBox(width: 6),
+          SizedBox(width: screenWidth * 0.01),
 
           // 애니메이션 되는 부분만 따로 AnimatedSwitcher
           SizedBox(
-            height: 20,
+            height: screenWidth * 0.05,
             child: ClipRect(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
@@ -59,8 +63,8 @@ class QuestionStepChip extends StatelessWidget {
                 child: Text(
                   '$currentStep',
                   key: ValueKey<int>(currentStep),
-                  style: const TextStyle(
-                    fontSize: 24,
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.05,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                     height: 0.5,
@@ -70,11 +74,11 @@ class QuestionStepChip extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(width: 2),
+          SizedBox(width: screenWidth * 0.008),
           Text(
             ' / $totalSteps',
-            style: const TextStyle(
-              fontSize: 24,
+            style: TextStyle(
+              fontSize: screenWidth * 0.05,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               height: 1.1,
