@@ -157,8 +157,33 @@ class _MemoryRecallScentSelectScreenState
     );
   }
 
+  String _getSessionGuide(int sessionIndex) {
+    switch (sessionIndex) {
+      case 1:
+        return "어린 시절의 추억이 담긴\n향기를 골라주세요.";
+      case 2:
+        return "가족에 대한 추억이 담긴\n향기를 골라주세요.";
+      case 3:
+        return "학교와 학창 시절의 추억이 담긴\n향기를 골라주세요.";
+      case 4:
+        return "결혼이나 연애의 추억이 담긴\n향기를 골라주세요.";
+      case 5:
+        return "자녀와 육아의 추억이 담긴\n향기를 골라주세요.";
+      case 6:
+        return "취미와 여가의 추억이 담긴\n향기를 골라주세요.";
+      case 7:
+        return "일과 사회생활의 추억이 담긴\n향기를 골라주세요.";
+      case 8:
+        return "지금의 나, 나의 삶을\n떠올리게 하는 향기를 골라주세요.";
+      default:
+        return "추억이 담긴 향기를 골라주세요.";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
@@ -206,23 +231,13 @@ class _MemoryRecallScentSelectScreenState
                       ),
                       child: SingleChildScrollView(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Text(
-                              '오늘은 학교와 친구들에 대한 기억을 나누는 시간입니다.',
+                            Text(
+                              _getSessionGuide(widget.sessionIndex),
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: screenWidth * 0.06,
                                 fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              '다음 중 떠오르는 향기를 하나 골라주세요.',
-                              style: TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -233,11 +248,11 @@ class _MemoryRecallScentSelectScreenState
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                    SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
                                       crossAxisSpacing: 12,
                                       mainAxisSpacing: 12,
-                                      childAspectRatio: 2.5 / 1, // 버튼의 가로/세로 비율
+                                      childAspectRatio: screenWidth < 400 ? 2.2 : 2.5, // 버튼의 가로/세로 비율
                                     ),
                                 itemCount: scentAll!.length,
                                 itemBuilder: (context, index) {
@@ -252,8 +267,8 @@ class _MemoryRecallScentSelectScreenState
                                     label: Text(
                                       scentInfo.scentName,
                                       style: TextStyle(
+                                        fontSize: screenWidth * 0.05,
                                         color: Colors.black,
-                                        fontSize: 24,
                                       ),
                                     ),
                                     style: OutlinedButton.styleFrom(
@@ -276,10 +291,7 @@ class _MemoryRecallScentSelectScreenState
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width *
-                                            0.5 -
-                                        48, // 좌우 padding 고려
+                                    width: screenWidth * 0.4,
                                     child: OutlinedButton.icon(
                                       onPressed:
                                           () => scentSelectionModal(
@@ -290,11 +302,11 @@ class _MemoryRecallScentSelectScreenState
                                         Icons.cancel,
                                         color: Colors.red,
                                       ),
-                                      label: const Text(
+                                      label: Text(
                                         '없음',
                                         style: TextStyle(
+                                          fontSize: screenWidth * 0.05,
                                           color: Colors.red,
-                                          fontSize: 24,
                                         ),
                                       ),
                                       style: OutlinedButton.styleFrom(
