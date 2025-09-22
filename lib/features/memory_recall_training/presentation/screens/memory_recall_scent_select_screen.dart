@@ -174,7 +174,7 @@ class _MemoryRecallScentSelectScreenState
       case 7:
         return "일과 사회생활의 추억이 담긴\n향기를 골라주세요.";
       case 8:
-        return "지금의 나, 나의 삶을\n떠올리게 하는 향기를 골라주세요.";
+        return "지금의 나, 나의 삶을 떠올리는\n 향기를 골라주세요.";
       default:
         return "추억이 담긴 향기를 골라주세요.";
     }
@@ -227,21 +227,22 @@ class _MemoryRecallScentSelectScreenState
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
-                        vertical: 20,
+                        vertical: 0,
                       ),
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            const SizedBox(height: 10),
                             Text(
                               _getSessionGuide(widget.sessionIndex),
                               style: TextStyle(
-                                fontSize: screenWidth * 0.06,
+                                fontSize: screenWidth * 0.07,
                                 fontWeight: FontWeight.bold,
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 5),
                             Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: GridView.builder(
@@ -285,48 +286,45 @@ class _MemoryRecallScentSelectScreenState
                               ),
                             ),
                             // 없음 버튼
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: screenWidth * 0.4,
-                                    child: OutlinedButton.icon(
-                                      onPressed:
-                                          () => scentSelectionModal(
-                                            context,
-                                            null,
-                                          ),
-                                      icon: const Icon(
-                                        Icons.cancel,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: screenWidth * 0.4,
+                                  child: OutlinedButton.icon(
+                                    onPressed:
+                                        () => scentSelectionModal(
+                                          context,
+                                          null,
+                                        ),
+                                    icon: const Icon(
+                                      Icons.cancel,
+                                      color: Colors.red,
+                                    ),
+                                    label: Text(
+                                      '없음',
+                                      style: TextStyle(
+                                        fontSize: screenWidth * 0.05,
                                         color: Colors.red,
                                       ),
-                                      label: Text(
-                                        '없음',
-                                        style: TextStyle(
-                                          fontSize: screenWidth * 0.05,
-                                          color: Colors.red,
-                                        ),
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      side: const BorderSide(
+                                        color: Colors.red,
                                       ),
-                                      style: OutlinedButton.styleFrom(
-                                        backgroundColor: Colors.white,
-                                        side: const BorderSide(
-                                          color: Colors.red,
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 16,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          12,
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
