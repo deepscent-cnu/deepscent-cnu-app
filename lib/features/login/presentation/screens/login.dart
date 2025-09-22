@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'signup.dart';
+import 'package:deepscent_cnu/common/widgets/custom_alert.dart';
 import '../../data/auth_api.dart';
 import 'dart:convert';
 
@@ -20,59 +21,67 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController pwController = TextEditingController();
 
   Future<void> handleLogin() async {
-    final response = await AuthApi.login(
-      username: phoneController.text,
-      password: pwController.text,
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final token = data['data'];
-
-      // 액세스 토큰 로컬 저장
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('jwtToken', token);
-
-      // 로그인 성공 처리
-      authController.accessToken.value = token;
-      print('로그인 성공: $data');
-
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const OlfactoryTrainingListScreen(),
-          transitionsBuilder: (_, animation, __, child) {
-            final slide = Tween<Offset>(
-              begin: const Offset(0, 0.06),
-              end: Offset.zero,
-            ).animate(
-              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-            );
-            return SlideTransition(
-              position: slide,
-              child: FadeTransition(opacity: animation, child: child),
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 300),
-        ),
+    try {
+      final response = await AuthApi.login(
+        username: phoneController.text,
+        password: pwController.text,
       );
-    } else {
-      showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text('로그인 실패', style: TextStyle(fontSize: 28)),
-              content: const Text(
-                '아이디 또는 비밀번호가 올바르지 않습니다.',
-                style: TextStyle(fontSize: 24),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('확인', style: TextStyle(fontSize: 24)),
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['data'];
+
+        // 액세스 토큰 로컬 저장
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('jwtToken', token);
+
+        // 로그인 성공 처리
+        authController.accessToken.value = token;
+        print('로그인 성공: $data');
+
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const OlfactoryTrainingListScreen(),
+            transitionsBuilder: (_, animation, __, child) {
+              final slide = Tween<Offset>(
+                begin: const Offset(0, 0.06),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+              );
+              return SlideTransition(
+                position: slide,
+                child: FadeTransition(opacity: animation, child: child),
+              );
+            },
+            transitionDuration: const Duration(milliseconds: 300),
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: const Text('로그인 실패', style: TextStyle(fontSize: 28)),
+                content: const Text(
+                  '아이디 또는 비밀번호가 올바르지 않습니다.',
+                  style: TextStyle(fontSize: 24),
                 ),
-              ],
-            ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('확인', style: TextStyle(fontSize: 24)),
+                  ),
+                ],
+              ),
+        );
+      }
+    } catch (_) {
+      CustomAlert.show(
+        context,
+        title: '연결 오류',
+        message: '서버와 연결할 수 없습니다.\n네트워크 상태를 확인해주세요.',
       );
     }
   }

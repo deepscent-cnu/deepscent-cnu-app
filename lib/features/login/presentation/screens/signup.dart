@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:deepscent_cnu/common/widgets/custom_alert.dart';
 import '../../data/auth_api.dart';
 import 'dart:convert';
 
@@ -28,66 +29,74 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> handleSignUp(double screenWidth) async {
-    final response = await AuthApi.signup(
-      name: nameController.text,
-      birthDate: birthController.text,
-      phoneNumber: phoneController.text,
-      password: pwController.text,
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      debugPrint('회원가입 성공: $data');
-      showDialog(
-        context: context,
-        builder:
-            (_) => AlertDialog(
-              title: Text(
-                "회원가입 완료",
-                style: TextStyle(fontSize: screenWidth * 0.06),
-              ),
-              content: Text(
-                "로그인 화면으로 이동합니다.",
-                style: TextStyle(fontSize: screenWidth * 0.07),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    "확인",
-                    style: TextStyle(fontSize: screenWidth * 0.05),
-                  ),
-                ),
-              ],
-            ),
+    try {
+      final response = await AuthApi.signup(
+        name: nameController.text,
+        birthDate: birthController.text,
+        phoneNumber: phoneController.text,
+        password: pwController.text,
       );
-    } else {
-      debugPrint('회원가입 실패: ${jsonDecode(utf8.decode(response.bodyBytes))}');
-      showDialog(
-        context: context,
-        builder:
-            (_) => AlertDialog(
-              title: Text(
-                "회원가입 실패",
-                style: TextStyle(fontSize: screenWidth * 0.06),
-              ),
-              content: Text(
-                jsonDecode(utf8.decode(response.bodyBytes))['message'],
-                style: TextStyle(fontSize: screenWidth * 0.07),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    "확인",
-                    style: TextStyle(fontSize: screenWidth * 0.05),
-                  ),
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        debugPrint('회원가입 성공: $data');
+        showDialog(
+          context: context,
+          builder:
+              (_) => AlertDialog(
+                title: Text(
+                  "회원가입 완료",
+                  style: TextStyle(fontSize: screenWidth * 0.06),
                 ),
-              ],
-            ),
+                content: Text(
+                  "로그인 화면으로 이동합니다.",
+                  style: TextStyle(fontSize: screenWidth * 0.07),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "확인",
+                      style: TextStyle(fontSize: screenWidth * 0.05),
+                    ),
+                  ),
+                ],
+              ),
+        );
+      } else {
+        debugPrint('회원가입 실패: ${jsonDecode(utf8.decode(response.bodyBytes))}');
+        showDialog(
+          context: context,
+          builder:
+              (_) => AlertDialog(
+                title: Text(
+                  "회원가입 실패",
+                  style: TextStyle(fontSize: screenWidth * 0.06),
+                ),
+                content: Text(
+                  jsonDecode(utf8.decode(response.bodyBytes))['message'],
+                  style: TextStyle(fontSize: screenWidth * 0.07),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      "확인",
+                      style: TextStyle(fontSize: screenWidth * 0.05),
+                    ),
+                  ),
+                ],
+              ),
+        );
+      }
+    } catch (_) {
+      CustomAlert.show(
+        context,
+        title: "연결 오류",
+        message: "서버와 연결할 수 없습니다.\n네트워크 상태를 확인해주세요.",
       );
     }
   }
