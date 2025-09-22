@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:deepscent_cnu/common/widgets/custom_alert.dart';
+import 'package:deepscent_cnu/common/widgets/loading_overlay.dart';
 import '../../data/auth_api.dart';
 import 'dart:convert';
 
@@ -29,6 +30,12 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> handleSignUp(double screenWidth) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const LoadingOverlay(message: '회원가입 중입니다...'),
+    );
+
     try {
       final response = await AuthApi.signup(
         name: nameController.text,
@@ -36,6 +43,8 @@ class _SignUpPageState extends State<SignUpPage> {
         phoneNumber: phoneController.text,
         password: pwController.text,
       );
+
+      Navigator.pop(context);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -92,11 +101,14 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
         );
       }
-    } catch (_) {
+    } catch (e, stack) {
+      Navigator.pop(context);
+      print('회원가입 예외 발생: $e');
+      print(stack);
       CustomAlert.show(
         context,
-        title: "연결 오류",
-        message: "서버와 연결할 수 없습니다.\n네트워크 상태를 확인해주세요.",
+        title: '연결 오류',
+        message: '서버와 연결할 수 없습니다.\n네트워크 상태를 확인해주세요.',
       );
     }
   }

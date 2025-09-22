@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'signup.dart';
 import 'package:deepscent_cnu/common/widgets/custom_alert.dart';
+import 'package:deepscent_cnu/common/widgets/loading_overlay.dart';
 import '../../data/auth_api.dart';
 import 'dart:convert';
 
@@ -22,10 +23,18 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> handleLogin() async {
     try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const LoadingOverlay(message: '로그인 중입니다...'),
+      );
+
       final response = await AuthApi.login(
         username: phoneController.text,
         password: pwController.text,
       );
+
+      Navigator.pop(context);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -77,7 +86,10 @@ class _LoginPageState extends State<LoginPage> {
               ),
         );
       }
-    } catch (_) {
+    } catch (e, stack) {
+      Navigator.pop(context);
+      print('로그인 예외 발생: $e');
+      print(stack);
       CustomAlert.show(
         context,
         title: '연결 오류',
