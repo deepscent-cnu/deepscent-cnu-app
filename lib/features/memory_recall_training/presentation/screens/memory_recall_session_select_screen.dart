@@ -89,12 +89,13 @@ class _MemoryRecallSessionSelectScreenState
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     final int firstIncompleteIndex = completedSessions.indexWhere(
       (element) => element == false,
     );
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       appBar: CustomAppBar(
         mode: CustomAppBarMode.sub,
         title: "기억 회상 훈련 회차 선택",
@@ -121,105 +122,101 @@ class _MemoryRecallSessionSelectScreenState
                   ),
                 ),
               )
-              : SafeArea(
-                child: Stack(
-                  children: [
-                    // 흐릿한 배경 이미지
-                    Positioned.fill(
-                      top: 50,
-                      child: Image.asset(
-                        'assets/images/blurred_background.png',
-                        fit: BoxFit.cover,
-                      ),
+              : Stack(
+                children: [
+                  // 흐릿한 배경 이미지
+                  Positioned.fill(
+                    top: kToolbarHeight,
+                    child: Image.asset(
+                      'assets/images/blurred_background.png',
+                      fit: BoxFit.cover,
                     ),
-                    // 회차 버튼
-                    SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 50,
-                          left: 40,
-                          right: 40,
-                          bottom: 20,
-                        ),
-                        child: ListView.builder(
-                          itemCount: completedSessions.length,
-                          itemBuilder: (context, index) {
-                            final bool isDone = completedSessions[index];
-                            final bool isCurrent =
-                                index == firstIncompleteIndex;
+                  ),
+                  // 회차 버튼
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 0,
+                      left: 40,
+                      right: 40,
+                      bottom: 0,
+                    ),
+                    child: ListView.builder(
+                      itemCount: completedSessions.length,
+                      itemBuilder: (context, index) {
+                        final bool isDone = completedSessions[index];
+                        final bool isCurrent =
+                            index == firstIncompleteIndex;
 
-                            Color backgroundColor;
-                            Color foregroundColor;
-                            BorderSide? border;
+                        Color backgroundColor;
+                        Color foregroundColor;
+                        BorderSide? border;
 
-                            if (isDone) {
-                              backgroundColor = Colors.grey;
-                              foregroundColor = Colors.white;
-                            } else if (isCurrent) {
-                              backgroundColor = const Color(0xFF335928);
-                              foregroundColor = Colors.white;
-                            } else {
-                              backgroundColor = Colors.white;
-                              foregroundColor = const Color(0xFF335928);
-                              border = const BorderSide(
-                                color: Color(0xFF335928),
-                              );
-                            }
+                        if (isDone) {
+                          backgroundColor = Colors.grey;
+                          foregroundColor = Colors.white;
+                        } else if (isCurrent) {
+                          backgroundColor = const Color(0xFF335928);
+                          foregroundColor = Colors.white;
+                        } else {
+                          backgroundColor = Colors.white;
+                          foregroundColor = const Color(0xFF335928);
+                          border = const BorderSide(
+                            color: Color(0xFF335928),
+                          );
+                        }
 
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  if (isDone) {
-                                    //완료된 회차: 히스토리 보기
-                                    _openFinishedSession(
-                                      index + 1,
-                                    ); // round == sessionIndex + 1
-                                  } else if (isCurrent) {
-                                    // 진행해야 할 현재 회차: 훈련 시작
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (_) =>
-                                                MemoryRecallScentSelectScreen(
-                                                  sessionIndex: index + 1,
-                                                ),
-                                      ),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('이 회차는 아직 진행할 수 없습니다.'),
-                                      ),
-                                    );
-                                  }
-                                },
-
-                                icon: const Icon(Icons.flag, size: 32),
-                                label: Text(
-                                  '${index + 1}회차${isDone ? " (완료)" : ""}',
-                                  style: const TextStyle(fontSize: 32),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: backgroundColor,
-                                  foregroundColor: foregroundColor,
-                                  side: border,
-                                  minimumSize: const Size(double.infinity, 56),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              if (isDone) {
+                                //완료된 회차: 히스토리 보기
+                                _openFinishedSession(
+                                  index + 1,
+                                ); // round == sessionIndex + 1
+                              } else if (isCurrent) {
+                                // 진행해야 할 현재 회차: 훈련 시작
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) =>
+                                            MemoryRecallScentSelectScreen(
+                                              sessionIndex: index + 1,
+                                            ),
                                   ),
-                                  // 눌러도 효과 없게 시각만 비슷하게 유지
-                                  elevation: isCurrent ? 2 : 0,
-                                ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('이 회차는 아직 진행할 수 없습니다.'),
+                                  ),
+                                );
+                              }
+                            },
+
+                            icon: Icon(Icons.flag, size: screenWidth * 0.08),
+                            label: Text(
+                              '${index + 1}회차${isDone ? " (완료)" : ""}',
+                              style: TextStyle(fontSize: screenWidth * 0.08),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: backgroundColor,
+                              foregroundColor: foregroundColor,
+                              side: border,
+                              minimumSize: Size(double.infinity, screenWidth * 0.15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(screenWidth * 0.03),
                               ),
-                            );
-                          },
-                        ),
-                      ),
+                              // 눌러도 효과 없게 시각만 비슷하게 유지
+                              elevation: isCurrent ? 2 : 0,
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
     );
   }
