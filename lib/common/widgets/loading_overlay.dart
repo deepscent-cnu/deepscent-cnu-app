@@ -37,14 +37,24 @@ class LoadingOverlay extends StatelessWidget {
                     strokeWidth: 5,
                   ),
                   const SizedBox(height: 24),
-                  Text(
-                    message,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF335928),
-                    ),
-                    textAlign: TextAlign.center,
+
+                  // 어색한 줄바꿈 방지
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    children: message
+                        .split(' ')
+                        .map(
+                          (word) => Text(
+                            '$word ',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF335928),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                        .toList(),
                   ),
                 ],
               ),
