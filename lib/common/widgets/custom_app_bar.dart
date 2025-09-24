@@ -23,7 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    final logoWidth = screenWidth * 0.20; // 화면 너비의 20%
+    final logoWidth = screenWidth * 0.45; // 화면 너비의 20%
     final iconSize = screenWidth * 0.05; // 화면 너비의 6%
     final horizontalPadding = screenWidth * 0.05;
     final topPadding = screenHeight * 0.025; // 화면 높이의 2.5%
@@ -41,7 +41,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ? Padding(
                 padding: EdgeInsets.only(left: horizontalPadding),
                 child: Image.asset(
-                  'assets/images/logo.png',
+                  'assets/images/logo_new.png',
                   width: logoWidth,
                   fit: BoxFit.contain,
                 ),
