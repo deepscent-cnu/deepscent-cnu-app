@@ -34,6 +34,11 @@ class DeviceApi {
       );
 
       debugPrint('(Debug) 응답 상태 코드: ${response.statusCode}');
+      if (fanSpeed == 0) {
+        debugPrint('(Debug) 발향 중지 동작 성공');
+      } else {
+        debugPrint('(Debug) 발향 시작 동작 성공');
+      }
     } catch (e) {
       debugPrint('(Debug) 향기 제어 API 호출 중 오류 발생: $e');
     }

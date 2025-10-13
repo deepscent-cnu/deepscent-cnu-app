@@ -7,6 +7,7 @@ import 'package:deepscent_cnu/features/memory_recall_training/presentation/scree
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:async';
 
 class MemoryRecallTrainingScreen extends StatefulWidget {
   final int sessionIndex; // 회차
@@ -23,14 +24,15 @@ class MemoryRecallTrainingScreen extends StatefulWidget {
       MemoryRecallTrainingScreenState();
 }
 
-class MemoryRecallTrainingScreenState
-    extends State<MemoryRecallTrainingScreen> {
+class MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
+    with SingleTickerProviderStateMixin {
   final memoryRecallTrainingController =
       Get.find<MemoryRecallTrainingController>();
-  int remainTime = 10;
-  String message = "초 뒤, 발향이 중지됩니다.";
-  bool isStopped = false;
+  bool isDifussed = false;
   bool showHelp = false;
+
+  late AnimationController _animationController;
+  late Animation<double> _animation;
 
   void toggleHelp() {
     setState(() {
@@ -41,30 +43,47 @@ class MemoryRecallTrainingScreenState
   @override
   void initState() {
     super.initState();
-    startTrainingCycle();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2), // 물결이 퍼지는 속도
+    );
+
+    _animation = Tween<double>(begin: 0, end: 1).animate(_animationController)
+      ..addListener(() {
+        // 애니메이션 값이 변경될 때마다 위젯을 다시 그리도록 설정
+        setState(() {});
+      });
   }
 
-  Future<void> startTrainingCycle() async {
-    isStopped = false;
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> toggleScent() async {
+    setState(() {
+      isDifussed = !isDifussed;
+    });
+
     int deviceNumber = memoryRecallTrainingController.deviceNumber;
     int fanNumber = memoryRecallTrainingController.fanNumber;
-    await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 3);
-    await Future.delayed(const Duration(seconds: 1));
 
-    while (remainTime > 1) {
-      if (isStopped) {
-        return;
-      }
-
-      setState(() {
-        remainTime -= 1;
-      });
-
-      await Future.delayed(const Duration(seconds: 1));
-    }
-
-    if (!isStopped && context.mounted) {
+    if (isDifussed) {
+      await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 3);
+      _animationController.repeat();
+    } else {
       await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
+      _animationController.stop();
+    }
+  }
+
+  Future<void> goNextStep() async {
+    int deviceNumber = memoryRecallTrainingController.deviceNumber;
+    int fanNumber = memoryRecallTrainingController.fanNumber;
+    await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
+
+    if (context.mounted) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -79,7 +98,6 @@ class MemoryRecallTrainingScreenState
   }
 
   Future<void> stopTrainingCycle() async {
-    isStopped = true;
     int deviceNumber = memoryRecallTrainingController.deviceNumber;
     int fanNumber = memoryRecallTrainingController.fanNumber;
     await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
@@ -91,12 +109,6 @@ class MemoryRecallTrainingScreenState
       MaterialPageRoute(builder: (_) => const OlfactoryTrainingListScreen()),
       (route) => false,
     );
-  }
-
-  void extendTime() {
-    setState(() {
-      remainTime += 10;
-    });
   }
 
   void showTrainingCarouselModal(BuildContext context) {
@@ -224,9 +236,11 @@ class MemoryRecallTrainingScreenState
                     const SizedBox(height: 24),
                     const SizedBox(height: 16),
                     Text(
-                      memoryRecallTrainingController.scentName.isNotEmpty
-                          ? '${memoryRecallTrainingController.scentName} 향을 발향하는 중입니다.'
-                          : '향을 발향하는 중입니다.',
+                      isDifussed
+                          ? memoryRecallTrainingController.scentName.isNotEmpty
+                              ? '${memoryRecallTrainingController.scentName} 향을 발향하는 중입니다.'
+                              : '향을 발향하는 중입니다.'
+                          : "버튼을 눌러 발향을 시작해주세요!",
                       style: TextStyle(
                         fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
@@ -234,25 +248,43 @@ class MemoryRecallTrainingScreenState
                     ),
                     Expanded(
                       child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              remainTime.toString(),
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.3,
-                                fontWeight: FontWeight.bold,
+                        child: CustomPaint(
+                          painter:
+                              isDifussed
+                                  ? RipplePainter(_animation.value)
+                                  : null,
+                          child: GestureDetector(
+                            onTap: toggleScent,
+                            child: Container(
+                              width: screenWidth * 0.6,
+                              height: screenWidth * 0.6,
+                              decoration: BoxDecoration(
+                                color:
+                                    isDifussed
+                                        ? const Color(0xFF2E7D32)
+                                        : const Color(0xFF616161),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    spreadRadius: 2,
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  isDifussed ? "ON" : "OFF",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: screenWidth * 0.2,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
-                            SizedBox(height: screenWidth * 0.02),
-                            Text(
-                              "초 뒤, 발향이 중지됩니다.",
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.06,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -262,10 +294,13 @@ class MemoryRecallTrainingScreenState
                         vertical: screenWidth * 0.035,
                       ),
                       child: ButtonBasic(
-                        content: '시간 연장하기',
+                        content: '다음 단계로',
                         fontSize: screenWidth * 0.07,
-                        icon: Icon(Icons.timer, size: screenWidth * 0.07),
-                        function: () => extendTime(),
+                        icon: Icon(
+                          Icons.double_arrow,
+                          size: screenWidth * 0.07,
+                        ),
+                        function: goNextStep,
                       ),
                     ),
                     SizedBox(height: screenWidth * 0.13),
@@ -397,5 +432,41 @@ class MemoryRecallTrainingScreenState
         ),
       ),
     );
+  }
+}
+
+class RipplePainter extends CustomPainter {
+  final double progress;
+  late Paint _paint;
+
+  RipplePainter(this.progress) {
+    _paint = Paint();
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    double radius = size.width / 2;
+    double strokeWidth = 3; // 물결 두께
+
+    // 2개의 물결을 시차를 두고 그립니다.
+    for (int i = 0; i < 2; i++) {
+      double waveProgress = (progress + (i * 0.5)) % 1.0;
+
+      // 물결의 투명도: 시작할 때 진하고 퍼지면서 연해집니다.
+      double alpha = (255 * (1 - waveProgress)).clamp(0, 255).toDouble();
+      _paint.color = Color(0xFF4CAF50).withAlpha(alpha.toInt());
+      _paint.style = PaintingStyle.stroke;
+      _paint.strokeWidth = strokeWidth * (1 - waveProgress); // 퍼지면서 얇아짐
+
+      // 물결의 반지름: 점점 커집니다.
+      double waveRadius = radius + (radius * waveProgress);
+
+      canvas.drawCircle(Offset(radius, radius), waveRadius, _paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
