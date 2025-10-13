@@ -235,15 +235,24 @@ class MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
                   children: [
                     const SizedBox(height: 24),
                     const SizedBox(height: 16),
-                    Text(
-                      isDifussed
-                          ? memoryRecallTrainingController.scentName.isNotEmpty
-                              ? '${memoryRecallTrainingController.scentName} 향을 발향하는 중입니다.'
-                              : '향을 발향하는 중입니다.'
-                          : "버튼을 눌러 발향을 시작해주세요!",
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.07,
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      constraints: BoxConstraints(
+                        minHeight: screenWidth * 0.07 * 2 * 1.5,
+                      ),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        isDifussed
+                            ? memoryRecallTrainingController
+                                    .scentName
+                                    .isNotEmpty
+                                ? '${memoryRecallTrainingController.scentName} 향을 발향하는 중입니다.'
+                                : '향을 발향하는 중입니다.'
+                            : "버튼을 눌러 발향을 시작해주세요!",
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.07,
+                          fontWeight: FontWeight.bold,
+                          height: 1.5,
+                        ),
                       ),
                     ),
                     Expanded(
