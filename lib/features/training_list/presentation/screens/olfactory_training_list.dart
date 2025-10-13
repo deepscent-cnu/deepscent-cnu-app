@@ -4,8 +4,6 @@ import 'package:deepscent_cnu/features/device_register/presentation/device_regis
 import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall_training_api.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/data/model/scent_info.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_session_select_screen.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/correct_scent.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
@@ -93,12 +91,6 @@ class _OlfactoryTrainingListScreenState
       return false;
     }
     return true;
-  }
-
-  Future<void> getCorrectScentList() async {
-    List<CorrectScent>? correctScentList =
-        await NormalOlfactoryTrainingApi.getCorrectScentList();
-    normalOlfactoryTrainingController.addCorrectScentList(correctScentList!);
   }
 
   Future<void> showTrainingCarouselModal(

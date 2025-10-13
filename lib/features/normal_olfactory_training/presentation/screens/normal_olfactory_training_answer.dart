@@ -26,6 +26,7 @@ class _NormalOlfactoryTrainingAnswerScreenState
   String message = "초 뒤, 다른 향기가 분출됩니다.";
   bool isLoading = false;
   bool isStopped = false;
+  bool isPaused = false;
 
   @override
   void initState() {
@@ -44,9 +45,11 @@ class _NormalOlfactoryTrainingAnswerScreenState
         return;
       }
 
-      setState(() {
-        remainTime -= 1;
-      });
+      if (!isPaused) {
+        setState(() {
+          remainTime -= 1;
+        });
+      }
 
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -65,17 +68,29 @@ class _NormalOlfactoryTrainingAnswerScreenState
   }
 
   Future<void> stopTrainingCycle() async {
-    isStopped = true;
+    setState(() {
+      isStopped = true;
+      isPaused = false;
+    });
 
     if (context.mounted) {
-      normalOlfactoryTrainingController.reset();
       Navigator.pop(context);
       Navigator.pop(context);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        normalOlfactoryTrainingController.reset();
+      });
     }
   }
 
-  void showTrainingStopModal(BuildContext context) {
-    showDialog(
+  void showTrainingStopModal(BuildContext context) async {
+    if (remainTime <= 1) {
+      return;
+    }
+
+    setState(() {
+      isPaused = true;
+    });
+    final result = await showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
@@ -133,7 +148,13 @@ class _NormalOlfactoryTrainingAnswerScreenState
                               child: ButtonBasic(
                                 content: '훈련 재개하기',
                                 icon: Icon(Icons.rocket_launch, size: 20),
-                                function: () => {Navigator.pop(context)},
+                                function:
+                                    () => {
+                                      Navigator.pop(context),
+                                      setState(() {
+                                        isPaused = false;
+                                      }),
+                                    },
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -160,6 +181,12 @@ class _NormalOlfactoryTrainingAnswerScreenState
         );
       },
     );
+
+    if (result == null) {
+      setState(() {
+        isPaused = false;
+      });
+    }
   }
 
   void nextRound() async {
