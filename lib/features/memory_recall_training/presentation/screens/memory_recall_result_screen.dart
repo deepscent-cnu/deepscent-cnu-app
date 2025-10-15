@@ -358,10 +358,10 @@ class _MemoryRecallResultScreenState extends State<MemoryRecallResultScreen> {
                                   vertical: screenWidth * 0.035,
                                 ),
                                 child: ButtonBasic(
-                                  content: '훈련 기록 보기',
+                                  content: '회차 목록으로 이동',
                                   fontSize: screenWidth * 0.07,
                                   icon: Icon(
-                                    Icons.edit_document,
+                                    Icons.format_list_numbered,
                                     size: screenWidth * 0.07,
                                   ),
                                   function: () => _goToTrainingLog(context),
@@ -374,9 +374,9 @@ class _MemoryRecallResultScreenState extends State<MemoryRecallResultScreen> {
                                   vertical: screenWidth * 0.035,
                                 ),
                                 child: ButtonBasic(
-                                  content: '훈련 목록 보기',
+                                  content: '홈 화면으로 이동',
                                   icon: Icon(
-                                    Icons.list,
+                                    Icons.home,
                                     size: screenWidth * 0.075,
                                   ),
                                   fontSize: screenWidth * 0.07,
