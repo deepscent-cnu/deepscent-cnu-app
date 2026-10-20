@@ -1,0 +1,184 @@
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:deepscent_cnu/features/login/presentation/screens/login.dart';
+
+enum CustomAppBarMode { main, sub }
+
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final CustomAppBarMode mode;
+  final String? title;
+  final VoidCallback? onBackPressed;
+  final bool logoutEnabled;
+
+  const CustomAppBar({
+    super.key,
+    this.mode = CustomAppBarMode.main,
+    this.title,
+    this.onBackPressed,
+    this.logoutEnabled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final logoWidth = screenWidth * 0.45; // 화면 너비의 20%
+    final iconSize = screenWidth * 0.05; // 화면 너비의 6%
+    final horizontalPadding = screenWidth * 0.05;
+    final topPadding = screenHeight * 0.025; // 화면 높이의 2.5%
+
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      toolbarHeight: kToolbarHeight + topPadding,
+      // AppBar 자체 높이 늘림
+
+      //추가: leading 과 title 사이 간격
+      titleSpacing:
+          mode == CustomAppBarMode.sub ? horizontalPadding * 0.6 : null,
+
+      leadingWidth:
+          mode == CustomAppBarMode.main
+              ? logoWidth + horizontalPadding * 2
+              : null,
+      leading:
+          mode == CustomAppBarMode.main
+              ? Padding(
+                padding: EdgeInsets.only(left: horizontalPadding),
+                child: Image.asset(
+                  'assets/images/logo_new.png',
+                  width: logoWidth,
+                  fit: BoxFit.contain,
+                ),
+              )
+              : Padding(
+                padding: EdgeInsets.only(left: horizontalPadding),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: onBackPressed ?? () => Navigator.pop(context),
+                    child: SizedBox(
+                      width: iconSize,
+                      height: iconSize,
+                      child: Center(
+                        child: Icon(
+                          Icons.arrow_back_ios_new,
+                          size: iconSize,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // child: IconButton(
+                  //   icon: Icon(
+                  //     Icons.arrow_back_ios_new,
+                  //     size: iconSize,
+                  //     color: Colors.black,
+                  //   ),
+                  //   onPressed: onBackPressed ?? () => Navigator.pop(context),
+                  //
+                  //   padding: EdgeInsets.zero,
+                  //   constraints: const BoxConstraints(
+                  //     minWidth: 48,
+                  //     maxWidth: 48,
+                  //   ),
+                  //   alignment: Alignment.center,
+                  // ),
+                ),
+              ),
+      title:
+          mode == CustomAppBarMode.sub && title != null
+              ? Text(
+                title!,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.06,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              )
+              : null,
+      centerTitle: false,
+      // 로그아웃 버튼 조건부 추가
+      actions:
+          logoutEnabled
+              ? [
+                Padding(
+                  padding: EdgeInsets.only(right: horizontalPadding),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.logout,
+                      color: Colors.black,
+                      size: iconSize,
+                    ),
+                    onPressed: () async {
+                      final shouldLogout = await showDialog<bool>(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: Text(
+                                '로그아웃',
+                                style: TextStyle(fontSize: screenWidth * 0.06),
+                              ),
+                              content: Text(
+                                '정말 로그아웃 하시겠습니까?',
+                                style: TextStyle(fontSize: screenWidth * 0.07),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed:
+                                      () => Navigator.pop(context, false),
+                                  child: Text(
+                                    '취소',
+                                    style: TextStyle(
+                                      fontSize: screenWidth * 0.05,
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: Text(
+                                    '확인',
+                                    style: TextStyle(
+                                      fontSize: screenWidth * 0.05,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                      );
+
+                      if (shouldLogout == true) {
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.remove('jwtToken');
+
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (_) => const LoginPage()),
+                          (route) => false,
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ]
+              : [], // false면 버튼 자체를 숨김
+    );
+  }
+
+  @override
+  Size get preferredSize {
+    // toolbarHeight와 동일하게 맞춤
+    final screenHeight =
+        WidgetsBinding
+            .instance
+            .platformDispatcher
+            .views
+            .first
+            .physicalSize
+            .height /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    final topPadding = screenHeight * 0.025;
+    return Size.fromHeight(kToolbarHeight + topPadding);
+  }
+}
