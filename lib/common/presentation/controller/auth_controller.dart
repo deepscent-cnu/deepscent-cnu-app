@@ -13,6 +13,7 @@ class AuthController extends GetxController {
     final requestHeaders = {'Content-type': 'application/json'};
 
     try {
+      var adminPhoneNumber;
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: requestHeaders,

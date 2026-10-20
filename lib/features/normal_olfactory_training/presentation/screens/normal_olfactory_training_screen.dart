@@ -20,7 +20,7 @@ class _NormalOlfactoryTrainingScreenState
     extends State<NormalOlfactoryTrainingScreen> {
   final normalOlfactoryTrainingController =
       Get.find<NormalOlfactoryTrainingController>();
-  int remainTime = 20;
+  int remainTime = 10;
   String message = "초 뒤, 발향이 중지됩니다.";
   bool isStopped = false;
   bool isPaused = false;
@@ -31,16 +31,25 @@ class _NormalOlfactoryTrainingScreenState
     startTrainingCycle();
   }
 
-  Future<void> getCorrectScentList() async {
-    List<CorrectScent>? correctScentList =
-        await NormalOlfactoryTrainingApi.getCorrectScentList();
-    normalOlfactoryTrainingController.addCorrectScentList(correctScentList!);
-  }
+  //수정
+  // Future<void> getCorrectScentList() async {
+  //   List<CorrectScent>? correctScentList =
+  //       await NormalOlfactoryTrainingApi.getCorrectScentList();
+  //   normalOlfactoryTrainingController.addCorrectScentList(correctScentList!);
+  // }
 
   Future<void> startTrainingCycle() async {
-    await getCorrectScentList();
+    //기존
+    // await getCorrectScentList();
+    // isStopped = false;
 
-    isStopped = false;
+    //수정
+    setState(() {
+      remainTime = 10;      // ✅ 라운드 시작마다 초기화 (지금 코드엔 이게 없어서 다음 라운드에서 문제 생김)
+      isStopped = false;
+      isPaused = false;
+    });
+
     CorrectScent correctScent =
         normalOlfactoryTrainingController.getCorrectScentByRound();
 

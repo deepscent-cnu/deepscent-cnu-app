@@ -5,6 +5,15 @@ import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_result.dart';
+
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
+
+import 'normal_olfactory_training_ventilation.dart';
+
+
+
 class NormalOlfactoryTrainingScentStrengthScreen extends StatefulWidget {
   const NormalOlfactoryTrainingScentStrengthScreen({super.key});
 
@@ -78,7 +87,10 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  _goAnswerScreen(scentStrengthNumber);
+                  //기존
+                  // Future.microtask(() => _goAnswerScreen(scentStrengthNumber));
+                  //수정
+                  Future.microtask(() => _goAfterStrength(scentStrengthNumber));
                 },
                 child: Text(
                   "확인",
@@ -192,14 +204,45 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
     );
   }
 
-  void _goAnswerScreen(int scentStrength) {
+  void _goAfterStrength(int scentStrength) {
     normalOlfactoryTrainingController.addLog(scentStrength);
-    Get.off(() => NormalOlfactoryTrainingAnswerScreen());
+
+    // ✅ 여기서 결과/다음라운드 판단하지 말고 환기 화면으로 넘김
+    Get.offAll(() => NormalOlfactoryTrainingVentilationScreen());
+  }
+
+
+  void _goAnswerScreen(int scentStrength) {
+    //기존
+    // normalOlfactoryTrainingController.addLog(scentStrength);
+    // Get.off(() => NormalOlfactoryTrainingAnswerScreen());
+
+    //수정
+    // 1) 라운드 로그 저장(+ score, totalTimeTaken 누적이 controller.addLog 안에 있으면 같이 처리됨)
+    normalOlfactoryTrainingController.addLog(scentStrength);
+
+    // 2) 마지막 라운드면 결과 화면으로
+    final isLastRound =
+        normalOlfactoryTrainingController.currentRound.value >=
+            normalOlfactoryTrainingController.totalRounds;
+
+    if (isLastRound) {
+      Get.offAll(() => NormalOlfactoryTrainingResultScreen());
+      return;
+    }
+
+    // 3) 마지막이 아니면 다음 라운드로 이동 후 발향 화면으로
+    normalOlfactoryTrainingController.nextRound();
+    normalOlfactoryTrainingController.resetRound();
+
+    // ✅ 이 줄이 없어서 멈췄던 거임
+    Get.offAll(() => NormalOlfactoryTrainingScreen());
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    bool _isProcessing = false;
     return PopScope(
       canPop: false, // 기본 pop 동작 차단
       onPopInvokedWithResult: (didPop, result) {

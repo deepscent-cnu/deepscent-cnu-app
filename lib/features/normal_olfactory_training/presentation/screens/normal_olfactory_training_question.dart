@@ -4,8 +4,12 @@ import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olf
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_scent_strength.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
+import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_result.dart';
 
 class NormalOlfactoryTrainingQuestionScreen extends StatefulWidget {
   const NormalOlfactoryTrainingQuestionScreen({super.key});
@@ -22,6 +26,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
   bool isLoading = true;
   ScentOptions? scentOptions;
   late DateTime startTime;
+  bool _isSubmitting = false; // State에 추가
 
   @override
   void initState() {
@@ -114,12 +119,19 @@ class _NormalOlfactoryTrainingQuestionScreenState
                               child: ButtonBasic(
                                 content: '훈련 끝내기',
                                 icon: Icon(Icons.exit_to_app, size: 20),
-                                function:
-                                    () => {
-                                      normalOlfactoryTrainingController.reset(),
-                                      Navigator.pop(context),
-                                      Navigator.pop(context),
-                                    },
+                                function: () {
+                                  // 1) 다이얼로그 닫기
+                                  Get.back(); // = Navigator.pop(context)랑 같지만 GetX 방식
+
+                                  // 2) 상태 초기화
+                                  normalOlfactoryTrainingController.reset();
+
+                                  // 3) 홈/훈련목록으로 "명시적으로" 이동 (여기만 너 목적지로 바꾸면 됨)
+                                  Get.offAll(
+                                    () => OlfactoryTrainingListScreen(),
+                                  );
+                                  // 또는 Get.offAll(() => TrainingListScreen());
+                                },
                               ),
                             ),
                           ],
@@ -176,7 +188,10 @@ class _NormalOlfactoryTrainingQuestionScreenState
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
+                  //기존
                   _goScentStrengthScreen(selectedOption);
+                  //수정
+                  // _submitAndGoNext(selectedOption);
                 },
                 child: Text(
                   "확인",
@@ -197,6 +212,7 @@ class _NormalOlfactoryTrainingQuestionScreenState
     );
   }
 
+  //기존
   void _goScentStrengthScreen(String selectedOption) {
     final endTime = DateTime.now();
     final timeTaken = endTime.difference(startTime).inSeconds;
@@ -207,10 +223,121 @@ class _NormalOlfactoryTrainingQuestionScreenState
     Get.off(() => NormalOlfactoryTrainingScentStrengthScreen());
   }
 
+  //수정
+  Future<void> _submitAndGoNext(String selectedOption) async {
+    //추가
+    if (_isSubmitting) return;
+    _isSubmitting = true;
+
+    final endTime = DateTime.now();
+    final timeTaken = endTime.difference(startTime).inSeconds;
+
+    normalOlfactoryTrainingController.selectedOption = selectedOption;
+    normalOlfactoryTrainingController.timeTaken = timeTaken;
+
+    // ✅ 강도는 미수집(-1)로 저장
+    normalOlfactoryTrainingController.addLog(-1);
+
+    final isLastRound =
+        normalOlfactoryTrainingController.currentRound.value >=
+        normalOlfactoryTrainingController.totalRounds;
+
+    // if (isLastRound) {
+    //   Get.offAll(() => NormalOlfactoryTrainingResultScreen());
+    //   return;
+    // }
+    //
+    // normalOlfactoryTrainingController.nextRound();
+    // normalOlfactoryTrainingController.resetRound();
+    //
+    // Get.offAll(() => NormalOlfactoryTrainingScreen());
+
+    try {
+      if (isLastRound) {
+        // ✅ payload 구성
+        final roundLogsPayload =
+            normalOlfactoryTrainingController.logs
+                .map((log) => log.toJson())
+                .toList();
+
+        await NormalOlfactoryTrainingApi.submitTrainingLog(
+          normalOlfactoryTrainingController.totalTimeTaken,
+          roundLogsPayload,
+        );
+
+        Get.offAll(() => NormalOlfactoryTrainingResultScreen());
+        return;
+      }
+
+      normalOlfactoryTrainingController.nextRound();
+      normalOlfactoryTrainingController.resetRound();
+      Get.offAll(() => NormalOlfactoryTrainingScreen());
+    } finally {
+      _isSubmitting = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     final bottomPad = MediaQuery.of(context).padding.bottom + 24;
+
+    const Map<String, String> scentImageMap = {
+      '커피': 'assets/scent/coffee.jpg',
+      '라벤더': 'assets/scent/lavender.jpg',
+      '레몬': 'assets/scent/lemon.jpg',
+      '장미': 'assets/scent/rose.jpg',
+      '꽃': 'assets/scent/rose.jpg',
+
+      '베이비파우더': 'assets/scent/babypowder.png',
+      '베이비파우더(화장품)': 'assets/scent/babypowder.png',
+
+      '사과': 'assets/scent/apple.jpg',
+      '카레': 'assets/scent/carry.jpg',
+      '초콜릿': 'assets/scent/chocolate.jpg',
+      '딸기': 'assets/scent/strawberry.jpg',
+      '계피': 'assets/scent/sinamon.jpg',
+      '홍삼/인삼': 'assets/scent/ginseng.jpg',
+      '홍삼': 'assets/scent/ginseng.jpg',
+      '인삼': 'assets/scent/ginseng.jpg',
+      '수박': 'assets/scent/watermelon.jpg',
+      '복숭아': 'assets/scent/peach.jpg',
+      '땅콩': 'assets/scent/peanut.jpg',
+
+      '건포도': 'assets/scent/plum.jpg',
+      '자두': 'assets/scent/jado.jpg',
+
+      '멜론': 'assets/scent/melon.jpg',
+      '누룽지': 'assets/scent/rice.jpg',
+      '아카시아꽃': 'assets/scent/acasia.jpg',
+      '아카시아': 'assets/scent/acasia.jpg',
+      '박하': 'assets/scent/mint.jpg',
+      '오렌지': 'assets/scent/orange.jpg',
+      '나무': 'assets/scent/tree.jpg',
+      '쑥': 'assets/scent/mugwort.jpg',
+      '마늘': 'assets/scent/garlic.jpg',
+      '김치': 'assets/scent/gimchi.jpg',
+      '파스': 'assets/scent/pas.jpg',
+      '체리': 'assets/scent/cherry.jpg',
+      '솜사탕': 'assets/scent/somcandy.jpg',
+      '꿀': 'assets/scent/honey.jpg',
+      '자몽': 'assets/scent/grapefruit.jpg',
+      '유자': 'assets/scent/yuzu.png',
+      '옥수수': 'assets/scent/corn.jpg',
+      '비누': 'assets/scent/soap.jpg',
+      '생강': 'assets/scent/ginger.jpg',
+      '바나나': 'assets/scent/banana.jpg',
+      '포도': 'assets/scent/grape.jpg',
+
+      '한약': 'assets/scent/komedicine.jpg',
+      '숯불고기': 'assets/scent/meet.jpg',
+      '소나무': 'assets/scent/pine.jpg',
+      '나프탈렌': 'assets/scent/nap.png',
+    };
+
+    //추가
+    final options = normalOlfactoryTrainingController.getCurrentOptions();
+
     return PopScope(
       canPop: false, // 기본 pop 동작 차단
       onPopInvokedWithResult: (didPop, result) {
@@ -289,42 +416,57 @@ class _NormalOlfactoryTrainingQuestionScreenState
                                   mainAxisSpacing: 40,
                                   childAspectRatio: 1,
                                   children: [
-                                    ButtonBasic(
-                                      content: scentOptions!.scentOption1,
-                                      fontSize: 32,
-                                      function:
-                                          () => scentSelectionModal(
-                                            context,
-                                            scentOptions!.scentOption1,
-                                          ),
-                                    ),
-                                    ButtonBasic(
-                                      content: scentOptions!.scentOption2,
-                                      fontSize: 32,
-                                      function:
-                                          () => scentSelectionModal(
-                                            context,
-                                            scentOptions!.scentOption2,
-                                          ),
-                                    ),
-                                    ButtonBasic(
-                                      content: scentOptions!.scentOption3,
-                                      fontSize: 32,
-                                      function:
-                                          () => scentSelectionModal(
-                                            context,
-                                            scentOptions!.scentOption3,
-                                          ),
-                                    ),
-                                    ButtonBasic(
-                                      content: scentOptions!.scentOption4,
-                                      fontSize: 32,
-                                      function:
-                                          () => scentSelectionModal(
-                                            context,
-                                            scentOptions!.scentOption4,
-                                          ),
-                                    ),
+                                    for (final opt in options)
+                                      ButtonBasic(
+                                        content: opt,
+                                        fontSize:
+                                            screenWidth * 0.05, // 60은 너무 큼
+                                        imageAssetPath: scentImageMap[opt],
+                                        function:
+                                            () => scentSelectionModal(
+                                              context,
+                                              opt,
+                                            ),
+                                        // fontSize: 60,
+                                        // function: () => scentSelectionModal(context, opt),
+                                      ),
+                                    //기존
+                                    // ButtonBasic(
+                                    //   content: scentOptions!.scentOption1,
+                                    //   fontSize: 60,
+                                    //   function:
+                                    //       () => scentSelectionModal(
+                                    //         context,
+                                    //         scentOptions!.scentOption1,
+                                    //       ),
+                                    // ),
+                                    // ButtonBasic(
+                                    //   content: scentOptions!.scentOption2,
+                                    //   fontSize: 60,
+                                    //   function:
+                                    //       () => scentSelectionModal(
+                                    //         context,
+                                    //         scentOptions!.scentOption2,
+                                    //       ),
+                                    // ),
+                                    // ButtonBasic(
+                                    //   content: scentOptions!.scentOption3,
+                                    //   fontSize: 60,
+                                    //   function:
+                                    //       () => scentSelectionModal(
+                                    //         context,
+                                    //         scentOptions!.scentOption3,
+                                    //       ),
+                                    // ),
+                                    // ButtonBasic(
+                                    //   content: scentOptions!.scentOption4,
+                                    //   fontSize: 60,
+                                    //   function:
+                                    //       () => scentSelectionModal(
+                                    //         context,
+                                    //         scentOptions!.scentOption4,
+                                    //       ),
+                                    // ),
                                   ],
                                 ),
                               ),

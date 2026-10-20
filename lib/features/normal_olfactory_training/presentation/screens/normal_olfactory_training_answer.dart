@@ -22,7 +22,7 @@ class _NormalOlfactoryTrainingAnswerScreenState
     extends State<NormalOlfactoryTrainingAnswerScreen> {
   final normalOlfactoryTrainingController =
       Get.find<NormalOlfactoryTrainingController>();
-  int remainTime = 20;
+  int remainTime = 3;    //휴식시간
   String message = "초 뒤, 다른 향기가 분출됩니다.";
   bool isLoading = false;
   bool isStopped = false;
@@ -275,7 +275,8 @@ class _NormalOlfactoryTrainingAnswerScreenState
                                 horizontal: 5,
                               ),
                               child: Text(
-                                '${normalOlfactoryTrainingController.getIsCorrect() ? "맞았어요!" : "앗, 아쉬워요!"} \n방금 맡은 향은\n${normalOlfactoryTrainingController.getCorrectScentByRound().scentName} 향이었습니다.',
+                                '${normalOlfactoryTrainingController.getIsCorrect() ? "" : ""} \n방금 맡은 향은\n${normalOlfactoryTrainingController.getCorrectScentByRound().scentName} 향이었습니다.',
+                                // '${normalOlfactoryTrainingController.getIsCorrect() ? "맞았어요!" : "앗, 아쉬워요!"} \n방금 맡은 향은\n${normalOlfactoryTrainingController.getCorrectScentByRound().scentName} 향이었습니다.',
                                 style: TextStyle(
                                   fontSize: screenWidth * 0.07,
                                   fontWeight: FontWeight.bold,

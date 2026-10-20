@@ -3,7 +3,7 @@ class CorrectScent {
   final int deviceNumber;
   final int fanNumber;
 
-  CorrectScent({
+  const CorrectScent({
     required this.scentName,
     required this.deviceNumber,
     required this.fanNumber,

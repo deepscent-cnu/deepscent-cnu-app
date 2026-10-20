@@ -6,6 +6,7 @@ import 'package:deepscent_cnu/features/memory_recall_training/data/model/scent_i
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_session_select_screen.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
+import 'package:deepscent_cnu/features/realtime_voice_test/presentation/realtime_voice_test_screen.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:deepscent_cnu/common/widgets/loading_overlay.dart';
 import 'package:flutter/material.dart';
@@ -364,6 +365,28 @@ class _OlfactoryTrainingListScreenState
     }
   }
 
+  Future<void> openRealtimeVoiceTest() async {
+    try {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const RealtimeVoiceTestScreen()),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          tapLocked = false;
+          isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // 반응형 처리
@@ -497,6 +520,25 @@ class _OlfactoryTrainingListScreenState
                                         MEMORY_RECALL_MODE,
                                       ),
                                   titleFontSize: screenWidth * 0.07,
+                                  subtitleFontSize: screenWidth * 0.05,
+                                  elementMargin: elementMargin,
+                                ),
+                              ),
+
+                              SizedBox(height: elementMargin / 2),
+
+                              // 5. 실시간 음성 대화 테스트 카드
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: cardPadding,
+                                ),
+                                child: _buildTrainingCard(
+                                  context,
+                                  icon: Icons.record_voice_over,
+                                  title: '실시간 향기 대화',
+                                  subtitle: '향기를 맡으며 AI와\n자연스럽게 대화하기',
+                                  onPressed: openRealtimeVoiceTest,
+                                  titleFontSize: screenWidth * 0.06,
                                   subtitleFontSize: screenWidth * 0.05,
                                   elementMargin: elementMargin,
                                 ),

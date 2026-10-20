@@ -453,7 +453,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
       child: Scaffold(
         appBar: CustomAppBar(
           mode: CustomAppBarMode.sub,
-          title: "[${widget.sessionIndex}회차] 기억 회상 훈련",
+          title: " [${widget.sessionIndex}회차] 기억 회상 훈련",
           onBackPressed: () {
             showTrainingCarouselModal(context);
           },
@@ -496,17 +496,17 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                             ),
                           ),
                         ),
-                        Expanded(
-                          flex: 4,
-                          child: Opacity(
-                            opacity: 0.5,
-                            child: ButtonBasic(
-                              content: '훈련 스킵 (디버깅)',
-                              fontSize: screenWidth * 0.05,
-                              function: _onSkipPressed,
-                            ),
-                          ),
-                        ),
+                        // Expanded(
+                        //   flex: 4,
+                        //   child: Opacity(
+                        //     opacity: 0.5,
+                        //     child: ButtonBasic(
+                        //       content: '훈련 스킵 (디버깅)',
+                        //       fontSize: screenWidth * 0.05,
+                        //       function: _onSkipPressed,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
 
@@ -540,7 +540,7 @@ class _MemoryRecallChatScreenState extends State<MemoryRecallChatScreen> {
                                         : ''),
                                 key: ValueKey(currentIndex),
                                 style: TextStyle(
-                                  fontSize: screenWidth * 0.08,
+                                  fontSize: screenWidth * 0.05,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

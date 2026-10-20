@@ -284,7 +284,7 @@ class MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
                               ),
                               child: Center(
                                 child: Text(
-                                  isDifussed ? "ON" : "OFF",
+                                  isDifussed ? "켜기" : "끄기",
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: screenWidth * 0.2,

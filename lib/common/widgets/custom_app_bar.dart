@@ -31,7 +31,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      toolbarHeight: kToolbarHeight + topPadding, // AppBar 자체 높이 늘림
+      toolbarHeight: kToolbarHeight + topPadding,
+      // AppBar 자체 높이 늘림
+
+      //추가: leading 과 title 사이 간격
+      titleSpacing:
+          mode == CustomAppBarMode.sub ? horizontalPadding * 0.6 : null,
+
       leadingWidth:
           mode == CustomAppBarMode.main
               ? logoWidth + horizontalPadding * 2
@@ -48,13 +54,38 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               )
               : Padding(
                 padding: EdgeInsets.only(left: horizontalPadding),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios_new,
-                    size: iconSize,
-                    color: Colors.black,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: onBackPressed ?? () => Navigator.pop(context),
+                    child: SizedBox(
+                      width: iconSize,
+                      height: iconSize,
+                      child: Center(
+                        child: Icon(
+                          Icons.arrow_back_ios_new,
+                          size: iconSize,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
                   ),
-                  onPressed: onBackPressed ?? () => Navigator.pop(context),
+                  // child: IconButton(
+                  //   icon: Icon(
+                  //     Icons.arrow_back_ios_new,
+                  //     size: iconSize,
+                  //     color: Colors.black,
+                  //   ),
+                  //   onPressed: onBackPressed ?? () => Navigator.pop(context),
+                  //
+                  //   padding: EdgeInsets.zero,
+                  //   constraints: const BoxConstraints(
+                  //     minWidth: 48,
+                  //     maxWidth: 48,
+                  //   ),
+                  //   alignment: Alignment.center,
+                  // ),
                 ),
               ),
       title:

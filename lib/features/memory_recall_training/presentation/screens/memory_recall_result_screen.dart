@@ -265,91 +265,91 @@ class _MemoryRecallResultScreenState extends State<MemoryRecallResultScreen> {
                                 ),
                               ),
                               SizedBox(height: screenWidth * 0.07),
-                              Text(
-                                '${widget.sessionIndex}회차의 회상:',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.07,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF335928),
-                                ),
-                              ),
-                              SizedBox(height: screenWidth * 0.01),
-                              Text(
-                                summaryFromApi.isNotEmpty
-                                    ? summaryFromApi
-                                    : '요약이 아직 없습니다.',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.05,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 32),
+                              // Text(
+                              //   '${widget.sessionIndex}회차의 회상:',
+                              //   style: TextStyle(
+                              //     fontSize: screenWidth * 0.07,
+                              //     fontWeight: FontWeight.bold,
+                              //     color: const Color(0xFF335928),
+                              //   ),
+                              // ),
+                              // SizedBox(height: screenWidth * 0.01),
+                              // Text(
+                              //   summaryFromApi.isNotEmpty
+                              //       ? summaryFromApi
+                              //       : '요약이 아직 없습니다.',
+                              //   style: TextStyle(
+                              //     fontSize: screenWidth * 0.05,
+                              //     fontWeight: FontWeight.bold,
+                              //   ),
+                              // ),
+                              // const SizedBox(height: 32),
 
                               // 오늘의 느낀 점 (입력/수정 가능 + 음성 입력)
-                              Text(
-                                '${widget.sessionIndex}회차 훈련 후 느낀 점:',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.07,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF335928),
-                                ),
-                              ),
+                              // Text(
+                              //   '${widget.sessionIndex}회차 훈련 후 느낀 점:',
+                              //   style: TextStyle(
+                              //     fontSize: screenWidth * 0.07,
+                              //     fontWeight: FontWeight.bold,
+                              //     color: const Color(0xFF335928),
+                              //   ),
+                              // ),
                               SizedBox(height: screenWidth * 0.015),
 
                               // 입력창 + 마이크 영역 (안내 문구 제거, 마이크 중앙 정렬)
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Color(0x33000000),
-                                      blurRadius: 12,
-                                      offset: Offset(0, 6),
-                                    ),
-                                  ],
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.025,
-                                  vertical: screenWidth * 0.01,
-                                ),
-                                child: Column(
-                                  children: [
-                                    TextField(
-                                      controller: _feelingController,
-                                      maxLines: 4,
-                                      decoration: const InputDecoration(
-                                        hintText: '오늘 훈련을 통해 느낀 점을 적어주세요. (선택사항)',
-                                        border: InputBorder.none,
-                                      ),
-                                      style: TextStyle(
-                                        fontSize: screenWidth * 0.05,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const Divider(height: 16, thickness: 1, color: Color(0xFFE0E0E0)),
-                                    Center(
-                                      child: GestureDetector(
-                                        onTap: _isTranscribing ? null : _toggleRecording,
-                                        child: CircleAvatar(
-                                          radius: screenWidth * 0.07,
-                                          backgroundColor: _isRecording ? Colors.red : const Color(0xFF2E7D32),
-                                          child: Icon(
-                                            _isRecording ? Icons.stop : Icons.mic,
-                                            color: Colors.white,
-                                            size: screenWidth * 0.07,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    if (_isTranscribing)
-                                      const Text('음성을 인식하는 중입니다...', style: TextStyle(fontWeight: FontWeight.w600))
-                                    else if (_isRecording)
-                                      Text('녹음중 · ${_formattedTime()}', style: const TextStyle(fontWeight: FontWeight.w600)),
-                                  ],
-                                ),
-                              ),
+                              // Container(
+                              //   decoration: BoxDecoration(
+                              //     color: Colors.white,
+                              //     borderRadius: BorderRadius.circular(12),
+                              //     boxShadow: const [
+                              //       BoxShadow(
+                              //         color: Color(0x33000000),
+                              //         blurRadius: 12,
+                              //         offset: Offset(0, 6),
+                              //       ),
+                              //     ],
+                              //   ),
+                              //   padding: EdgeInsets.symmetric(
+                              //     horizontal: screenWidth * 0.025,
+                              //     vertical: screenWidth * 0.01,
+                              //   ),
+                              //   child: Column(
+                              //     children: [
+                              //       TextField(
+                              //         controller: _feelingController,
+                              //         maxLines: 4,
+                              //         decoration: const InputDecoration(
+                              //           hintText: '오늘 훈련을 통해 느낀 점을 적어주세요. (선택사항)',
+                              //           border: InputBorder.none,
+                              //         ),
+                              //         style: TextStyle(
+                              //           fontSize: screenWidth * 0.05,
+                              //           fontWeight: FontWeight.w500,
+                              //         ),
+                              //       ),
+                              //       const Divider(height: 16, thickness: 1, color: Color(0xFFE0E0E0)),
+                              //       Center(
+                              //         child: GestureDetector(
+                              //           onTap: _isTranscribing ? null : _toggleRecording,
+                              //           child: CircleAvatar(
+                              //             radius: screenWidth * 0.07,
+                              //             backgroundColor: _isRecording ? Colors.red : const Color(0xFF2E7D32),
+                              //             child: Icon(
+                              //               _isRecording ? Icons.stop : Icons.mic,
+                              //               color: Colors.white,
+                              //               size: screenWidth * 0.07,
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       ),
+                              //       const SizedBox(height: 8),
+                              //       if (_isTranscribing)
+                              //         const Text('음성을 인식하는 중입니다...', style: TextStyle(fontWeight: FontWeight.w600))
+                              //       else if (_isRecording)
+                              //         Text('녹음중 · ${_formattedTime()}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                              //     ],
+                              //   ),
+                              // ),
 
                               SizedBox(height: screenWidth * 0.1),
                               Padding(
