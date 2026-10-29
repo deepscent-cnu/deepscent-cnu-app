@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/local/normal_training_local_database.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/normal_training_survey.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_result.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 
 class NormalOlfactoryTrainingVentilationScreen extends StatefulWidget {
   const NormalOlfactoryTrainingVentilationScreen({super.key});
@@ -21,19 +26,80 @@ class _NormalOlfactoryTrainingVentilationScreenState
 
   bool _isProcessing = false;
 
+  Future<void> _syncTrainingToServer({
+    required String clientId,
+    required int totalTimeTaken,
+    required List<Map<String, dynamic>> roundLogs,
+  }) async {
+    final localDatabase = NormalTrainingLocalDatabase.instance;
+
+    try {
+      await NormalOlfactoryTrainingApi.submitTrainingLog(
+        totalTimeTaken,
+        roundLogs,
+      );
+    } catch (e) {
+      try {
+        await localDatabase.markSyncFailed(clientId, e);
+      } catch (localStatusError) {
+        debugPrint('(Debug) 로컬 동기화 실패 상태 저장 중 오류: $localStatusError');
+      }
+
+      Get.snackbar(
+        '휴대폰 저장 완료',
+        '서버 전송에는 실패했지만 훈련 기록은 이 휴대폰에 저장되었습니다.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    try {
+      await localDatabase.markSynced(clientId);
+    } catch (localStatusError) {
+      debugPrint('(Debug) 로컬 동기화 성공 상태 저장 중 오류: $localStatusError');
+    }
+  }
+
   Future<void> _goNext() async {
     if (_isProcessing) return;
-    _isProcessing = true;
+    setState(() {
+      _isProcessing = true;
+    });
 
     try {
       final isLastRound = c.currentRound.value >= c.totalRounds;
 
       if (isLastRound) {
-        // ✅ 마지막이면 DB 저장 후 결과
         final roundLogsPayload = c.logs.map((e) => e.toJson()).toList();
-        await NormalOlfactoryTrainingApi.submitTrainingLog(
-          c.totalTimeTaken,
-          roundLogsPayload,
+        final clientId = const Uuid().v4();
+        final localDatabase = NormalTrainingLocalDatabase.instance;
+        final surveyResponses = <Map<String, String>>[
+          for (final question in normalTrainingSurveyQuestions)
+            if ((c.surveyResponses[question.key] ?? '').trim().isNotEmpty)
+              {
+                'question_key': question.key,
+                'question_text': question.question,
+                'answer': c.surveyResponses[question.key]!.trim(),
+              },
+        ];
+
+        // 서버 상태와 관계없이 휴대폰에 먼저 보관한다.
+        await localDatabase.saveTraining(
+          clientId: clientId,
+          participantCode: c.participantCode,
+          participantName: c.participantName,
+          participantBirthYear: c.participantBirthYear,
+          surveyResponses: surveyResponses,
+          totalTimeTaken: c.totalTimeTaken,
+          roundLogs: roundLogsPayload,
+        );
+
+        unawaited(
+          _syncTrainingToServer(
+            clientId: clientId,
+            totalTimeTaken: c.totalTimeTaken,
+            roundLogs: roundLogsPayload,
+          ),
         );
         Get.offAll(() => NormalOlfactoryTrainingResultScreen());
         return;
@@ -43,8 +109,20 @@ class _NormalOlfactoryTrainingVentilationScreenState
       c.nextRound();
       c.resetRound();
       Get.offAll(() => NormalOlfactoryTrainingScreen());
+    } catch (e) {
+      debugPrint('(Debug) 일반 후각 훈련 완료 처리 중 오류 발생: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('휴대폰에 훈련 기록을 저장하지 못했습니다. 다시 시도해주세요.\n$e')),
+      );
     } finally {
-      _isProcessing = false;
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+      } else {
+        _isProcessing = false;
+      }
     }
   }
 
@@ -101,7 +179,7 @@ class _NormalOlfactoryTrainingVentilationScreenState
                         vertical: screenWidth * 0.05,
                       ),
                       child: ButtonBasic(
-                        content: "다음 단계로",
+                        content: _isProcessing ? "저장 중..." : "다음 단계로",
                         fontSize: screenWidth * 0.06,
                         function: _isProcessing ? null : _goNext,
                       ),

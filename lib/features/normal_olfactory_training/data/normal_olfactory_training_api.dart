@@ -86,27 +86,31 @@ class NormalOlfactoryTrainingApi {
     };
 
     try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: requestHeaders,
-        body: jsonEncode({
-          'totalTimeTaken': totalTimeTaken,
-          'roundLogs': roundLogs,
-        }),
-      );
+      final response = await http
+          .post(
+            Uri.parse(apiUrl),
+            headers: requestHeaders,
+            body: jsonEncode({
+              'totalTimeTaken': totalTimeTaken,
+              'roundLogs': roundLogs,
+            }),
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 204) {
         debugPrint(
           '(Debug) 일반 후각 훈련 로그 등록 API 응답 상태 코드: ${response.statusCode}',
         );
-      } else {
-        debugPrint('(Debug) 일반 후각 훈련 로그 등록 실패: ${response.statusCode}');
-        debugPrint(
-          '(Debug) 응답 본문: ${jsonDecode(utf8.decode(response.bodyBytes))}',
-        );
+        return;
       }
+
+      final responseBody = utf8.decode(response.bodyBytes);
+      debugPrint('(Debug) 일반 후각 훈련 로그 등록 실패: ${response.statusCode}');
+      debugPrint('(Debug) 응답 본문: $responseBody');
+      throw Exception('훈련 기록 저장에 실패했습니다. (${response.statusCode})');
     } catch (e) {
       debugPrint('(Debug) 일반 후각 훈련 로그 등록 API 호출 중 오류 발생: $e');
+      rethrow;
     }
   }
 }

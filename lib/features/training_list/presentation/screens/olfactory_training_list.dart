@@ -5,8 +5,8 @@ import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall
 import 'package:deepscent_cnu/features/memory_recall_training/data/model/scent_info.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_session_select_screen.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_screen.dart';
-import 'package:deepscent_cnu/features/realtime_voice_test/presentation/realtime_voice_test_screen.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_training_local_history_screen.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_training_participant_survey_screen.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:deepscent_cnu/common/widgets/loading_overlay.dart';
 import 'package:flutter/material.dart';
@@ -150,13 +150,17 @@ class _OlfactoryTrainingListScreenState
 
     // 다음 화면으로 이동하는 로직을 함수로 분리
     Future<void> navigateToTrainingScreen() async {
+      if (mode == NORMAL_MODE) {
+        normalOlfactoryTrainingController.reset();
+      }
+
       // Navigator.push가 Future를 반환하므로 await으로 기다릴 수 있음
       await Navigator.push(
         context, // 이 context는 OlfactoryTrainingListScreen의 것이므로 안전함
         MaterialPageRoute(
           builder: (context) {
             if (mode == NORMAL_MODE) {
-              return const NormalOlfactoryTrainingScreen();
+              return const NormalTrainingParticipantSurveyScreen();
             } else if (mode == MEMORY_RECALL_MODE) {
               return MemoryRecallSessionSelectScreen();
             } else {
@@ -375,7 +379,35 @@ class _OlfactoryTrainingListScreenState
 
       await Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const RealtimeVoiceTestScreen()),
+        MaterialPageRoute(
+          builder:
+              (_) =>
+                  const MemoryRecallSessionSelectScreen(isRealtimeMode: true),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          tapLocked = false;
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> openLocalTrainingHistory() async {
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+
+    try {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const NormalTrainingLocalHistoryScreen(),
+        ),
       );
     } finally {
       if (mounted) {
@@ -538,6 +570,24 @@ class _OlfactoryTrainingListScreenState
                                   title: '실시간 향기 대화',
                                   subtitle: '향기를 맡으며 AI와\n자연스럽게 대화하기',
                                   onPressed: openRealtimeVoiceTest,
+                                  titleFontSize: screenWidth * 0.06,
+                                  subtitleFontSize: screenWidth * 0.05,
+                                  elementMargin: elementMargin,
+                                ),
+                              ),
+
+                              SizedBox(height: elementMargin / 2),
+
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: cardPadding,
+                                ),
+                                child: _buildTrainingCard(
+                                  context,
+                                  icon: Icons.storage,
+                                  title: '로컬 저장 기록',
+                                  subtitle: '이 휴대폰에 저장된\n일반 후각 훈련 기록 확인',
+                                  onPressed: openLocalTrainingHistory,
                                   titleFontSize: screenWidth * 0.06,
                                   subtitleFontSize: screenWidth * 0.05,
                                   elementMargin: elementMargin,

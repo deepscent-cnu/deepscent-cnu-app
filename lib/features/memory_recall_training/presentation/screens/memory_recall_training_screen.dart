@@ -4,6 +4,7 @@ import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/controllers/memory_recall_training_controller.dart';
 import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_chat_screen.dart';
+import 'package:deepscent_cnu/features/realtime_voice_test/presentation/realtime_voice_test_screen.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,11 +13,13 @@ import 'dart:async';
 class MemoryRecallTrainingScreen extends StatefulWidget {
   final int sessionIndex; // 회차
   final String selectedScent; // 선택된 향
+  final bool isRealtimeMode;
 
   const MemoryRecallTrainingScreen({
     super.key,
     required this.sessionIndex,
     required this.selectedScent,
+    this.isRealtimeMode = false,
   });
 
   @override
@@ -87,11 +90,18 @@ class MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder:
-              (_) => MemoryRecallChatScreen(
+          builder: (_) {
+            if (widget.isRealtimeMode) {
+              return RealtimeVoiceTestScreen(
                 sessionIndex: widget.sessionIndex,
-                selectedScent: widget.selectedScent,
-              ),
+                initialScent: widget.selectedScent,
+              );
+            }
+            return MemoryRecallChatScreen(
+              sessionIndex: widget.sessionIndex,
+              selectedScent: widget.selectedScent,
+            );
+          },
         ),
       );
     }
@@ -101,9 +111,11 @@ class MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
     int deviceNumber = memoryRecallTrainingController.deviceNumber;
     int fanNumber = memoryRecallTrainingController.fanNumber;
     await DeviceApi.controlScentDeviceSlot(deviceNumber, fanNumber, 0);
-    await MemoryRecallTrainingApi.deleteMemoryRecallRoundLog(
-      memoryRecallTrainingController.roundId,
-    );
+    if (!widget.isRealtimeMode) {
+      await MemoryRecallTrainingApi.deleteMemoryRecallRoundLog(
+        memoryRecallTrainingController.roundId,
+      );
+    }
 
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const OlfactoryTrainingListScreen()),
@@ -147,7 +159,9 @@ class MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
                             const SizedBox(height: 20), // 위아래 여백
                             Text(
                               // 안내 멘트 텍스트
-                              '지금까지 진행한 훈련 기록이 모두 삭제됩니다.',
+                              widget.isRealtimeMode
+                                  ? '현재 대화 준비가 종료됩니다.'
+                                  : '지금까지 진행한 훈련 기록이 모두 삭제됩니다.',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -213,7 +227,10 @@ class MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
       child: Scaffold(
         appBar: CustomAppBar(
           mode: CustomAppBarMode.sub,
-          title: "[${widget.sessionIndex}회차] 기억 회상 훈련",
+          title:
+              widget.isRealtimeMode
+                  ? "[${widget.sessionIndex}회차] 실시간 향기 대화"
+                  : "[${widget.sessionIndex}회차] 기억 회상 훈련",
           onBackPressed: () {
             showTrainingCarouselModal(context); // 상단 뒤로가기 버튼도 동일 동작
           },
@@ -284,7 +301,7 @@ class MemoryRecallTrainingScreenState extends State<MemoryRecallTrainingScreen>
                               ),
                               child: Center(
                                 child: Text(
-                                  isDifussed ? "켜기" : "끄기",
+                                  isDifussed ? "끄기" : "켜기",
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: screenWidth * 0.2,

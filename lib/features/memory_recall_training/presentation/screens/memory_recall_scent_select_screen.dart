@@ -3,14 +3,20 @@ import 'package:deepscent_cnu/features/memory_recall_training/data/memory_recall
 import 'package:deepscent_cnu/features/memory_recall_training/data/model/scent_info.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/controllers/memory_recall_training_controller.dart';
 import 'package:deepscent_cnu/features/memory_recall_training/presentation/screens/memory_recall_training_screen.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/question_bank.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MemoryRecallScentSelectScreen extends StatefulWidget {
   final int sessionIndex;
+  final bool isRealtimeMode;
 
-  const MemoryRecallScentSelectScreen({super.key, required this.sessionIndex});
+  const MemoryRecallScentSelectScreen({
+    super.key,
+    required this.sessionIndex,
+    this.isRealtimeMode = false,
+  });
 
   @override
   State<MemoryRecallScentSelectScreen> createState() =>
@@ -52,6 +58,22 @@ class _MemoryRecallScentSelectScreenState
     memoryRecallTrainingController.deviceNumber = scentInfo.deviceNumber;
     memoryRecallTrainingController.fanNumber = scentInfo.fanNumber;
 
+    if (widget.isRealtimeMode) {
+      memoryRecallTrainingController.round = widget.sessionIndex;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (_) => MemoryRecallTrainingScreen(
+                sessionIndex: widget.sessionIndex,
+                selectedScent: memoryRecallTrainingController.scentName,
+                isRealtimeMode: true,
+              ),
+        ),
+      );
+      return;
+    }
+
     // 2) API 호출
     setState(() => isSubmitting = true);
 
@@ -87,9 +109,26 @@ class _MemoryRecallScentSelectScreenState
   }
 
   Future<void> getScentAll() async {
+    if (widget.isRealtimeMode) {
+      scentAll =
+          normalTrainingQuestionBank
+              .map(
+                (question) => ScentInfo(
+                  scentName: question.correct.scentName,
+                  deviceNumber: question.correct.deviceNumber,
+                  fanNumber: question.correct.fanNumber,
+                ),
+              )
+              .toList();
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
     scentAll = await MemoryRecallTrainingApi.getScentAll();
 
-    if (scentAll != null) {
+    if (mounted && scentAll != null) {
       setState(() {
         isLoading = false;
       });
@@ -189,7 +228,10 @@ class _MemoryRecallScentSelectScreenState
       extendBodyBehindAppBar: true,
       appBar: CustomAppBar(
         mode: CustomAppBarMode.sub,
-        title: "[${widget.sessionIndex}회차] 기억 회상 훈련",
+        title:
+            widget.isRealtimeMode
+                ? "[${widget.sessionIndex}회차] 실시간 향기 대화"
+                : "[${widget.sessionIndex}회차] 기억 회상 훈련",
         onBackPressed: () {
           Navigator.pop(context);
         },
@@ -253,7 +295,10 @@ class _MemoryRecallScentSelectScreenState
                                       crossAxisCount: 2,
                                       crossAxisSpacing: 12,
                                       mainAxisSpacing: 12,
-                                      childAspectRatio: screenWidth < 400 ? 2.2 : 2.5, // 버튼의 가로/세로 비율
+                                      childAspectRatio:
+                                          screenWidth < 400
+                                              ? 2.2
+                                              : 2.5, // 버튼의 가로/세로 비율
                                     ),
                                 itemCount: scentAll!.length,
                                 itemBuilder: (context, index) {
@@ -293,10 +338,8 @@ class _MemoryRecallScentSelectScreenState
                                   width: screenWidth * 0.4,
                                   child: OutlinedButton.icon(
                                     onPressed:
-                                        () => scentSelectionModal(
-                                          context,
-                                          null,
-                                        ),
+                                        () =>
+                                            scentSelectionModal(context, null),
                                     icon: const Icon(
                                       Icons.cancel,
                                       color: Colors.red,
@@ -310,16 +353,12 @@ class _MemoryRecallScentSelectScreenState
                                     ),
                                     style: OutlinedButton.styleFrom(
                                       backgroundColor: Colors.white,
-                                      side: const BorderSide(
-                                        color: Colors.red,
-                                      ),
+                                      side: const BorderSide(color: Colors.red),
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 16,
                                       ),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          12,
-                                        ),
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
                                     ),
                                   ),

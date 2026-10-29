@@ -58,6 +58,8 @@ dependencies:
   animations: ^2.0.11
   flutter_staggered_animations: ^1.1.1
   flutter_webrtc: ^1.6.2+hotfix.4
+  sqflite: ^2.4.5
+  uuid: ^4.6.0
 
 dev_dependencies:
   flutter_test:

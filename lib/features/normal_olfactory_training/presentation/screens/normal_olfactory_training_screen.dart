@@ -1,7 +1,6 @@
 import 'package:deepscent_cnu/common/data/device_api.dart';
 import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/correct_scent.dart';
-import 'package:deepscent_cnu/features/normal_olfactory_training/data/normal_olfactory_training_api.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_question.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
@@ -21,9 +20,11 @@ class _NormalOlfactoryTrainingScreenState
   final normalOlfactoryTrainingController =
       Get.find<NormalOlfactoryTrainingController>();
   int remainTime = 10;
-  String message = "초 뒤, 발향이 중지됩니다.";
   bool isStopped = false;
   bool isPaused = false;
+  bool _isScentStopped = false;
+  bool _isStoppingScent = false;
+  bool _isTransitioning = false;
 
   @override
   void initState() {
@@ -45,9 +46,12 @@ class _NormalOlfactoryTrainingScreenState
 
     //수정
     setState(() {
-      remainTime = 10;      // ✅ 라운드 시작마다 초기화 (지금 코드엔 이게 없어서 다음 라운드에서 문제 생김)
+      remainTime = 10; // ✅ 라운드 시작마다 초기화 (지금 코드엔 이게 없어서 다음 라운드에서 문제 생김)
       isStopped = false;
       isPaused = false;
+      _isScentStopped = false;
+      _isStoppingScent = false;
+      _isTransitioning = false;
     });
 
     CorrectScent correctScent =
@@ -58,35 +62,70 @@ class _NormalOlfactoryTrainingScreenState
       correctScent.fanNumber,
       3,
     );
-    await Future.delayed(const Duration(seconds: 1));
+    while (remainTime > 0) {
+      await Future.delayed(const Duration(seconds: 1));
 
-    while (remainTime > 1) {
-      if (isStopped) {
-        return;
-      }
+      if (isStopped || !mounted) return;
 
       if (!isPaused) {
         setState(() {
           remainTime -= 1;
         });
       }
-
-      await Future.delayed(const Duration(seconds: 1));
     }
 
-    if (!isStopped && context.mounted) {
+    if (!isStopped && mounted) {
+      await _stopScentOnly();
+    }
+  }
+
+  Future<void> _stopScentOnly() async {
+    if (_isScentStopped || _isStoppingScent) return;
+
+    setState(() {
+      _isStoppingScent = true;
+    });
+
+    final correctScent =
+        normalOlfactoryTrainingController.getCorrectScentByRound();
+
+    try {
       await DeviceApi.controlScentDeviceSlot(
         correctScent.deviceNumber,
         correctScent.fanNumber,
         0,
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => NormalOlfactoryTrainingQuestionScreen(),
-        ),
-      );
+      ).timeout(const Duration(seconds: 2));
+    } catch (e) {
+      debugPrint('(Debug) 발향 중지 요청 중 오류 발생: $e');
     }
+
+    if (!mounted) return;
+
+    setState(() {
+      _isScentStopped = true;
+      _isStoppingScent = false;
+    });
+  }
+
+  Future<void> _openQuestion() async {
+    if (_isTransitioning || _isStoppingScent) return;
+
+    setState(() {
+      _isTransitioning = true;
+      isStopped = true;
+      isPaused = false;
+    });
+
+    await _stopScentOnly();
+
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => NormalOlfactoryTrainingQuestionScreen(),
+      ),
+    );
   }
 
   Future<void> stopTrainingCycle() async {
@@ -103,19 +142,17 @@ class _NormalOlfactoryTrainingScreenState
       0,
     );
 
-    if (context.mounted) {
-      Navigator.pop(context);
-      Navigator.pop(context);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        normalOlfactoryTrainingController.reset();
-      });
-    }
+    if (!mounted) return;
+
+    Navigator.pop(context);
+    Navigator.pop(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      normalOlfactoryTrainingController.reset();
+    });
   }
 
   void showTrainingStopModal(BuildContext context) async {
-    if (remainTime <= 1) {
-      return;
-    }
+    if (_isTransitioning || _isStoppingScent) return;
 
     setState(() {
       isPaused = true;
@@ -213,7 +250,7 @@ class _NormalOlfactoryTrainingScreenState
       },
     );
 
-    if (result == null) {
+    if (result == null && mounted) {
       setState(() {
         isPaused = false;
       });
@@ -256,7 +293,9 @@ class _NormalOlfactoryTrainingScreenState
                     const SizedBox(height: 24),
                     Center(
                       child: Text(
-                        '${normalOlfactoryTrainingController.currentRound.value} 번째 향을 발향 중입니다.\n향을 집중해서 맡아보세요!',
+                        _isScentStopped
+                            ? '${normalOlfactoryTrainingController.currentRound.value} 번째 향 발향이 끝났습니다.'
+                            : '${normalOlfactoryTrainingController.currentRound.value} 번째 향을 발향 중입니다.\n향을 집중해서 맡아보세요!',
                         style: TextStyle(
                           fontSize: screenWidth * 0.07,
                           fontWeight: FontWeight.bold,
@@ -268,24 +307,69 @@ class _NormalOlfactoryTrainingScreenState
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              remainTime.toString(),
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.3,
-                                fontWeight: FontWeight.bold,
+                            if (_isScentStopped) ...[
+                              Icon(
+                                Icons.check_circle_outline,
+                                size: screenWidth * 0.25,
+                                color: const Color(0xFF4F7F68),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "초 뒤, 발향이 중지됩니다.",
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.07,
-                                fontWeight: FontWeight.bold,
+                              const SizedBox(height: 20),
+                              Text(
+                                '아래 버튼을 눌러\n다음 문제로 진행해주세요.',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.07,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
+                            ] else ...[
+                              Text(
+                                remainTime.toString(),
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.3,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '초 뒤, 발향이 중지됩니다.',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.07,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ],
                         ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: screenWidth * 0.07,
+                        right: screenWidth * 0.07,
+                        bottom: screenWidth * 0.06,
+                      ),
+                      child: ButtonBasic(
+                        content:
+                            _isTransitioning
+                                ? '이동 중...'
+                                : _isStoppingScent
+                                ? '발향 중지 중...'
+                                : _isScentStopped
+                                ? '다음 문제로'
+                                : '테스트용 건너뛰기',
+                        icon: Icon(
+                          _isScentStopped
+                              ? Icons.arrow_forward
+                              : Icons.fast_forward,
+                          size: screenWidth * 0.06,
+                        ),
+                        fontSize: screenWidth * 0.05,
+                        function:
+                            _isTransitioning || _isStoppingScent
+                                ? null
+                                : _openQuestion,
                       ),
                     ),
                   ],

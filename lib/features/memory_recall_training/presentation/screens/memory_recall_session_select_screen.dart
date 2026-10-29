@@ -5,7 +5,12 @@ import 'package:deepscent_cnu/features/memory_recall_training/presentation/scree
 import 'package:flutter/material.dart';
 
 class MemoryRecallSessionSelectScreen extends StatefulWidget {
-  const MemoryRecallSessionSelectScreen({super.key});
+  final bool isRealtimeMode;
+
+  const MemoryRecallSessionSelectScreen({
+    super.key,
+    this.isRealtimeMode = false,
+  });
 
   @override
   State<MemoryRecallSessionSelectScreen> createState() =>
@@ -29,7 +34,11 @@ class _MemoryRecallSessionSelectScreenState
   @override
   void initState() {
     super.initState();
-    initCompletedSessions();
+    if (widget.isRealtimeMode) {
+      isLoading = false;
+    } else {
+      initCompletedSessions();
+    }
   }
 
   Future<void> _openFinishedSession(int round) async {
@@ -98,7 +107,7 @@ class _MemoryRecallSessionSelectScreenState
       extendBodyBehindAppBar: false,
       appBar: CustomAppBar(
         mode: CustomAppBarMode.sub,
-        title: "기억 회상 훈련 회차 선택",
+        title: widget.isRealtimeMode ? "실시간 향기 대화 회차 선택" : "기억 회상 훈련 회차 선택",
         onBackPressed: () {
           Navigator.pop(context);
         },
@@ -143,8 +152,10 @@ class _MemoryRecallSessionSelectScreenState
                     child: ListView.builder(
                       itemCount: completedSessions.length,
                       itemBuilder: (context, index) {
-                        final bool isDone = completedSessions[index];
+                        final bool isDone =
+                            !widget.isRealtimeMode && completedSessions[index];
                         final bool isCurrent =
+                            widget.isRealtimeMode ||
                             index == firstIncompleteIndex;
 
                         Color backgroundColor;
@@ -160,16 +171,27 @@ class _MemoryRecallSessionSelectScreenState
                         } else {
                           backgroundColor = Colors.white;
                           foregroundColor = const Color(0xFF335928);
-                          border = const BorderSide(
-                            color: Color(0xFF335928),
-                          );
+                          border = const BorderSide(color: Color(0xFF335928));
                         }
 
                         return Padding(
-                          padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
+                          padding: EdgeInsets.symmetric(
+                            vertical: screenWidth * 0.03,
+                          ),
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              if (isDone) {
+                              if (widget.isRealtimeMode) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) => MemoryRecallScentSelectScreen(
+                                          sessionIndex: index + 1,
+                                          isRealtimeMode: true,
+                                        ),
+                                  ),
+                                );
+                              } else if (isDone) {
                                 //완료된 회차: 히스토리 보기
                                 _openFinishedSession(
                                   index + 1,
@@ -180,10 +202,9 @@ class _MemoryRecallSessionSelectScreenState
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (_) =>
-                                            MemoryRecallScentSelectScreen(
-                                              sessionIndex: index + 1,
-                                            ),
+                                        (_) => MemoryRecallScentSelectScreen(
+                                          sessionIndex: index + 1,
+                                        ),
                                   ),
                                 );
                               } else {
@@ -204,9 +225,14 @@ class _MemoryRecallSessionSelectScreenState
                               backgroundColor: backgroundColor,
                               foregroundColor: foregroundColor,
                               side: border,
-                              minimumSize: Size(double.infinity, screenWidth * 0.15),
+                              minimumSize: Size(
+                                double.infinity,
+                                screenWidth * 0.15,
+                              ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                                borderRadius: BorderRadius.circular(
+                                  screenWidth * 0.03,
+                                ),
                               ),
                               // 눌러도 효과 없게 시각만 비슷하게 유지
                               elevation: isCurrent ? 2 : 0,

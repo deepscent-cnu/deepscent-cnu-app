@@ -9,12 +9,15 @@ class NormalOlfactoryTrainingController extends GetxController {
   var timeTaken = 0;
   var totalScore = 0;
   var totalTimeTaken = 0;
+  var participantCode = '';
+  var participantName = '';
+  var participantBirthYear = 0;
+  var surveyResponses = <String, String>{};
 
   //기존 라운드
   // final totalRounds = 4;
   //현재는 2문항 -> 12문항으로
   int get totalRounds => normalTrainingQuestionBank.length;
-
 
   var logs = <RoundLog>[].obs;
 
@@ -33,27 +36,27 @@ class NormalOlfactoryTrainingController extends GetxController {
 
   bool getIsCorrect() => currentQuestion.correct.scentName == selectedOption;
 
-//기존
-//
-//   void addLog(int scentStrength) {
-//     //기존
-//     // String correctOption = correctScentList[currentRound.value - 1].scentName;
-//
-//     final correctOption = currentQuestion.correct.scentName;
-//     logs.add(
-//       RoundLog(
-//         correctOption: correctOption,
-//         selectedOption: selectedOption,
-//         isCorrect: correctOption == selectedOption,
-//         timeTaken: timeTaken,
-//         scentStrength: scentStrength,
-//       ),
-//     );
-//     //수정
-//     // 점수/총시간 누적을 여기서 할지, 결과 화면에서 할지 선택
-//     totalTimeTaken += timeTaken;
-//     if (correctOption == selectedOption) totalScore += 1;
-//   }
+  //기존
+  //
+  //   void addLog(int scentStrength) {
+  //     //기존
+  //     // String correctOption = correctScentList[currentRound.value - 1].scentName;
+  //
+  //     final correctOption = currentQuestion.correct.scentName;
+  //     logs.add(
+  //       RoundLog(
+  //         correctOption: correctOption,
+  //         selectedOption: selectedOption,
+  //         isCorrect: correctOption == selectedOption,
+  //         timeTaken: timeTaken,
+  //         scentStrength: scentStrength,
+  //       ),
+  //     );
+  //     //수정
+  //     // 점수/총시간 누적을 여기서 할지, 결과 화면에서 할지 선택
+  //     totalTimeTaken += timeTaken;
+  //     if (correctOption == selectedOption) totalScore += 1;
+  //   }
   //수정
   void addLog([int scentStrength = -1]) {
     final correctOption = currentQuestion.correct.scentName;
@@ -72,8 +75,6 @@ class NormalOlfactoryTrainingController extends GetxController {
     if (correctOption == selectedOption) totalScore += 1;
   }
 
-
-
   //기존
   // void addCorrectScentList(List<CorrectScent> correctScentList) {
   //   for (CorrectScent correctScent in correctScentList) {
@@ -89,13 +90,23 @@ class NormalOlfactoryTrainingController extends GetxController {
   //   return correctScentList[currentRound.value - 1].scentName == selectedOption;
   // }
 
-
-
   /// ✅ 다음 라운드로 이동 (최대 12)
   void nextRound() {
     if (currentRound.value < totalRounds) {
       currentRound.value += 1;
     }
+  }
+
+  void setParticipant({
+    required String participantCode,
+    required String participantName,
+    required int birthYear,
+    required Map<String, String> surveyResponses,
+  }) {
+    this.participantCode = participantCode;
+    this.participantName = participantName;
+    participantBirthYear = birthYear;
+    this.surveyResponses = surveyResponses;
   }
 
   void reset() {
@@ -104,6 +115,10 @@ class NormalOlfactoryTrainingController extends GetxController {
     timeTaken = 0;
     totalScore = 0;
     totalTimeTaken = 0;
+    participantCode = '';
+    participantName = '';
+    participantBirthYear = 0;
+    surveyResponses = <String, String>{};
     logs.clear();
     //기존
     // correctScentList.clear();

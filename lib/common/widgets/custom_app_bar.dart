@@ -24,7 +24,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     final logoWidth = screenWidth * 0.45; // 화면 너비의 20%
-    final iconSize = screenWidth * 0.05; // 화면 너비의 6%
+    final iconSize = (screenWidth * 0.05).clamp(20.0, 28.0);
     final horizontalPadding = screenWidth * 0.05;
     final topPadding = screenHeight * 0.025; // 화면 높이의 2.5%
 
@@ -41,7 +41,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leadingWidth:
           mode == CustomAppBarMode.main
               ? logoWidth + horizontalPadding * 2
-              : null,
+              : 48 + horizontalPadding,
       leading:
           mode == CustomAppBarMode.main
               ? Padding(
@@ -54,38 +54,23 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               )
               : Padding(
                 padding: EdgeInsets.only(left: horizontalPadding),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: onBackPressed ?? () => Navigator.pop(context),
-                    child: SizedBox(
-                      width: iconSize,
-                      height: iconSize,
-                      child: Center(
-                        child: Icon(
-                          Icons.arrow_back_ios_new,
-                          size: iconSize,
-                          color: Colors.black,
-                        ),
-                      ),
+                child: SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: IconButton(
+                    tooltip: '뒤로가기',
+                    onPressed: onBackPressed ?? () => Navigator.pop(context),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 48,
+                      minHeight: 48,
+                    ),
+                    icon: Icon(
+                      Icons.arrow_back_ios_new,
+                      size: iconSize,
+                      color: Colors.black,
                     ),
                   ),
-                  // child: IconButton(
-                  //   icon: Icon(
-                  //     Icons.arrow_back_ios_new,
-                  //     size: iconSize,
-                  //     color: Colors.black,
-                  //   ),
-                  //   onPressed: onBackPressed ?? () => Navigator.pop(context),
-                  //
-                  //   padding: EdgeInsets.zero,
-                  //   constraints: const BoxConstraints(
-                  //     minWidth: 48,
-                  //     maxWidth: 48,
-                  //   ),
-                  //   alignment: Alignment.center,
-                  // ),
                 ),
               ),
       title:
@@ -152,6 +137,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       if (shouldLogout == true) {
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.remove('jwtToken');
+                        if (!context.mounted) return;
 
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(builder: (_) => const LoginPage()),

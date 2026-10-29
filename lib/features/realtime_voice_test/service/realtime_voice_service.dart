@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:deepscent_cnu/common/presentation/controller/auth_controller.dart';
+import 'package:deepscent_cnu/secrets.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:get/get.dart' as getx;
 import 'package:http/http.dart' as http;
 
 typedef RealtimeStatusCallback = void Function(String message);
@@ -15,19 +18,16 @@ class RealtimeVoiceService {
   bool get isActive => _peerConnection != null;
 
   Future<void> start({
-    required String serverBaseUrl,
     required String scent,
     required RealtimeStatusCallback onStatus,
     required RealtimeEventCallback onEvent,
   }) async {
     await stop();
 
-    final normalizedBaseUrl = serverBaseUrl.trim().replaceFirst(
-      RegExp(r'/$'),
-      '',
-    );
-    if (normalizedBaseUrl.isEmpty) {
-      throw const FormatException('로컬 서버 주소를 입력해 주세요.');
+    final authController = getx.Get.find<AuthController>();
+    final accessToken = authController.accessToken.value;
+    if (accessToken.isEmpty) {
+      throw StateError('로그인 정보가 없습니다. 다시 로그인해 주세요.');
     }
 
     onStatus('마이크 권한을 확인하고 있어요…');
@@ -110,8 +110,11 @@ class RealtimeVoiceService {
 
       final response = await http
           .post(
-            Uri.parse('$normalizedBaseUrl/api/session'),
-            headers: {'Content-Type': 'application/json'},
+            Uri.parse('$apiBaseUrl/api/realtime/session'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $accessToken',
+            },
             body: jsonEncode({'sdp': sdp, 'scent': scent.trim()}),
           )
           .timeout(const Duration(seconds: 30));
@@ -198,7 +201,7 @@ class RealtimeVoiceService {
     try {
       final decoded = jsonDecode(response.body);
       if (decoded is Map<String, dynamic>) {
-        final message = decoded['error'];
+        final message = decoded['message'] ?? decoded['error'];
         if (message is String && message.isNotEmpty) {
           return '$message (HTTP ${response.statusCode})';
         }
