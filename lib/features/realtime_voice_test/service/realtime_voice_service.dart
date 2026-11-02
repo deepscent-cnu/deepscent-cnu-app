@@ -10,6 +10,27 @@ import 'package:http/http.dart' as http;
 typedef RealtimeStatusCallback = void Function(String message);
 typedef RealtimeEventCallback = void Function(Map<String, dynamic> event);
 
+class RealtimeConversationMessagePayload {
+  final String itemId;
+  final int sequenceNumber;
+  final String role;
+  final String content;
+
+  const RealtimeConversationMessagePayload({
+    required this.itemId,
+    required this.sequenceNumber,
+    required this.role,
+    required this.content,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'itemId': itemId,
+    'sequenceNumber': sequenceNumber,
+    'role': role,
+    'content': content,
+  };
+}
+
 class RealtimeVoiceService {
   RTCPeerConnection? _peerConnection;
   RTCDataChannel? _dataChannel;
@@ -82,6 +103,7 @@ class RealtimeVoiceService {
       dataChannel.onDataChannelState = (state) {
         if (state == RTCDataChannelState.RTCDataChannelOpen) {
           onStatus('연결되었습니다. 편하게 말씀해 주세요.');
+          unawaited(_configureInputTranscription(dataChannel, onStatus));
         }
       };
       dataChannel.onMessage = (message) {
@@ -152,6 +174,71 @@ class RealtimeVoiceService {
 
     await peerConnection?.close();
     await peerConnection?.dispose();
+  }
+
+  Future<void> saveCompletedConversation({
+    required String clientSessionId,
+    required int round,
+    required String scent,
+    required DateTime startedAt,
+    required DateTime endedAt,
+    required List<RealtimeConversationMessagePayload> messages,
+  }) async {
+    final authController = getx.Get.find<AuthController>();
+    final accessToken = authController.accessToken.value;
+    if (accessToken.isEmpty) {
+      throw StateError('로그인 정보가 없습니다. 다시 로그인해 주세요.');
+    }
+
+    final response = await http
+        .post(
+          Uri.parse('$apiBaseUrl/api/realtime/conversations/complete'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $accessToken',
+          },
+          body: jsonEncode({
+            'clientSessionId': clientSessionId,
+            'round': round,
+            'scent': scent.trim(),
+            'startedAt': startedAt.toUtc().toIso8601String(),
+            'endedAt': endedAt.toUtc().toIso8601String(),
+            'messages': messages.map((message) => message.toJson()).toList(),
+          }),
+        )
+        .timeout(const Duration(seconds: 30));
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw StateError(_readServerError(response));
+    }
+  }
+
+  Future<void> _configureInputTranscription(
+    RTCDataChannel dataChannel,
+    RealtimeStatusCallback onStatus,
+  ) async {
+    try {
+      await dataChannel.send(
+        RTCDataChannelMessage(
+          jsonEncode({
+            'type': 'session.update',
+            'session': {
+              'type': 'realtime',
+              'audio': {
+                'input': {
+                  'transcription': {
+                    'model': 'gpt-transcribe',
+                    'languages': ['ko'],
+                  },
+                },
+              },
+            },
+          }),
+        ),
+      );
+    } catch (_) {
+      onStatus('사용자 음성 인식 설정을 전송하지 못했습니다.');
+    }
   }
 
   Future<void> _waitForIceGathering(RTCPeerConnection connection) async {
