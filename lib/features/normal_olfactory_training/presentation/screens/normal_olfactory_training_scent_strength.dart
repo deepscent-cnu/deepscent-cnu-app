@@ -2,6 +2,7 @@ import 'package:deepscent_cnu/common/widgets/button_basic.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_answer.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
+import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -29,6 +30,11 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
   final SCENT_STRENGTH_STRONG = "강함";
   final SCENT_STRENGTH_NORMAL = "보통";
   final SCENT_STRENGTH_WEAK = "약함";
+
+  void _exitWithoutSaving() {
+    normalOlfactoryTrainingController.reset();
+    Get.offAll(() => const OlfactoryTrainingListScreen());
+  }
 
   @override
   void initState() {
@@ -182,12 +188,7 @@ class _NormalOlfactoryTrainingScentStrengthScreenState
                               child: ButtonBasic(
                                 content: '훈련 끝내기',
                                 icon: Icon(Icons.exit_to_app, size: 20),
-                                function:
-                                    () => {
-                                      normalOlfactoryTrainingController.reset(),
-                                      Navigator.pop(context),
-                                      Navigator.pop(context),
-                                    },
+                                function: _exitWithoutSaving,
                               ),
                             ),
                           ],
