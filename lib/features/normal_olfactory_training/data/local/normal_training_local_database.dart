@@ -193,6 +193,14 @@ class NormalTrainingLocalDatabase {
     );
   }
 
+  Future<List<Map<String, Object?>>> getAllTrainingRounds() async {
+    final db = await database;
+    return db.query(
+      'normal_training_round',
+      orderBy: 'session_client_id ASC, round_number ASC',
+    );
+  }
+
   Future<List<Map<String, Object?>>> getSurveyResponses(String clientId) async {
     final db = await database;
     return db.query(
@@ -200,6 +208,14 @@ class NormalTrainingLocalDatabase {
       where: 'session_client_id = ?',
       whereArgs: [clientId],
       orderBy: 'id ASC',
+    );
+  }
+
+  Future<List<Map<String, Object?>>> getAllSurveyResponses() async {
+    final db = await database;
+    return db.query(
+      'normal_training_survey_response',
+      orderBy: 'session_client_id ASC, id ASC',
     );
   }
 
