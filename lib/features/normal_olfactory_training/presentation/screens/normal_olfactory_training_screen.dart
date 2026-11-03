@@ -4,6 +4,7 @@ import 'package:deepscent_cnu/features/normal_olfactory_training/data/models/cor
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/controllers/normal_olfactory_training_controller.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/presentation/screens/normal_olfactory_training_question.dart';
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
+import 'package:deepscent_cnu/features/training_list/presentation/screens/olfactory_training_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -144,11 +145,8 @@ class _NormalOlfactoryTrainingScreenState
 
     if (!mounted) return;
 
-    Navigator.pop(context);
-    Navigator.pop(context);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      normalOlfactoryTrainingController.reset();
-    });
+    normalOlfactoryTrainingController.reset();
+    Get.offAll(() => const OlfactoryTrainingListScreen());
   }
 
   void showTrainingStopModal(BuildContext context) async {

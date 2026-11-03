@@ -120,17 +120,10 @@ class _NormalOlfactoryTrainingQuestionScreenState
                                 content: '훈련 끝내기',
                                 icon: Icon(Icons.exit_to_app, size: 20),
                                 function: () {
-                                  // 1) 다이얼로그 닫기
-                                  Get.back(); // = Navigator.pop(context)랑 같지만 GetX 방식
-
-                                  // 2) 상태 초기화
                                   normalOlfactoryTrainingController.reset();
-
-                                  // 3) 홈/훈련목록으로 "명시적으로" 이동 (여기만 너 목적지로 바꾸면 됨)
                                   Get.offAll(
-                                    () => OlfactoryTrainingListScreen(),
+                                    () => const OlfactoryTrainingListScreen(),
                                   );
-                                  // 또는 Get.offAll(() => TrainingListScreen());
                                 },
                               ),
                             ),

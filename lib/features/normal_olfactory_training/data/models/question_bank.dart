@@ -60,12 +60,12 @@ final List<ScentQuestion> normalTrainingQuestionBank = [
   ),
   ScentQuestion(
     id: 10,
-    correct: CorrectScent(scentName: '유자', deviceNumber: 2, fanNumber: 4),
+    correct: CorrectScent(scentName: '유자', deviceNumber: 3, fanNumber: 4),
     options: ['옥수수', '레몬', '유자', '비누'],
   ),
   ScentQuestion(
     id: 11,
-    correct: CorrectScent(scentName: '장미', deviceNumber: 3, fanNumber: 4),
+    correct: CorrectScent(scentName: '장미', deviceNumber: 2, fanNumber: 4),
     options: ['자몽', '소나무', '커피', '장미'],
   ),
   ScentQuestion(

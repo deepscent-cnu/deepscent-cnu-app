@@ -26,6 +26,11 @@ class DeviceApi {
       'fanSpeed': fanSpeed,
     });
 
+    debugPrint(
+      '(Debug) 향기 제어 요청: '
+      'device=$deviceNumber, fan=$fanNumber, speed=$fanSpeed',
+    );
+
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
