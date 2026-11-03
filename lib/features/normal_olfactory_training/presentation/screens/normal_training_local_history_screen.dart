@@ -1,6 +1,8 @@
 import 'package:deepscent_cnu/common/widgets/custom_app_bar.dart';
+import 'package:deepscent_cnu/features/normal_olfactory_training/data/export/normal_training_excel_exporter.dart';
 import 'package:deepscent_cnu/features/normal_olfactory_training/data/local/normal_training_local_database.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 class NormalTrainingLocalHistoryScreen extends StatefulWidget {
   const NormalTrainingLocalHistoryScreen({super.key});
@@ -13,7 +15,9 @@ class NormalTrainingLocalHistoryScreen extends StatefulWidget {
 class _NormalTrainingLocalHistoryScreenState
     extends State<NormalTrainingLocalHistoryScreen> {
   final _localDatabase = NormalTrainingLocalDatabase.instance;
+  final _excelExporter = NormalTrainingExcelExporter();
   late Future<List<Map<String, Object?>>> _sessionsFuture;
+  bool _isExporting = false;
 
   @override
   void initState() {
@@ -27,6 +31,56 @@ class _NormalTrainingLocalHistoryScreenState
       _sessionsFuture = future;
     });
     await future;
+  }
+
+  Future<void> _exportAll(BuildContext shareContext) async {
+    if (_isExporting) return;
+
+    final renderBox = shareContext.findRenderObject() as RenderBox?;
+    final shareOrigin =
+        renderBox == null
+            ? null
+            : renderBox.localToGlobal(Offset.zero) & renderBox.size;
+
+    setState(() {
+      _isExporting = true;
+    });
+
+    try {
+      final file = await _excelExporter.exportAll();
+      if (!mounted) return;
+
+      await Share.shareXFiles(
+        [
+          XFile(
+            file.path,
+            mimeType:
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ),
+        ],
+        subject: '일반 후각 훈련 전체 기록',
+        text: '일반 후각 훈련 로컬 저장 기록입니다.',
+        sharePositionOrigin: shareOrigin,
+      );
+    } on StateError catch (error) {
+      if (!mounted) return;
+      _showMessage(error.message.toString());
+    } catch (error) {
+      if (!mounted) return;
+      _showMessage('Excel 내보내기에 실패했습니다.\n$error');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isExporting = false;
+        });
+      }
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   String _formatDate(Object? value) {
@@ -81,41 +135,97 @@ class _NormalTrainingLocalHistoryScreenState
         onBackPressed: () => Navigator.pop(context),
       ),
       body: SafeArea(
-        child: FutureBuilder<List<Map<String, Object?>>>(
-          future: _sessionsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                screenWidth * 0.04,
+                screenWidth * 0.02,
+                screenWidth * 0.04,
+                screenWidth * 0.01,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _isExporting ? null : _refresh,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('새로고침'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Builder(
+                      builder:
+                          (shareContext) => FilledButton.icon(
+                            onPressed:
+                                _isExporting
+                                    ? null
+                                    : () => _exportAll(shareContext),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFF335928),
+                            ),
+                            icon:
+                                _isExporting
+                                    ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                    : const Icon(Icons.file_download_outlined),
+                            label: Text(_isExporting ? '생성 중' : '전체 내보내기'),
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: FutureBuilder<List<Map<String, Object?>>>(
+                future: _sessionsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-            if (snapshot.hasError) {
-              return _MessageList(
-                message: '로컬 기록을 불러오지 못했습니다.\n${snapshot.error}',
-                onRefresh: _refresh,
-              );
-            }
+                  if (snapshot.hasError) {
+                    return _MessageList(
+                      message: '로컬 기록을 불러오지 못했습니다.\n${snapshot.error}',
+                      onRefresh: _refresh,
+                    );
+                  }
 
-            final sessions = snapshot.data ?? const [];
-            if (sessions.isEmpty) {
-              return _MessageList(
-                message: '이 휴대폰에 저장된 일반 후각 훈련 기록이 없습니다.',
-                onRefresh: _refresh,
-              );
-            }
+                  final sessions = snapshot.data ?? const [];
+                  if (sessions.isEmpty) {
+                    return _MessageList(
+                      message: '이 휴대폰에 저장된 일반 후각 훈련 기록이 없습니다.',
+                      onRefresh: _refresh,
+                    );
+                  }
 
-            return RefreshIndicator(
-              onRefresh: _refresh,
-              child: ListView.separated(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.all(screenWidth * 0.04),
-                itemCount: sessions.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  return _buildSessionCard(context, sessions[index], index);
+                  return RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.all(screenWidth * 0.04),
+                      itemCount: sessions.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        return _buildSessionCard(
+                          context,
+                          sessions[index],
+                          index,
+                        );
+                      },
+                    ),
+                  );
                 },
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );
